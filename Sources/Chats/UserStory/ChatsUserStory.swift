@@ -13,10 +13,6 @@ import Foundation
 import AlertManager
 import Managers
 
-public protocol ChatsRouteMap: AnyObject {
-    func rootModule() -> ChatsModule
-}
-
 public final class ChatsUserStory {
     private let container: Container
     private var outputWrapper: RootModuleWrapper?
