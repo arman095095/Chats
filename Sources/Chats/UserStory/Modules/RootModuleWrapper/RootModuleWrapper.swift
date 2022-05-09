@@ -20,7 +20,7 @@ final class RootModuleWrapper {
     }
 
     func view() -> UIViewController {
-        let module = routeMap.//
+        let module = routeMap.chatsAndRequestsModule()
         module.output = self
         return module.view
     }
@@ -29,3 +29,5 @@ final class RootModuleWrapper {
 extension RootModuleWrapper: ChatsModuleInput {
     
 }
+
+extension RootModuleWrapper: ChatsAndRequestsModuleOutput { }

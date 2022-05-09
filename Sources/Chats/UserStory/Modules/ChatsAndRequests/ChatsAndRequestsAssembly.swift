@@ -8,15 +8,22 @@
 
 import UIKit
 import Module
+import Managers
+import AlertManager
 
 typealias ChatsAndRequestsModule = Module<ChatsAndRequestsModuleInput, ChatsAndRequestsModuleOutput>
 
 enum ChatsAndRequestsAssembly {
-    static func makeModule() -> ChatsAndRequestsModule {
+    static func makeModule(communicationManager: CommunicationManagerProtocol,
+                           alertManager: AlertManagerProtocol) -> ChatsAndRequestsModule {
         let view = ChatsAndRequestsViewController()
         let router = ChatsAndRequestsRouter()
-        let interactor = ChatsAndRequestsInteractor()
-        let presenter = ChatsAndRequestsPresenter(router: router, interactor: interactor)
+        let interactor = ChatsAndRequestsInteractor(communicationManager: communicationManager)
+        let stringFactory = ChatsAndRequestsStringFactory()
+        let presenter = ChatsAndRequestsPresenter(router: router,
+                                                  interactor: interactor,
+                                                  alertManager: alertManager,
+                                                  stringFactory: stringFactory)
         view.output = presenter
         interactor.output = presenter
         presenter.view = view

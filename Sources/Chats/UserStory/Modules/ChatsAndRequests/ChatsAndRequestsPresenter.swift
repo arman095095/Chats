@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import AlertManager
+import ModelInterfaces
+import Utils
 
 protocol ChatsAndRequestsStringFactoryProtocol {
     var title: String { get }
@@ -34,20 +37,25 @@ final class ChatsAndRequestsPresenter {
     weak var view: ChatsAndRequestsViewInput?
     weak var output: ChatsAndRequestsModuleOutput?
     private let stringFactory: ChatsAndRequestsStringFactoryProtocol
+    private let alertManager: AlertManagerProtocol
     private let router: ChatsAndRequestsRouterInput
     private let interactor: ChatsAndRequestsInteractorInput
-    private let chats: [ChatCellViewModelProtocol]?
-    private let requests: [RequestCellViewModelProtocol]?
+    private var chats: [ChatCellViewModelProtocol]?
+    private var requests: [RequestCellViewModelProtocol]?
     
     init(router: ChatsAndRequestsRouterInput,
-         interactor: ChatsAndRequestsInteractorInput) {
+         interactor: ChatsAndRequestsInteractorInput,
+         alertManager: AlertManagerProtocol,
+         stringFactory: ChatsAndRequestsStringFactoryProtocol) {
         self.router = router
         self.interactor = interactor
+        self.stringFactory = stringFactory
+        self.alertManager = alertManager
     }
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
-
+    
     var title: String {
         stringFactory.title
     }
@@ -75,7 +83,38 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
+    func failureChatsLoad(message: String) {
+        alertManager.present(type: .error, title: message)
+    }
     
+    func failureRequestsLoad(message: String) {
+        alertManager.present(type: .error, title: message)
+    }
+    
+    func successChatsLoaded(_ chats: [ChatModelProtocol]) {
+        self.chats = chats.map { Item(id: $0.friendID,
+                                      userName: $0.friend.userName,
+                                      imageURL: $0.friend.imageUrl,
+                                      lastMessageContent: "Напишите первое сообщение",
+                                      lastMessageDate: DateFormatService().convertForActiveChat(from: Date()),
+                                      lastMessageMarkedImage: UIImage(),
+                                      online: true,
+                                      newMessagesEnable: true,
+                                      newMessagesCount: 2) }
+        
+    }
+    
+    func successRequestsLoaded(_ requests: [RequestModelProtocol]) {
+        self.requests = requests.map { Item(id: $0.senderID,
+                                            userName: $0.sender.userName,
+                                            imageURL: $0.sender.imageUrl,
+                                            lastMessageContent: "",
+                                            lastMessageDate: DateFormatService().convertForActiveChat(from: Date()),
+                                            lastMessageMarkedImage: UIImage(),
+                                            online: true,
+                                            newMessagesEnable: false,
+                                            newMessagesCount: 0) }
+    }
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsModuleInput {

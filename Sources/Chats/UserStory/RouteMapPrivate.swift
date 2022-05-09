@@ -9,5 +9,5 @@
 import UIKit
 
 protocol RouteMapPrivate: AnyObject {
-    
+    func chatsAndRequestsModule() -> ChatsAndRequestsModule
 }

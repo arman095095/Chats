@@ -51,8 +51,8 @@ private extension RequestCell {
         userImageView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         userImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         userImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        userImageView.heightAnchor.constraint(equalToConstant: ChatsConstants.waitingChatHeight).isActive = true
-        userImageView.widthAnchor.constraint(equalToConstant: ChatsConstants.waitingChatHeight).isActive = true
+        userImageView.heightAnchor.constraint(equalToConstant: Constants.requestCellHeight).isActive = true
+        userImageView.widthAnchor.constraint(equalToConstant: Constants.requestCellHeight).isActive = true
     }
 }
 

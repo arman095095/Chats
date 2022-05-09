@@ -69,7 +69,7 @@
       "location" : "https://github.com/arman095095/DesignSystem.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "df5e8bb65f6b312a57d5249db65ae43f48cceaeb"
+        "revision" : "735834117cce873cd8a36587a318a7b34136d449"
       }
     },
     {
@@ -141,7 +141,7 @@
       "location" : "https://github.com/arman095095/Managers.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "600d5a95e9a0ab6eab679e64939425d96f816ee0"
+        "revision" : "db2c6d05721699cfdec5eb7b9d2e9d1b361a82b3"
       }
     },
     {
@@ -150,7 +150,7 @@
       "location" : "https://github.com/arman095095/ModelInterfaces.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "00dd5115165881365eb98015ec01fbbd21001334"
+        "revision" : "26ce028611a426872822e144f362cc25cafc6c67"
       }
     },
     {
@@ -177,7 +177,7 @@
       "location" : "https://github.com/arman095095/NetworkServices.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "671c8df874f8fcb13eefcfadc75f2de340a83c23"
+        "revision" : "3bad07ef121a020e17e8811e3e22920a4125c8da"
       }
     },
     {

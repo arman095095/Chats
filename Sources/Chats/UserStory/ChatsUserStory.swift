@@ -10,6 +10,8 @@ import Swinject
 import ChatsRouteMap
 import Module
 import Foundation
+import AlertManager
+import Managers
 
 public protocol ChatsRouteMap: AnyObject {
     func rootModule() -> ChatsModule
@@ -32,8 +34,14 @@ extension ChatsUserStory: ChatsRouteMap {
 }
 
 extension ChatsUserStory: RouteMapPrivate {
-    func module() -> ModuleProtocol {
-        let module =
+    func chatsAndRequestsModule() -> ChatsAndRequestsModule {
+        let safeResolver = container.synchronize()
+        guard let alertManager = safeResolver.resolve(AlertManagerProtocol.self),
+              let communicationManager = safeResolver.resolve(CommunicationManagerProtocol.self) else {
+            fatalError(ErrorMessage.dependency.localizedDescription)
+        }
+        let module = ChatsAndRequestsAssembly.makeModule(communicationManager: communicationManager,
+                                                         alertManager: alertManager)
         module.output = outputWrapper
         return module
     }

@@ -158,7 +158,7 @@ private extension ChatsAndRequestsViewController {
         collectionView.register(ChatCell.self, forCellWithReuseIdentifier: ChatCell.idCell)
         collectionView.register(RequestCell.self, forCellWithReuseIdentifier: RequestCell.idCell)
         collectionView.register(HeaderItem.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderItem.headerID)
-        collectionView.register(EmptyHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmptyHeaderView.headerID)
+        collectionView.register(EmptyHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmptyHeaderView.idHeader)
     }
     
     func setupDataSource() {
@@ -193,8 +193,8 @@ private extension ChatsAndRequestsViewController {
                 header.config(text: section.title, textColor: .systemGray, fontSize: 22)
                 return header
             case .chatsEmpty:
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: EmptyHeaderView.headerID, for: indexpath) as! EmptyHeaderView
-                header.config(type: .emptyActiveChats)
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: EmptyHeaderView.idHeader, for: indexpath) as! EmptyHeaderView
+                header.config(type: .emptyChats)
                 return header
             }
         }

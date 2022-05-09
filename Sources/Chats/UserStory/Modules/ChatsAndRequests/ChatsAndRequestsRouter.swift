@@ -10,7 +10,7 @@ import UIKit
 import ModelInterfaces
 
 protocol ChatsAndRequestsRouterInput: AnyObject {
-    func openProfileModule()
+    func openProfileModule(profile: ProfileModelProtocol)
 }
 
 final class ChatsAndRequestsRouter {
@@ -19,6 +19,6 @@ final class ChatsAndRequestsRouter {
 
 extension ChatsAndRequestsRouter: ChatsAndRequestsRouterInput {
     func openProfileModule(profile: ProfileModelProtocol) {
-        <#code#>
+    
     }
 }
