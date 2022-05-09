@@ -40,8 +40,8 @@ final class ChatsAndRequestsPresenter {
     private let alertManager: AlertManagerProtocol
     private let router: ChatsAndRequestsRouterInput
     private let interactor: ChatsAndRequestsInteractorInput
-    private var chats: [ChatCellViewModelProtocol]?
-    private var requests: [RequestCellViewModelProtocol]?
+    private var chats: [ChatCellViewModelProtocol]
+    private var requests: [RequestCellViewModelProtocol]
     
     init(router: ChatsAndRequestsRouterInput,
          interactor: ChatsAndRequestsInteractorInput,
@@ -51,6 +51,8 @@ final class ChatsAndRequestsPresenter {
         self.interactor = interactor
         self.stringFactory = stringFactory
         self.alertManager = alertManager
+        self.chats = []
+        self.requests = []
     }
 }
 
@@ -62,6 +64,8 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
     
     func viewDidLoad() {
         view?.setupInitialState()
+        interactor.getChats()
+        interactor.getRequests()
     }
     
     func selectChat(at indexPath: IndexPath) {
@@ -102,6 +106,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
                                       newMessagesEnable: true,
                                       newMessagesCount: 2) }
         
+        view?.reloadData(requests: requests, chats: chats)
     }
     
     func successRequestsLoaded(_ requests: [RequestModelProtocol]) {
@@ -114,6 +119,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
                                             online: true,
                                             newMessagesEnable: false,
                                             newMessagesCount: 0) }
+        view?.reloadData(requests: requests, chats: chats)
     }
 }
 
