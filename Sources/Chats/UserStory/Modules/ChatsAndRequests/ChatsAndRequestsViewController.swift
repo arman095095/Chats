@@ -133,9 +133,6 @@ extension ChatsAndRequestsViewController: UISearchResultsUpdating {
 private extension ChatsAndRequestsViewController {
     
     func setupSearchBar() {
-        if #available(iOS 11.0, *) {
-            navigationController?.navigationBar.prefersLargeTitles = true
-        }
         navigationItem.title = output?.title
         navigationController?.navigationBar.barTintColor = .systemGray6
         navigationController?.navigationBar.shadowImage = UIImage()
