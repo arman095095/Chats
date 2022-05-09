@@ -8,12 +8,15 @@
 
 import UIKit
 import Swinject
+import ChatsRouteMap
 
 public final class ChatsUserStoryAssembly: Assembly {
     
     public init() { }
 
     public func assemble(container: Container) {
-        //
+        container.register(ChatsRouteMap.self) { r in
+            ChatsUserStory(container: container)
+        }
     }
 }
