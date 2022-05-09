@@ -73,7 +73,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
     }
     
     func selectRequest(at indexPath: IndexPath) {
-        guard let request = requests?[indexPath.row] else { return }
+        guard let request = requests[indexPath.row] else { return }
         
     }
     
