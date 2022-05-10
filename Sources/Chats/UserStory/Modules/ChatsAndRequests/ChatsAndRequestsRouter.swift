@@ -8,9 +8,11 @@
 
 import UIKit
 import ModelInterfaces
+import ProfileRouteMap
 
 protocol ChatsAndRequestsRouterInput: AnyObject {
-    func openProfileModule(profile: ProfileModelProtocol)
+    func openProfileModule(profile: ProfileModelProtocol, output: ProfileModuleOutput)
+    func dismissProfileModule()
 }
 
 final class ChatsAndRequestsRouter {
@@ -23,8 +25,13 @@ final class ChatsAndRequestsRouter {
 }
 
 extension ChatsAndRequestsRouter: ChatsAndRequestsRouterInput {
-    func openProfileModule(profile: ProfileModelProtocol) {
+    func openProfileModule(profile: ProfileModelProtocol, output: ProfileModuleOutput) {
         let module = routeMap.profileModule(model: profile)
+        module.output = output
         transitionHandler?.navigationController?.pushViewController(module.view, animated: true)
+    }
+    
+    func dismissProfileModule() {
+        transitionHandler?.navigationController?.popViewController(animated: true)
     }
 }

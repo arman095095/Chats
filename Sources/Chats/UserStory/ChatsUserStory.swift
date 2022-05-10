@@ -37,7 +37,6 @@ extension ChatsUserStory: RouteMapPrivate {
         let safeResolver = container.synchronize()
         guard let profileUserStory = safeResolver.resolve(UserStoryFacadeProtocol.self)?.profileUserStory else { fatalError(ErrorMessage.dependency.localizedDescription) }
         let module = profileUserStory.someAccountModule(profile: model)
-        module.output = outputWrapper
         return module
     }
     

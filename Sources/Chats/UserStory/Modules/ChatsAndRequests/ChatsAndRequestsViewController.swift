@@ -9,23 +9,6 @@
 import UIKit
 import DesignSystem
 
-enum Sections: Int, CaseIterable {
-    case requests
-    case chats
-    case chatsEmpty
-    
-    var title: String {
-        switch self {
-        case .chats:
-            return "Чаты"
-        case .requests:
-            return "Запросы"
-        case .chatsEmpty:
-            return ""
-        }
-    }
-}
-
 protocol ChatsAndRequestsViewInput: AnyObject {
     func setupInitialState()
     func reloadData(requests: [Item], chats: [Item])
@@ -223,7 +206,6 @@ extension ChatsAndRequestsViewController: ChatCellOuput {
 }
 
 private extension ChatsAndRequestsViewController {
-
     struct Constants {
         static let layout1: CGFloat = 15
         static let layout2: CGFloat = 16

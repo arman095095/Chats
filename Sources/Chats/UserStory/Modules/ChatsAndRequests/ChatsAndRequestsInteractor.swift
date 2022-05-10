@@ -34,19 +34,6 @@ final class ChatsAndRequestsInteractor {
 }
 
 extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
-
-    func remove(chat: ChatModelProtocol) {
-        communicationManager.remove(chat: chat)
-    }
-    
-    func initObserve() {
-        communicationManager.observeFriends { [weak self] newChats, removed in
-            self?.output?.changed(newChats: newChats, removed: removed)
-        }
-        communicationManager.observeRequests { [weak self] newRequests, removed in
-            self?.output?.changed(newRequests: newRequests, removed: removed)
-        }
-    }
     
     func initialLoad() {
         communicationManager.getChatsAndRequests { [weak self] result in
@@ -57,5 +44,18 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
                 self?.output?.failureLoad(message: error.localizedDescription)
             }
         }
+    }
+    
+    func initObserve() {
+        communicationManager.observeFriends { [weak self] newChats, removed in
+            self?.output?.changed(newChats: newChats, removed: removed)
+        }
+        communicationManager.observeRequests { [weak self] newRequests, removed in
+            self?.output?.changed(newRequests: newRequests, removed: removed)
+        }
+    }
+
+    func remove(chat: ChatModelProtocol) {
+        communicationManager.remove(chat: chat)
     }
 }

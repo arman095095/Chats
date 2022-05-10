@@ -32,7 +32,3 @@ extension RootModuleWrapper: ChatsModuleInput {
 }
 
 extension RootModuleWrapper: ChatsAndRequestsModuleOutput { }
-
-extension RootModuleWrapper: ProfileModuleOutput {
-    
-}
