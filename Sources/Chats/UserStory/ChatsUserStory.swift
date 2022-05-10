@@ -12,6 +12,9 @@ import Module
 import Foundation
 import AlertManager
 import Managers
+import UserStoryFacade
+import ModelInterfaces
+import ProfileRouteMap
 
 public final class ChatsUserStory {
     private let container: Container
@@ -30,6 +33,14 @@ extension ChatsUserStory: ChatsRouteMap {
 }
 
 extension ChatsUserStory: RouteMapPrivate {
+    func profileModule(model: ProfileModelProtocol) -> ProfileModule {
+        let safeResolver = container.synchronize()
+        guard let profileUserStory = safeResolver.resolve(UserStoryFacadeProtocol.self)?.profileUserStory else { fatalError(ErrorMessage.dependency.localizedDescription) }
+        let module = profileUserStory.someAccountModule(profile: model)
+        module.output = outputWrapper
+        return module
+    }
+    
     func chatsAndRequestsModule() -> ChatsAndRequestsModule {
         let safeResolver = container.synchronize()
         guard let alertManager = safeResolver.resolve(AlertManagerProtocol.self),
@@ -37,7 +48,8 @@ extension ChatsUserStory: RouteMapPrivate {
             fatalError(ErrorMessage.dependency.localizedDescription)
         }
         let module = ChatsAndRequestsAssembly.makeModule(communicationManager: communicationManager,
-                                                         alertManager: alertManager)
+                                                         alertManager: alertManager,
+                                                         routeMap: self)
         module.output = outputWrapper
         return module
     }

@@ -9,6 +9,7 @@
 import UIKit
 import Module
 import ChatsRouteMap
+import ProfileRouteMap
 
 final class RootModuleWrapper {
 
@@ -31,3 +32,7 @@ extension RootModuleWrapper: ChatsModuleInput {
 }
 
 extension RootModuleWrapper: ChatsAndRequestsModuleOutput { }
+
+extension RootModuleWrapper: ProfileModuleOutput {
+    
+}

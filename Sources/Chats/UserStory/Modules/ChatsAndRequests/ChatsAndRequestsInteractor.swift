@@ -11,15 +11,16 @@ import Managers
 import ModelInterfaces
 
 protocol ChatsAndRequestsInteractorInput: AnyObject {
-    func getChats()
-    func getRequests()
+    func initialLoad()
+    func initObserve()
+    func remove(chat: ChatModelProtocol)
 }
 
 protocol ChatsAndRequestsInteractorOutput: AnyObject {
-    func successChatsLoaded(_ chats: [ChatModelProtocol])
-    func failureChatsLoad(message: String)
-    func successRequestsLoaded(_ requests: [RequestModelProtocol])
-    func failureRequestsLoad(message: String)
+    func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol])
+    func changed(newChats: [ChatModelProtocol], removed: [ChatModelProtocol])
+    func changed(newRequests: [RequestModelProtocol], removed: [RequestModelProtocol])
+    func failureLoad(message: String)
 }
 
 final class ChatsAndRequestsInteractor {
@@ -33,24 +34,27 @@ final class ChatsAndRequestsInteractor {
 }
 
 extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
-    func getChats() {
-        communicationManager.getChats { [weak self] result in
-            switch result {
-            case .success(let chats):
-                self?.output?.successChatsLoaded(chats)
-            case .failure(let error):
-                self?.output?.failureChatsLoad(message: error.localizedDescription)
-            }
+
+    func remove(chat: ChatModelProtocol) {
+        communicationManager.remove(chat: chat)
+    }
+    
+    func initObserve() {
+        communicationManager.observeFriends { [weak self] newChats, removed in
+            self?.output?.changed(newChats: newChats, removed: removed)
+        }
+        communicationManager.observeRequests { [weak self] newRequests, removed in
+            self?.output?.changed(newRequests: newRequests, removed: removed)
         }
     }
     
-    func getRequests() {
-        communicationManager.getRequests { [weak self] result in
+    func initialLoad() {
+        communicationManager.getChatsAndRequests { [weak self] result in
             switch result {
-            case .success(let requests):
-                self?.output?.successRequestsLoaded(requests)
+            case .success((let chats, let requests)):
+                self?.output?.successLoaded(chats, requests)
             case .failure(let error):
-                self?.output?.failureRequestsLoad(message: error.localizedDescription)
+                self?.output?.failureLoad(message: error.localizedDescription)
             }
         }
     }

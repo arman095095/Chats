@@ -15,9 +15,10 @@ typealias ChatsAndRequestsModule = Module<ChatsAndRequestsModuleInput, ChatsAndR
 
 enum ChatsAndRequestsAssembly {
     static func makeModule(communicationManager: CommunicationManagerProtocol,
-                           alertManager: AlertManagerProtocol) -> ChatsAndRequestsModule {
+                           alertManager: AlertManagerProtocol,
+                           routeMap: RouteMapPrivate) -> ChatsAndRequestsModule {
         let view = ChatsAndRequestsViewController()
-        let router = ChatsAndRequestsRouter()
+        let router = ChatsAndRequestsRouter(routeMap: routeMap)
         let interactor = ChatsAndRequestsInteractor(communicationManager: communicationManager)
         let stringFactory = ChatsAndRequestsStringFactory()
         let presenter = ChatsAndRequestsPresenter(router: router,

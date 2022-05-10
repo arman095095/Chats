@@ -7,7 +7,10 @@
 //
 
 import UIKit
+import ProfileRouteMap
+import ModelInterfaces
 
 protocol RouteMapPrivate: AnyObject {
     func chatsAndRequestsModule() -> ChatsAndRequestsModule
+    func profileModule(model: ProfileModelProtocol) -> ProfileModule
 }

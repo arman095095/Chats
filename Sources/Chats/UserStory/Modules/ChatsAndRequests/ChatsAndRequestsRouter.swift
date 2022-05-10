@@ -15,10 +15,16 @@ protocol ChatsAndRequestsRouterInput: AnyObject {
 
 final class ChatsAndRequestsRouter {
     weak var transitionHandler: UIViewController?
+    private let routeMap: RouteMapPrivate
+    
+    init(routeMap: RouteMapPrivate) {
+        self.routeMap = routeMap
+    }
 }
 
 extension ChatsAndRequestsRouter: ChatsAndRequestsRouterInput {
     func openProfileModule(profile: ProfileModelProtocol) {
-    
+        let module = routeMap.profileModule(model: profile)
+        transitionHandler?.navigationController?.pushViewController(module.view, animated: true)
     }
 }

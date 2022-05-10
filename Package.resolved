@@ -141,7 +141,7 @@
       "location" : "https://github.com/arman095095/Managers.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "db2c6d05721699cfdec5eb7b9d2e9d1b361a82b3"
+        "revision" : "489d98797fc7f0e23835756358c4b8ffcfe5517c"
       }
     },
     {
@@ -267,7 +267,7 @@
       "location" : "https://github.com/arman095095/UserStoryFacade.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "f88d248f59b5e753a57fe1e4529f1de4f3c48c6c"
+        "revision" : "3aabd4a895343aca9061862e37c738ccf3acf114"
       }
     },
     {

@@ -14,14 +14,14 @@ protocol ChatCellOuput: AnyObject {
 
 protocol ChatCellViewModelProtocol {
     var id: String { get }
-    var userName: String { get }
     var imageURL: String { get }
-    var lastMessageContent: String { get }
-    var lastMessageDate: String { get }
-    var lastMessageMarkedImage: UIImage { get }
-    var online: Bool { get }
-    var newMessagesEnable: Bool { get }
-    var newMessagesCount: Int { get }
+    var userName: String? { get }
+    var lastMessageContent: String? { get }
+    var lastMessageDate: String? { get }
+    var lastMessageMarkedImage: UIImage? { get }
+    var online: Bool? { get }
+    var newMessagesEnable: Bool? { get }
+    var newMessagesCount: Int? { get }
 }
 
 final class ChatCell: UICollectionViewCell {
@@ -49,7 +49,7 @@ final class ChatCell: UICollectionViewCell {
         lastMessegeLabel.text = viewModel.lastMessageContent
         dateLabel.text = viewModel.lastMessageDate
         markMessage.image = viewModel.lastMessageMarkedImage
-        onlineImageView.isHidden = !viewModel.online
+        onlineImageView.isHidden = !(viewModel.online ?? true)
         badgeLabelSetup(viewModel: viewModel)
     }
     
@@ -89,13 +89,13 @@ final class ChatCell: UICollectionViewCell {
 private extension ChatCell {
     
     func badgeLabelSetup(viewModel: ChatCellViewModelProtocol) {
-        if !viewModel.newMessagesEnable {
+        if !(viewModel.newMessagesEnable ?? false) {
             badge.isHidden = true
             lastMessageTrailingAnchor.constant = -Constants.messageAndContainerInset
         }
         else {
             badge.isHidden = false
-            badge.setBadgeCount(count: viewModel.newMessagesCount)
+            badge.setBadgeCount(count: viewModel.newMessagesCount ?? 0)
            // badgeWidthConstreint.constant = viewModel.badgeWidth
             lastMessageTrailingAnchor.constant = -Constants.badgeAndMessageInset - Constants.badgeHeight
             layoutIfNeeded()
