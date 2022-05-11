@@ -36,14 +36,8 @@ final class ChatsAndRequestsInteractor {
 extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     
     func initialLoad() {
-        communicationManager.getChatsAndRequests { [weak self] result in
-            switch result {
-            case .success((let chats, let requests)):
-                self?.output?.successLoaded(chats, requests)
-            case .failure(let error):
-                self?.output?.failureLoad(message: error.localizedDescription)
-            }
-        }
+        let chatsAndRequests = communicationManager.getChatsAndRequests()
+        output?.successLoaded(chatsAndRequests.chats, chatsAndRequests.requests)
     }
     
     func initObserve() {
