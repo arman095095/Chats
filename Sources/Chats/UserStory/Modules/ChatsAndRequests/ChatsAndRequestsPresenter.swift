@@ -96,12 +96,17 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
     
     func viewDidLoad() {
         view?.setupInitialState()
-        interactor.initialLoad()
-        interactor.initObserve()
+        loadCache()
+        interactor.remoteLoad()
+        interactor.initObservers()
     }
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
+
+    func profilesUpdated() {
+        loadCache()
+    }
 
     func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol]) {
         self.requests = requests.map { Item(request: $0) }
@@ -143,5 +148,13 @@ extension ChatsAndRequestsPresenter: ProfileModuleOutput {
     
     func acceptedProfile() {
         router.dismissProfileModule()
+    }
+}
+
+private extension ChatsAndRequestsPresenter {
+    func loadCache() {
+        self.chats = interactor.cachedChats.map { Item(chat: $0) }
+        self.requests = interactor.cachedRequests.map { Item(request: $0) }
+        view?.reloadData(requests: requests, chats: chats)
     }
 }

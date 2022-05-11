@@ -11,8 +11,10 @@ import Managers
 import ModelInterfaces
 
 protocol ChatsAndRequestsInteractorInput: AnyObject {
-    func initialLoad()
-    func initObserve()
+    var cachedChats: [ChatModelProtocol] { get }
+    var cachedRequests: [RequestModelProtocol] { get }
+    func remoteLoad()
+    func initObservers()
     func remove(chat: ChatModelProtocol)
 }
 
@@ -20,6 +22,7 @@ protocol ChatsAndRequestsInteractorOutput: AnyObject {
     func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol])
     func changed(newChats: [ChatModelProtocol], removed: [ChatModelProtocol])
     func changed(newRequests: [RequestModelProtocol], removed: [RequestModelProtocol])
+    func profilesUpdated()
     func failureLoad(message: String)
 }
 
@@ -35,9 +38,15 @@ final class ChatsAndRequestsInteractor {
 
 extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     
-    func initialLoad() {
-        let chatsAndRequests = communicationManager.getChatsAndRequests()
-        output?.successLoaded(chatsAndRequests.chats, chatsAndRequests.requests)
+    var cachedChats: [ChatModelProtocol] {
+        communicationManager.getChatsAndRequests().chats
+    }
+    
+    var cachedRequests: [RequestModelProtocol] {
+        communicationManager.getChatsAndRequests().requests
+    }
+    
+    func remoteLoad() {
         communicationManager.getChatsAndRequests { [weak self] result in
             switch result {
             case .success((let chats, let requests)):
@@ -48,12 +57,15 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         }
     }
     
-    func initObserve() {
+    func initObservers() {
         communicationManager.observeFriends { [weak self] newChats, removed in
             self?.output?.changed(newChats: newChats, removed: removed)
         }
         communicationManager.observeRequests { [weak self] newRequests, removed in
             self?.output?.changed(newRequests: newRequests, removed: removed)
+        }
+        communicationManager.observeFriendsAndRequestsProfiles { [weak self] in
+            self?.output?.profilesUpdated()
         }
     }
 
