@@ -38,6 +38,14 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     func initialLoad() {
         let chatsAndRequests = communicationManager.getChatsAndRequests()
         output?.successLoaded(chatsAndRequests.chats, chatsAndRequests.requests)
+        communicationManager.getChatsAndRequests { [weak self] result in
+            switch result {
+            case .success((let chats, let requests)):
+                self?.output?.successLoaded(chats, requests)
+            case .failure(let error):
+                self?.output?.failureLoad(message: error.localizedDescription)
+            }
+        }
     }
     
     func initObserve() {
