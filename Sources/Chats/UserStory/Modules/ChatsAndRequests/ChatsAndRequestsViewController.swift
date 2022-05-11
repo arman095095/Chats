@@ -36,7 +36,7 @@ extension ChatsAndRequestsViewController: ChatsAndRequestsViewInput {
     }
     
     func reloadData(requests: [Item], chats: [Item]) {
-        setupDataSource()
+        //setupDataSource()
         var snapshot = NSDiffableDataSourceSnapshot<Sections, Item>()
         snapshot.appendSections([.requests])
         snapshot.appendItems(requests, toSection: .requests)

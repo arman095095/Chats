@@ -50,10 +50,24 @@ struct Item: Hashable,
 
 extension Item {
     static func == (lhs: Item, rhs: Item) -> Bool {
-        lhs.id == rhs.id
+        lhs.hashValue == rhs.hashValue
+    }
+    
+    var hashValue: Int {
+        var hasher = Hasher()
+        hash(into: &hasher)
+        return hasher.finalize()
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+        hasher.combine(userName)
+        hasher.combine(imageURL)
+        hasher.combine(lastMessageContent)
+        hasher.combine(lastMessageDate)
+        hasher.combine(lastMessageMarkedImage)
+        hasher.combine(online)
+        hasher.combine(newMessagesEnable)
+        hasher.combine(newMessagesCount)
     }
 }
