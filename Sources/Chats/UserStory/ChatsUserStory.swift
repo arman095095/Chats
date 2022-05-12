@@ -43,10 +43,10 @@ extension ChatsUserStory: RouteMapPrivate {
     func chatsAndRequestsModule() -> ChatsAndRequestsModule {
         let safeResolver = container.synchronize()
         guard let alertManager = safeResolver.resolve(AlertManagerProtocol.self),
-              let communicationManager = safeResolver.resolve(CommunicationManagerProtocol.self) else {
+              let chatsAndRequestsManager = safeResolver.resolve(ChatsAndRequestsManagerProtocol.self) else {
             fatalError(ErrorMessage.dependency.localizedDescription)
         }
-        let module = ChatsAndRequestsAssembly.makeModule(communicationManager: communicationManager,
+        let module = ChatsAndRequestsAssembly.makeModule(chatsAndRequestsManager: chatsAndRequestsManager,
                                                          alertManager: alertManager,
                                                          routeMap: self)
         module.output = outputWrapper

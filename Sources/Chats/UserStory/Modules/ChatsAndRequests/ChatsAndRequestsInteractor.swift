@@ -29,25 +29,25 @@ protocol ChatsAndRequestsInteractorOutput: AnyObject {
 final class ChatsAndRequestsInteractor {
     
     weak var output: ChatsAndRequestsInteractorOutput?
-    private let communicationManager: CommunicationManagerProtocol
+    private let chatsAndRequestsManager: ChatsAndRequestsManagerProtocol
     
-    init(communicationManager: CommunicationManagerProtocol) {
-        self.communicationManager = communicationManager
+    init(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol) {
+        self.chatsAndRequestsManager = chatsAndRequestsManager
     }
 }
 
 extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     
     var cachedChats: [ChatModelProtocol] {
-        communicationManager.getChatsAndRequests().chats
+        chatsAndRequestsManager.getChatsAndRequests().chats
     }
     
     var cachedRequests: [RequestModelProtocol] {
-        communicationManager.getChatsAndRequests().requests
+        chatsAndRequestsManager.getChatsAndRequests().requests
     }
     
     func remoteLoad() {
-        communicationManager.getChatsAndRequests { [weak self] result in
+        chatsAndRequestsManager.getChatsAndRequests { [weak self] result in
             switch result {
             case .success((let chats, let requests)):
                 self?.output?.successLoaded(chats, requests)
@@ -58,18 +58,18 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     }
     
     func initObservers() {
-        communicationManager.observeFriends { [weak self] newChats, removed in
+        chatsAndRequestsManager.observeFriends { [weak self] newChats, removed in
             self?.output?.changed(newChats: newChats, removed: removed)
         }
-        communicationManager.observeRequests { [weak self] newRequests, removed in
+        chatsAndRequestsManager.observeRequests { [weak self] newRequests, removed in
             self?.output?.changed(newRequests: newRequests, removed: removed)
         }
-        communicationManager.observeFriendsAndRequestsProfiles { [weak self] in
+        chatsAndRequestsManager.observeFriendsAndRequestsProfiles { [weak self] in
             self?.output?.profilesUpdated()
         }
     }
 
     func remove(chat: ChatModelProtocol) {
-        communicationManager.remove(chat: chat)
+        chatsAndRequestsManager.remove(chat: chat)
     }
 }

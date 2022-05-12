@@ -14,12 +14,12 @@ import AlertManager
 typealias ChatsAndRequestsModule = Module<ChatsAndRequestsModuleInput, ChatsAndRequestsModuleOutput>
 
 enum ChatsAndRequestsAssembly {
-    static func makeModule(communicationManager: CommunicationManagerProtocol,
+    static func makeModule(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
                            alertManager: AlertManagerProtocol,
                            routeMap: RouteMapPrivate) -> ChatsAndRequestsModule {
         let view = ChatsAndRequestsViewController()
         let router = ChatsAndRequestsRouter(routeMap: routeMap)
-        let interactor = ChatsAndRequestsInteractor(communicationManager: communicationManager)
+        let interactor = ChatsAndRequestsInteractor(chatsAndRequestsManager: chatsAndRequestsManager)
         let stringFactory = ChatsAndRequestsStringFactory()
         let presenter = ChatsAndRequestsPresenter(router: router,
                                                   interactor: interactor,
