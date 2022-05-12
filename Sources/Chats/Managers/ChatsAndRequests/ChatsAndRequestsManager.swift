@@ -10,7 +10,7 @@ import Services
 import NetworkServices
 import ModelInterfaces
 
-public protocol ChatsAndRequestsManagerProtocol {
+protocol ChatsAndRequestsManagerProtocol {
     func getChatsAndRequests() -> (chats: [ChatModelProtocol], requests: [RequestModelProtocol])
     func getChatsAndRequests(completion: @escaping (Result<([ChatModelProtocol], [RequestModelProtocol]), Error>) -> ())
     func observeFriends(completion: @escaping ([ChatModelProtocol], [ChatModelProtocol]) -> Void)
@@ -19,7 +19,7 @@ public protocol ChatsAndRequestsManagerProtocol {
     func remove(chat: ChatModelProtocol)
 }
 
-public final class ChatsAndRequestsManager {
+final class ChatsAndRequestsManager {
     
     private let account: AccountModelProtocol
     private let accountID: String
@@ -50,15 +50,15 @@ public final class ChatsAndRequestsManager {
 
 extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
     
-    public func getChatsAndRequests() -> (chats: [ChatModelProtocol], requests: [RequestModelProtocol]) {
+    func getChatsAndRequests() -> (chats: [ChatModelProtocol], requests: [RequestModelProtocol]) {
         return (cacheService.storedChats, cacheService.storedRequests)
     }
     
-    public func remove(chat: ChatModelProtocol) {
+    func remove(chat: ChatModelProtocol) {
         self.requestsService.removeFriend(with: chat.friendID, from: accountID) { _ in }
     }
     
-    public func observeFriendsAndRequestsProfiles(completion: @escaping () -> ()) {
+    func observeFriendsAndRequestsProfiles(completion: @escaping () -> ()) {
         
         account.friendIds.forEach {
             let socket = profileService.initProfileSocket(userID: $0) { result in
@@ -73,7 +73,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
             }
             sockets.append(socket)
         }
-
+        
         account.waitingsIds.forEach {
             let socket = profileService.initProfileSocket(userID: $0) { result in
                 switch result {
@@ -88,8 +88,8 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
             sockets.append(socket)
         }
     }
-
-    public func observeFriends(completion: @escaping ([ChatModelProtocol], [ChatModelProtocol]) -> Void) {
+    
+    func observeFriends(completion: @escaping ([ChatModelProtocol], [ChatModelProtocol]) -> Void) {
         let socket = requestsService.initFriendsSocket(userID: accountID) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -138,7 +138,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
         self.sockets.append(socket)
     }
     
-    public func observeRequests(completion: @escaping ([RequestModelProtocol], [RequestModelProtocol]) -> Void) {
+    func observeRequests(completion: @escaping ([RequestModelProtocol], [RequestModelProtocol]) -> Void) {
         let recievedSocket = requestsService.initRequestsSocket(userID: accountID) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -196,7 +196,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
         sockets.append(sendedSocket)
     }
     
-    public func getChatsAndRequests(completion: @escaping (Result<([ChatModelProtocol], [RequestModelProtocol]), Error>) -> ()) {
+    func getChatsAndRequests(completion: @escaping (Result<([ChatModelProtocol], [RequestModelProtocol]), Error>) -> ()) {
         var refreshedChats = [ChatModelProtocol]()
         var refreshedRequests = [RequestModelProtocol]()
         let group = DispatchGroup()
