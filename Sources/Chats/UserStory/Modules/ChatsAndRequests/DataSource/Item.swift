@@ -33,12 +33,30 @@ struct Item: Hashable,
         self.id = chat.friendID
         self.userName = chat.friend.userName
         self.imageURL = chat.friend.imageUrl
-        self.lastMessageContent = "Напишите сообщение"
-        self.lastMessageDate = DateFormatService().convertForActiveChat(from: Date())
-        self.lastMessageMarkedImage = UIImage(named: "wait", in: Bundle.module, with: nil)
+        switch chat.messages.last?.type {
+        case .none:
+            self.lastMessageContent = Constants.emptyChatPlaceholder
+        case .text(let content):
+            self.lastMessageContent = content
+        case.image:
+            self.lastMessageContent = Constants.photoMessagePlaceholder
+        case .audio:
+            self.lastMessageContent = Constants.audioMessagePlaceholer
+        }
+        self.lastMessageDate = DateFormatService().convertForActiveChat(from: chat.messages.last?.date)
+        switch chat.messages.last?.sendingStatus {
+        case .sended:
+            self.lastMessageMarkedImage = UIImage(named: Constants.markSendedImageName, in: Bundle.module, with: nil)
+        case .waiting:
+            self.lastMessageMarkedImage = UIImage(named: Constants.markWaitinigImageName, in: Bundle.module, with: nil)
+        case .looked:
+            self.lastMessageMarkedImage = UIImage(named: Constants.markLookedImageName, in: Bundle.module, with: nil)
+        case .none:
+            self.lastMessageMarkedImage = nil
+        }
         self.online = chat.friend.online
-        self.newMessagesEnable = true
-        self.newMessagesCount = 5
+        self.newMessagesEnable = !chat.newMessages.isEmpty
+        self.newMessagesCount = chat.newMessages.count
     }
     
     init(request: RequestModelProtocol) {
@@ -70,4 +88,13 @@ extension Item {
         hasher.combine(newMessagesEnable)
         hasher.combine(newMessagesCount)
     }
+}
+
+struct Constants {
+    static let emptyChatPlaceholder = "Напишите сообщение первым(ой)"
+    static let audioMessagePlaceholer = "Голосовое сообщение"
+    static let photoMessagePlaceholder = "Фотография"
+    static let markWaitinigImageName = "wait"
+    static let markSendedImageName = "Sented1"
+    static let markLookedImageName = "sended3"
 }
