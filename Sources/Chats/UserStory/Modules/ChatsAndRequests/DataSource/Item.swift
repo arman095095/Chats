@@ -33,7 +33,7 @@ struct Item: Hashable,
         self.id = chat.friendID
         self.userName = chat.friend.userName
         self.imageURL = chat.friend.imageUrl
-        switch chat.messages.last?.type {
+        switch chat.lastMessage?.type {
         case .none:
             self.lastMessageContent = Constants.emptyChatPlaceholder
         case .text(let content):
@@ -43,8 +43,8 @@ struct Item: Hashable,
         case .audio:
             self.lastMessageContent = Constants.audioMessagePlaceholer
         }
-        self.lastMessageDate = DateFormatService().convertForActiveChat(from: chat.messages.last?.date)
-        switch chat.messages.last?.sendingStatus {
+        self.lastMessageDate = DateFormatService().convertForActiveChat(from: chat.lastMessage?.date)
+        switch chat.lastMessage?.sendingStatus {
         case .sended:
             self.lastMessageMarkedImage = UIImage(named: Constants.markSendedImageName, in: Bundle.module, with: nil)
         case .waiting:
