@@ -55,8 +55,8 @@ struct Item: Hashable,
             self.lastMessageMarkedImage = nil
         }
         self.online = chat.friend.online
-        self.newMessagesEnable = !chat.newMessages.isEmpty
-        self.newMessagesCount = chat.newMessages.count
+        self.newMessagesEnable = !(chat.newMessagesCount == 0)
+        self.newMessagesCount = chat.newMessagesCount
     }
     
     init(request: RequestModelProtocol) {
