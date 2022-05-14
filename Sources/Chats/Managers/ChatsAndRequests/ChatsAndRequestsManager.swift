@@ -24,7 +24,8 @@ final class ChatsAndRequestsManager {
     private let account: AccountModelProtocol
     private let accountID: String
     private let accountService: AccountServiceProtocol
-    private let cacheService: CommunicationCacheServiceProtocol
+    private let accountCacheService: AccountCacheServiceProtocol
+    private let chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol
     private let profileService: ProfilesServiceProtocol
     private let requestsService: RequestsServiceProtocol
     private var sockets = [SocketProtocol]()
@@ -32,13 +33,15 @@ final class ChatsAndRequestsManager {
     init(accountID: String,
          account: AccountModelProtocol,
          accountService: AccountServiceProtocol,
-         cacheService: CommunicationCacheServiceProtocol,
+         accountCacheService: AccountCacheServiceProtocol,
+         chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol,
          profileService: ProfilesServiceProtocol,
          requestsService: RequestsServiceProtocol) {
         self.accountID = accountID
         self.account = account
         self.accountService = accountService
-        self.cacheService = cacheService
+        self.accountCacheService = accountCacheService
+        self.chatsAndRequestsCacheService = chatsAndRequestsCacheService
         self.profileService = profileService
         self.requestsService = requestsService
     }
@@ -51,7 +54,7 @@ final class ChatsAndRequestsManager {
 extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
     
     func getChatsAndRequests() -> (chats: [ChatModelProtocol], requests: [RequestModelProtocol]) {
-        return (cacheService.storedChats, cacheService.storedRequests)
+        return (chatsAndRequestsCacheService.storedChats, chatsAndRequestsCacheService.storedRequests)
     }
     
     func remove(chat: ChatModelProtocol) {
@@ -64,7 +67,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
             let socket = profileService.initProfileSocket(userID: $0) { result in
                 switch result {
                 case .success(let profile):
-                    self.cacheService.update(profileModel: ProfileModel(profile: profile),
+                    self.chatsAndRequestsCacheService.update(profileModel: ProfileModel(profile: profile),
                                              chatID: profile.id)
                     completion()
                 case .failure:
@@ -78,7 +81,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
             let socket = profileService.initProfileSocket(userID: $0) { result in
                 switch result {
                 case .success(let profile):
-                    self.cacheService.update(profileModel: ProfileModel(profile: profile),
+                    self.chatsAndRequestsCacheService.update(profileModel: ProfileModel(profile: profile),
                                              requestID: profile.id)
                     completion()
                 case .failure:
@@ -104,8 +107,8 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
                         switch result {
                         case .success(let profile):
                             let chat = ChatModel(friend: profile)
-                            guard !self.cacheService.storedChats.contains(where: { $0.friendID == chat.friendID }) else { return }
-                            self.cacheService.store(chatModel: chat)
+                            guard !self.chatsAndRequestsCacheService.storedChats.contains(where: { $0.friendID == chat.friendID }) else { return }
+                            self.chatsAndRequestsCacheService.store(chatModel: chat)
                             newFriends.insert(chat, at: 0)
                         case .failure:
                             break
@@ -120,8 +123,8 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
                         switch result {
                         case .success(let profile):
                             let chat = ChatModel(friend: profile)
-                            guard self.cacheService.storedChats.contains(where: { $0.friendID == chat.friendID }) else { return }
-                            self.cacheService.removeChat(with: chat.friendID)
+                            guard self.chatsAndRequestsCacheService.storedChats.contains(where: { $0.friendID == chat.friendID }) else { return }
+                            self.chatsAndRequestsCacheService.removeChat(with: chat.friendID)
                             removedFriends.append(chat)
                         case .failure:
                             break
@@ -153,8 +156,8 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
                         switch result {
                         case .success(let profile):
                             let request = RequestModel(sender: profile)
-                            guard !self.cacheService.storedRequests.contains(where: { $0.senderID == request.senderID }) else { return }
-                            self.cacheService.store(requestModel: request)
+                            guard !self.chatsAndRequestsCacheService.storedRequests.contains(where: { $0.senderID == request.senderID }) else { return }
+                            self.chatsAndRequestsCacheService.store(requestModel: request)
                             newRequests.insert(request, at: 0)
                         case .failure:
                             break
@@ -169,8 +172,8 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
                         switch result {
                         case .success(let profile):
                             let request = RequestModel(sender: profile)
-                            guard self.cacheService.storedRequests.contains(where: { $0.senderID == request.senderID }) else { return }
-                            self.cacheService.removeRequest(with: request.senderID)
+                            guard self.chatsAndRequestsCacheService.storedRequests.contains(where: { $0.senderID == request.senderID }) else { return }
+                            self.chatsAndRequestsCacheService.removeRequest(with: request.senderID)
                             removedRequests.append(request)
                         case .failure:
                             break
@@ -235,7 +238,7 @@ private extension ChatsAndRequestsManager {
         removed.forEach {
             self.account.friendIds.remove($0)
         }
-        cacheService.store(accountModel: self.account)
+        accountCacheService.store(accountModel: self.account)
     }
     
     func updateCurrentAccountRequests(add: [String], removed: [String]) {
@@ -245,7 +248,7 @@ private extension ChatsAndRequestsManager {
         removed.forEach {
             self.account.waitingsIds.remove($0)
         }
-        cacheService.store(accountModel: self.account)
+        accountCacheService.store(accountModel: self.account)
     }
     
     func updateCurrentAccountSendedRequests(add: [String], removed: [String]) {
@@ -255,7 +258,7 @@ private extension ChatsAndRequestsManager {
         removed.forEach {
             self.account.requestIds.remove($0)
         }
-        cacheService.store(accountModel: self.account)
+        accountCacheService.store(accountModel: self.account)
     }
     
     func getRequests(completion: @escaping (Result<[RequestModelProtocol], Error>) -> ()) {
@@ -264,7 +267,7 @@ private extension ChatsAndRequestsManager {
             switch result {
             case .success(let ids):
                 self.account.waitingsIds = Set(ids)
-                self.cacheService.store(accountModel: self.account)
+                self.accountCacheService.store(accountModel: self.account)
                 var requests = [RequestModelProtocol]()
                 let group = DispatchGroup()
                 ids.forEach {
@@ -274,7 +277,7 @@ private extension ChatsAndRequestsManager {
                         switch result {
                         case .success(let profile):
                             let requestModel = RequestModel(sender: profile)
-                            self.cacheService.store(requestModel: requestModel)
+                            self.chatsAndRequestsCacheService.store(requestModel: requestModel)
                             requests.insert(requestModel, at: 0)
                         case .failure:
                             break
@@ -282,7 +285,7 @@ private extension ChatsAndRequestsManager {
                     }
                 }
                 group.notify(queue: .main) {
-                    let stored = self.cacheService.storedRequests
+                    let stored = self.chatsAndRequestsCacheService.storedRequests
                     func contains(element: RequestModelProtocol, array: [RequestModelProtocol]) -> Bool {
                         for item in array {
                             if element.senderID == item.senderID {
@@ -293,7 +296,7 @@ private extension ChatsAndRequestsManager {
                     }
                     for element in stored {
                         if !contains(element: element, array: requests) {
-                            self.cacheService.removeRequest(with: element.senderID)
+                            self.chatsAndRequestsCacheService.removeRequest(with: element.senderID)
                         }
                     }
                     completion(.success(requests))
@@ -310,7 +313,7 @@ private extension ChatsAndRequestsManager {
             switch result {
             case .success(let ids):
                 self.account.friendIds = Set(ids)
-                self.cacheService.store(accountModel: self.account)
+                self.accountCacheService.store(accountModel: self.account)
                 var chats = [ChatModelProtocol]()
                 let group = DispatchGroup()
                 ids.forEach {
@@ -320,7 +323,7 @@ private extension ChatsAndRequestsManager {
                         switch result {
                         case .success(let profile):
                             let chatModel = ChatModel(friend: profile)
-                            self.cacheService.store(chatModel: chatModel)
+                            self.chatsAndRequestsCacheService.store(chatModel: chatModel)
                             chats.insert(chatModel, at: 0)
                         case .failure:
                             break
@@ -328,7 +331,7 @@ private extension ChatsAndRequestsManager {
                     }
                 }
                 group.notify(queue: .main) {
-                    let stored = self.cacheService.storedChats
+                    let stored = self.chatsAndRequestsCacheService.storedChats
                     func contains(element: ChatModelProtocol, array: [ChatModelProtocol]) -> Bool {
                         for item in array {
                             if element.friendID == item.friendID {
@@ -339,7 +342,7 @@ private extension ChatsAndRequestsManager {
                     }
                     for element in stored {
                         if !contains(element: element, array: chats) {
-                            self.cacheService.removeChat(with: element.friendID)
+                            self.chatsAndRequestsCacheService.removeChat(with: element.friendID)
                         }
                     }
                     completion(.success(chats))

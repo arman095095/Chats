@@ -15,6 +15,7 @@ public final class ChatsUserStoryAssembly: Assembly {
     public init() { }
 
     public func assemble(container: Container) {
+        ChatsAndRequestsCacheServiceAssembly().assemble(container: container)
         ChatsAndRequestsManagerAssembly().assemble(container: container)
         container.register(ChatsRouteMap.self) { r in
             ChatsUserStory(container: container)
