@@ -72,6 +72,8 @@ extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
     public func removeChat(with id: String) {
         guard let account = account else { return }
         guard let chat = account.chats?.first(where: { ($0 as? Chat)?.friendID == id }) as? Chat else { return }
+        account.removeFromChats(chat)
+        coreDataService.saveContext()
         coreDataService.remove(chat)
     }
 }
@@ -98,6 +100,8 @@ extension ChatsAndRequestsCacheService: RequestsCacheServiceProtocol {
         guard let account = account else { return nil }
         guard let request = account.requests?.first(where: { ($0 as? Request)?.senderID == id }) as? Request else { return nil }
         let requestModel = RequestModel(request: request)
+        account.removeFromRequests(request)
+        coreDataService.saveContext()
         coreDataService.remove(request)
         return requestModel
     }
