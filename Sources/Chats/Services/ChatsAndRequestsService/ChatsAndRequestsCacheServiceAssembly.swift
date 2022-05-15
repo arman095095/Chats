@@ -22,6 +22,6 @@ public final class ChatsAndRequestsCacheServiceAssembly: Assembly {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return ChatsAndRequestsCacheService(accountID: userID, coreDataService: coreDataService)
-        }
+        }.inObjectScope(.weak)
     }
 }

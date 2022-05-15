@@ -31,6 +31,6 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
                                            chatsAndRequestsCacheService: chatsAndRequestsCacheService,
                                            profileService: profileService,
                                            requestsService: requestsService)
-        }
+        }.inObjectScope(.weak)
     }
 }
