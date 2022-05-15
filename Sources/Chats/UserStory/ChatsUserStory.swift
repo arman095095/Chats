@@ -15,6 +15,7 @@ import Managers
 import UserStoryFacade
 import ModelInterfaces
 import ProfileRouteMap
+import MessangerRouteMap
 
 public final class ChatsUserStory {
     private let container: Container
@@ -33,6 +34,14 @@ extension ChatsUserStory: ChatsRouteMap {
 }
 
 extension ChatsUserStory: RouteMapPrivate {
+    
+    func messangerModule(chat: ChatModelProtocol) -> MessangerModule {
+        let safeResolver = container.synchronize()
+        guard let messangerUserStory = safeResolver.resolve(UserStoryFacadeProtocol.self)?.messangerUserStory else { fatalError(ErrorMessage.dependency.localizedDescription) }
+        let module = messangerUserStory.rootModule(with: chat)
+        return module
+    }
+    
     func profileModule(model: ProfileModelProtocol) -> ProfileModule {
         let safeResolver = container.synchronize()
         guard let profileUserStory = safeResolver.resolve(UserStoryFacadeProtocol.self)?.profileUserStory else { fatalError(ErrorMessage.dependency.localizedDescription) }
@@ -43,10 +52,12 @@ extension ChatsUserStory: RouteMapPrivate {
     func chatsAndRequestsModule() -> ChatsAndRequestsModule {
         let safeResolver = container.synchronize()
         guard let alertManager = safeResolver.resolve(AlertManagerProtocol.self),
-              let chatsAndRequestsManager = safeResolver.resolve(ChatsAndRequestsManagerProtocol.self) else {
+              let chatsAndRequestsManager = safeResolver.resolve(ChatsAndRequestsManagerProtocol.self),
+              let chatManager = safeResolver.resolve(ChatManagerProtocol.self) else {
             fatalError(ErrorMessage.dependency.localizedDescription)
         }
         let module = ChatsAndRequestsAssembly.makeModule(chatsAndRequestsManager: chatsAndRequestsManager,
+                                                         chatsManager: chatManager,
                                                          alertManager: alertManager,
                                                          routeMap: self)
         module.output = outputWrapper

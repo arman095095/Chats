@@ -7,6 +7,7 @@
 //
 import UIKit
 import DesignSystem
+import ModelInterfaces
 
 protocol ChatCellOuput: AnyObject {
     func removeChat(at cell: UICollectionViewCell)
@@ -16,9 +17,9 @@ protocol ChatCellViewModelProtocol {
     var id: String { get }
     var imageURL: String { get }
     var userName: String? { get }
-    var lastMessageContent: String? { get }
+    var lastMessageType: LastMessageContentType? { get }
+    var lastMessageSendingStatus: LastMessageSendingStatus? { get }
     var lastMessageDate: String? { get }
-    var lastMessageMarkedImage: UIImage? { get }
     var online: Bool? { get }
     var newMessagesEnable: Bool? { get }
     var newMessagesCount: Int? { get }
@@ -44,11 +45,11 @@ final class ChatCell: UICollectionViewCell {
     weak var output: ChatCellOuput?
     
     func config(viewModel: ChatCellViewModelProtocol) {
+        lastMessegeLabel.text = viewModel.lastMessageType?.description
         nameLabel.text = viewModel.userName
         userImageView.set(imageURL: viewModel.imageURL)
-        lastMessegeLabel.text = viewModel.lastMessageContent
         dateLabel.text = viewModel.lastMessageDate
-        markMessage.image = viewModel.lastMessageMarkedImage
+        markMessage.image = viewModel.lastMessageSendingStatus?.image
         onlineImageView.isHidden = !(viewModel.online ?? true)
         badgeLabelSetup(viewModel: viewModel)
     }

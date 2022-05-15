@@ -10,6 +10,7 @@ import UIKit
 import AlertManager
 import ModelInterfaces
 import ProfileRouteMap
+import Utils
 
 protocol ChatsAndRequestsStringFactoryProtocol {
     var title: String { get }
@@ -66,7 +67,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         case .chats:
             let chatItem = chats[indexPath.row]
             guard case .chats(let model) = chatItem.type else { return }
-            // to do
+            router.openMessangerModule(chat: model)
         case .chatsEmpty:
             break
         }
@@ -103,30 +104,20 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
+    func newMessagesAtChat(chatID: String) {
+        loadCache()
+    }
     
     func chatDidBeganTyping(chatID: String) {
-        guard let item = chats.first(where: { $0.id == chatID }) else { return }
-        item.typing = true
-        view?.reloadData(requests: requests, chats: chats)
+        loadCache()
     }
     
     func chatDidFinishTyping(chatID: String) {
-        guard let item = chats.first(where: { $0.id == chatID }) else { return }
-        item.typing = false
-        view?.reloadData(requests: requests, chats: chats)
-    }
-    
-    func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
-        guard let item = chats.first(where: { $0.id == chatID }) else { return }
-        item.newMessagesCount = messagesCount
-        item.newMessagesEnable = true
-        item.lastMessageDate = messages.last?.date
-        item.lastMessageContent = messages.last
+        loadCache()
     }
     
     func messagesLookedAtChat(chatID: String) {
-        guard let item = chats.first(where: { $0.id == chatID }) else { return }
-        item.las
+        loadCache()
     }
 
     func profilesUpdated() {
