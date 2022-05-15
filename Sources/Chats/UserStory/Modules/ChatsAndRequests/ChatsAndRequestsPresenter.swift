@@ -98,11 +98,36 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         view?.setupInitialState()
         loadCache()
         interactor.remoteLoad()
-        interactor.initObservers()
+        interactor.startObserve()
     }
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
+    
+    func chatDidBeganTyping(chatID: String) {
+        guard let item = chats.first(where: { $0.id == chatID }) else { return }
+        item.typing = true
+        view?.reloadData(requests: requests, chats: chats)
+    }
+    
+    func chatDidFinishTyping(chatID: String) {
+        guard let item = chats.first(where: { $0.id == chatID }) else { return }
+        item.typing = false
+        view?.reloadData(requests: requests, chats: chats)
+    }
+    
+    func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
+        guard let item = chats.first(where: { $0.id == chatID }) else { return }
+        item.newMessagesCount = messagesCount
+        item.newMessagesEnable = true
+        item.lastMessageDate = messages.last?.date
+        item.lastMessageContent = messages.last
+    }
+    
+    func messagesLookedAtChat(chatID: String) {
+        guard let item = chats.first(where: { $0.id == chatID }) else { return }
+        item.las
+    }
 
     func profilesUpdated() {
         loadCache()

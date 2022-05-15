@@ -24,6 +24,7 @@ struct Item: Hashable,
     var lastMessageContent: String?
     var lastMessageDate: String?
     var lastMessageMarkedImage: UIImage?
+    var typing: Bool?
     var online: Bool?
     var newMessagesEnable: Bool?
     var newMessagesCount: Int?
@@ -55,6 +56,7 @@ struct Item: Hashable,
             self.lastMessageMarkedImage = nil
         }
         self.online = chat.friend.online
+        self.typing = chat.typing
         self.newMessagesEnable = !(chat.newMessagesCount == 0)
         self.newMessagesCount = chat.newMessagesCount
     }

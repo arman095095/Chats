@@ -14,7 +14,8 @@ protocol ChatsAndRequestsInteractorInput: AnyObject {
     var cachedChats: [ChatModelProtocol] { get }
     var cachedRequests: [RequestModelProtocol] { get }
     func remoteLoad()
-    func initObservers()
+    func startObserve()
+    func stopObserve()
     func remove(chat: ChatModelProtocol)
 }
 
@@ -22,6 +23,10 @@ protocol ChatsAndRequestsInteractorOutput: AnyObject {
     func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol])
     func changed(newChats: [ChatModelProtocol], removed: [ChatModelProtocol])
     func changed(newRequests: [RequestModelProtocol], removed: [RequestModelProtocol])
+    func chatDidBeganTyping(chatID: String)
+    func chatDidFinishTyping(chatID: String)
+    func newMessagesAtChat(chatID: String)
+    func messagesLookedAtChat(chatID: String)
     func profilesUpdated()
     func failureLoad(message: String)
 }
@@ -30,9 +35,12 @@ final class ChatsAndRequestsInteractor {
     
     weak var output: ChatsAndRequestsInteractorOutput?
     private let chatsAndRequestsManager: ChatsAndRequestsManagerProtocol
+    private let chatsManager: ChatManagerProtocol
     
-    init(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol) {
+    init(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
+         chatsManager: ChatManagerProtocol) {
         self.chatsAndRequestsManager = chatsAndRequestsManager
+        self.chatsManager = chatsManager
     }
 }
 
@@ -57,7 +65,8 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         }
     }
     
-    func initObservers() {
+    func startObserve() {
+        chatsManager.addDelegate(self)
         chatsAndRequestsManager.observeFriends { [weak self] newChats, removed in
             self?.output?.changed(newChats: newChats, removed: removed)
         }
@@ -68,8 +77,27 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
             self?.output?.profilesUpdated()
         }
     }
+    
+    func stopObserve() {
+        chatsManager.removeDelegate(self)
+    }
 
     func remove(chat: ChatModelProtocol) {
         chatsAndRequestsManager.remove(chat: chat)
+    }
+}
+
+extension ChatsAndRequestsInteractor: ChatManagerDelegate {
+    func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
+        output?.newMessagesAtChat(chatID: friendID)
+    }
+    
+    func messagesLooked(friendID: String, _ value: Bool) {
+        guard value else { return }
+        output?.messagesLookedAtChat(chatID: friendID)
+    }
+    
+    func typing(friendID: String, _ value: Bool) {
+        value ? output?.chatDidBeganTyping(chatID: friendID) : output?.chatDidFinishTyping(chatID: friendID)
     }
 }
