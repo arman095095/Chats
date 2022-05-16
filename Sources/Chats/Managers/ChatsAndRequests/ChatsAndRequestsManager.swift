@@ -24,6 +24,7 @@ final class ChatsAndRequestsManager {
     private let account: AccountModelProtocol
     private let accountID: String
     private let accountService: AccountServiceProtocol
+    private let messagingService: MessagingServiceProtocol
     private let accountCacheService: AccountCacheServiceProtocol
     private let chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol
     private let profileService: ProfilesServiceProtocol
@@ -34,6 +35,7 @@ final class ChatsAndRequestsManager {
          account: AccountModelProtocol,
          accountService: AccountServiceProtocol,
          accountCacheService: AccountCacheServiceProtocol,
+         messagingService: MessagingServiceProtocol,
          chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol,
          profileService: ProfilesServiceProtocol,
          requestsService: RequestsServiceProtocol) {
@@ -44,6 +46,7 @@ final class ChatsAndRequestsManager {
         self.chatsAndRequestsCacheService = chatsAndRequestsCacheService
         self.profileService = profileService
         self.requestsService = requestsService
+        self.messagingService = messagingService
     }
     
     deinit {
@@ -59,6 +62,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
     
     func remove(chat: ChatModelProtocol) {
         self.requestsService.removeFriend(with: chat.friendID, from: accountID) { _ in }
+        self.messagingService.removeChat(from: accountID, for: chat.friendID)
     }
     
     func observeFriendsAndRequestsProfiles(completion: @escaping () -> ()) {

@@ -21,13 +21,15 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
                   let chatsAndRequestsCacheService = r.resolve(ChatsAndRequestsCacheServiceProtocol.self),
                   let accountCacheService = r.resolve(AccountCacheServiceProtocol.self),
                   let profileService = r.resolve(ProfilesServiceProtocol.self),
-                  let requestsService = r.resolve(RequestsServiceProtocol.self) else {
+                  let requestsService = r.resolve(RequestsServiceProtocol.self),
+                  let messagingService = r.resolve(MessagingServiceProtocol.self)  else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return ChatsAndRequestsManager(accountID: accountID,
                                            account: account,
                                            accountService: accountService,
                                            accountCacheService: accountCacheService,
+                                           messagingService: messagingService,
                                            chatsAndRequestsCacheService: chatsAndRequestsCacheService,
                                            profileService: profileService,
                                            requestsService: requestsService)
