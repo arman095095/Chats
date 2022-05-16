@@ -104,16 +104,32 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
-    func newMessagesAtChat(chatID: String) {
-        loadCache()
+    func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
+        guard let index = chats.firstIndex(where: { $0.id == chatID }),
+              let last = messages.last else { return }
+        switch last.type {
+        case .text(content: let content):
+            chats[index].lastMessageType = .text(content)
+        case .audio:
+            chats[index].lastMessageType = .audio
+        case .image:
+            chats[index].lastMessageType = .image
+        }
+        chats[index].newMessagesEnable = true
+        chats[index].newMessagesCount = messages.count
+        view?.reloadData(requests: requests, chats: chats)
     }
     
     func chatDidBeganTyping(chatID: String) {
-        loadCache()
+        guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
+        chats[index].typing = true
+        view?.reloadData(requests: requests, chats: chats)
     }
     
     func chatDidFinishTyping(chatID: String) {
-        loadCache()
+        guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
+        chats[index].typing = false
+        view?.reloadData(requests: requests, chats: chats)
     }
     
     func messagesLookedAtChat(chatID: String) {
@@ -141,7 +157,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
             }
         }
         let new = newChats.map { Item(chat: $0) }
-        self.chats.append(contentsOf: new)
+        self.chats.insert(contentsOf: new, at: 0)
         self.view?.reloadData(requests: requests, chats: chats)
     }
     
@@ -150,7 +166,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
             removed.contains { $0.senderID == item.id }
         }
         let new = newRequests.map { Item(request: $0) }
-        self.requests.append(contentsOf: new)
+        self.requests.insert(contentsOf: new, at: 0)
         self.view?.reloadData(requests: requests, chats: chats)
     }
 }

@@ -25,7 +25,7 @@ protocol ChatsAndRequestsInteractorOutput: AnyObject {
     func changed(newRequests: [RequestModelProtocol], removed: [RequestModelProtocol])
     func chatDidBeganTyping(chatID: String)
     func chatDidFinishTyping(chatID: String)
-    func newMessagesAtChat(chatID: String)
+    func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol])
     func messagesLookedAtChat(chatID: String)
     func profilesUpdated()
     func failureLoad(message: String)
@@ -67,11 +67,20 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     
     func startObserve() {
         chatsManager.addDelegate(self)
+        cachedChats.forEach {
+            self.chatsManager.observeNewMessages(friendID: $0.friendID)
+            self.chatsManager.observeLookedMessages(friendID: $0.friendID)
+            self.chatsManager.observeTypingStatus(friendID: $0.friendID)
+        }
         chatsAndRequestsManager.observeFriends { [weak self] newChats, removed in
             self?.output?.changed(newChats: newChats, removed: removed)
+            self?.addObservers(newChats: newChats)
+            self?.removeObservers(chats: removed)
         }
         chatsAndRequestsManager.observeRequests { [weak self] newRequests, removed in
             self?.output?.changed(newRequests: newRequests, removed: removed)
+            self?.addObservers(newRequests: newRequests)
+            self?.removeObservers(requests: removed)
         }
         chatsAndRequestsManager.observeFriendsAndRequestsProfiles { [weak self] in
             self?.output?.profilesUpdated()
@@ -89,7 +98,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
 
 extension ChatsAndRequestsInteractor: ChatManagerDelegate {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
-        output?.newMessagesAtChat(chatID: friendID)
+        output?.newMessagesAtChat(chatID: friendID, messages: messages)
     }
     
     func messagesLooked(friendID: String, _ value: Bool) {
@@ -99,5 +108,40 @@ extension ChatsAndRequestsInteractor: ChatManagerDelegate {
     
     func typing(friendID: String, _ value: Bool) {
         value ? output?.chatDidBeganTyping(chatID: friendID) : output?.chatDidFinishTyping(chatID: friendID)
+    }
+}
+
+private extension ChatsAndRequestsInteractor {
+    func addObservers(newChats: [ChatModelProtocol]) {
+        newChats.forEach {
+            chatsAndRequestsManager.addObserveFriendsAndRequestsProfiles(id: $0.friendID) { [weak self] in
+                self?.output?.profilesUpdated()
+            }
+        }
+        newChats.forEach {
+            chatsManager.observeNewMessages(friendID: $0.friendID)
+            chatsManager.observeLookedMessages(friendID: $0.friendID)
+            chatsManager.observeTypingStatus(friendID: $0.friendID)
+        }
+    }
+    
+    func addObservers(newRequests: [RequestModelProtocol]) {
+        newRequests.forEach {
+            chatsAndRequestsManager.addObserveFriendsAndRequestsProfiles(id: $0.senderID) { [weak self] in
+                self?.output?.profilesUpdated()
+            }
+        }
+    }
+    
+    func removeObservers(chats: [ChatModelProtocol]) {
+        chats.forEach {
+            chatsAndRequestsManager.removeObserveFriendsAndRequestsProfiles(id: $0.friendID)
+        }
+    }
+    
+    func removeObservers(requests: [RequestModelProtocol]) {
+        requests.forEach {
+            chatsAndRequestsManager.removeObserveFriendsAndRequestsProfiles(id: $0.senderID)
+        }
     }
 }

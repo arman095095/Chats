@@ -60,14 +60,15 @@ enum LastMessageSendingStatus {
 struct Item: Hashable,
              ChatCellViewModelProtocol,
              RequestCellViewModelProtocol {
+    private var _lastMessageType: LastMessageContentType?
     var type: ItemType
     var id: String
     var imageURL: String
     var userName: String?
-    var lastMessageType: LastMessageContentType?
     var lastMessageSendingStatus: LastMessageSendingStatus?
     var lastMessageDate: String?
     var online: Bool?
+    var typing: Bool?
     var newMessagesEnable: Bool?
     var newMessagesCount: Int?
     
@@ -80,19 +81,17 @@ struct Item: Hashable,
         self.newMessagesEnable = !(chat.newMessagesCount == 0)
         self.newMessagesCount = chat.newMessagesCount
         self.lastMessageDate = DateFormatService().convertForActiveChat(from: chat.lastMessage?.date)
-        if chat.typing {
-            self.lastMessageType = .typing
-        } else {
-            switch chat.lastMessage?.type {
-            case .none:
-                self.lastMessageType = .empty
-            case .text(let content):
-                self.lastMessageType = .text(content)
-            case .audio:
-                self.lastMessageType = .audio
-            case .image:
-                self.lastMessageType = .image
-            }
+        self.typing = chat.typing
+        
+        switch chat.lastMessage?.type {
+        case .none:
+            self._lastMessageType = .empty
+        case .text(let content):
+            self._lastMessageType = .text(content)
+        case .audio:
+            self._lastMessageType = .audio
+        case .image:
+            self._lastMessageType = .image
         }
         switch chat.lastMessage?.sendingStatus {
         case .none:
@@ -114,6 +113,17 @@ struct Item: Hashable,
 }
 
 extension Item {
+    var lastMessageType: LastMessageContentType? {
+        get {
+            typing == true ? .typing : _lastMessageType
+        }
+        set {
+            self._lastMessageType = newValue
+        }
+    }
+}
+
+extension Item {
     static func == (lhs: Item, rhs: Item) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
@@ -130,10 +140,11 @@ extension Item {
         hasher.combine(imageURL)
         hasher.combine(lastMessageSendingStatus)
         hasher.combine(lastMessageDate)
-        hasher.combine(lastMessageType)
+        hasher.combine(_lastMessageType)
         hasher.combine(online)
         hasher.combine(newMessagesEnable)
         hasher.combine(newMessagesCount)
+        hasher.combine(typing)
     }
 }
 
