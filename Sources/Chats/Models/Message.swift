@@ -10,23 +10,23 @@ import ModelInterfaces
 import NetworkServices
 import Services
 
-public final class MessageModel: MessageModelProtocol {
-
-    public var senderID: String
-    public var adressID: String
-    public var date: Date
-    public var id: String
-    public var firstOfDate: Bool
-    public var sendingStatus: SendingStatus?
-    public var type: MessageContentType
+final class MessageModel: MessageModelProtocol {
     
-    public init(senderID: String,
-                adressID: String,
-                date: Date,
-                id: String,
-                firstOfDate: Bool,
-                sendingStatus: SendingStatus,
-                type: MessageContentType) {
+    var senderID: String
+    var adressID: String
+    var date: Date
+    var id: String
+    var firstOfDate: Bool
+    var sendingStatus: SendingStatus?
+    var type: MessageContentType
+    
+    init(senderID: String,
+         adressID: String,
+         date: Date,
+         id: String,
+         firstOfDate: Bool,
+         sendingStatus: SendingStatus,
+         type: MessageContentType) {
         self.senderID = senderID
         self.adressID = adressID
         self.date = date
@@ -36,7 +36,7 @@ public final class MessageModel: MessageModelProtocol {
         self.type = type
     }
     
-    public init?(model: MessageNetworkModelProtocol) {
+    init?(model: MessageNetworkModelProtocol) {
         guard let date = model.date else { return nil }
         self.senderID = model.senderID
         self.adressID = model.adressID
@@ -55,7 +55,7 @@ public final class MessageModel: MessageModelProtocol {
         }
     }
     
-    public init?(message: Message?) {
+    init?(message: Message?) {
         guard let message = message,
               let id = message.id,
               let date = message.date,

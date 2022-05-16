@@ -10,16 +10,16 @@ import ModelInterfaces
 import NetworkServices
 import Services
 
-public final class RequestModel: RequestModelProtocol {
-    public var sender: ProfileModelProtocol
-    public var senderID: String
+final class RequestModel: RequestModelProtocol {
+    var sender: ProfileModelProtocol
+    var senderID: String
     
-    public init(sender: ProfileNetworkModelProtocol) {
+    init(sender: ProfileNetworkModelProtocol) {
         self.sender = ProfileModel(profile: sender)
         self.senderID = sender.id
     }
     
-    public init?(request: Request?) {
+    init?(request: Request?) {
         guard let request = request,
               let senderID = request.senderID,
               let sender = request.sender,

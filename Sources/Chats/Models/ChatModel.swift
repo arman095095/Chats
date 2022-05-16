@@ -10,17 +10,17 @@ import ModelInterfaces
 import NetworkServices
 import Services
 
-public final class ChatModel: ChatModelProtocol,
-                              MessangerChatModelProtocol {
-    public var friend: ProfileModelProtocol
-    public var friendID: String
-    public var typing: Bool
-    public var notSendedMessages: [MessageModelProtocol]
-    public var messages: [MessageModelProtocol]
-    public var newMessages: [MessageModelProtocol]
-    public var notLookedMessages: [MessageModelProtocol]
+final class ChatModel: ChatModelProtocol,
+                       MessangerChatModelProtocol {
+    var friend: ProfileModelProtocol
+    var friendID: String
+    var typing: Bool
+    var notSendedMessages: [MessageModelProtocol]
+    var messages: [MessageModelProtocol]
+    var newMessages: [MessageModelProtocol]
+    var notLookedMessages: [MessageModelProtocol]
     
-    public init(friend: ProfileNetworkModelProtocol) {
+    init(friend: ProfileNetworkModelProtocol) {
         self.friend = ProfileModel(profile: friend)
         self.friendID = friend.id
         self.typing = false
@@ -30,7 +30,7 @@ public final class ChatModel: ChatModelProtocol,
         self.notLookedMessages = []
     }
     
-    public init(friend: ProfileModelProtocol) {
+    init(friend: ProfileModelProtocol) {
         self.friend = friend
         self.friendID = friend.id
         self.typing = false
@@ -40,7 +40,7 @@ public final class ChatModel: ChatModelProtocol,
         self.notLookedMessages = []
     }
     
-    public init?(chat: Chat?) {
+    init?(chat: Chat?) {
         guard let chat = chat,
               let friendID = chat.friendID,
               let friend = chat.friend,
@@ -57,11 +57,11 @@ public final class ChatModel: ChatModelProtocol,
 }
 
 extension ChatModel {
-    public var newMessagesCount: Int {
+    var newMessagesCount: Int {
         return newMessages.count
     }
     
-    public var lastMessage: MessageModelProtocol? {
+    var lastMessage: MessageModelProtocol? {
         return messages.last
     }
 }
