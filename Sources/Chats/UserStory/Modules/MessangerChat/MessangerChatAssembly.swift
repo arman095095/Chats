@@ -33,7 +33,7 @@ enum MessangerChatAssembly {
                                                  chatManager: chatManager,
                                                  audioRecorder: audioRecorder,
                                                  audioPlayer: audioPlayer)
-        let stringFactory = MessangerChatStringFactory()
+        let stringFactory = ChatsStringFactory()
         let presenter = MessangerChatPresenter(router: router,
                                                interactor: interactor,
                                                stringFactory: stringFactory,

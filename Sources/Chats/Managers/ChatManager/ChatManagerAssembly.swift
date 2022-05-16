@@ -9,6 +9,7 @@ import Foundation
 import Swinject
 import NetworkServices
 import Services
+import Managers
 
 final class ChatManagerAssembly: Assembly {
     func assemble(container: Container) {

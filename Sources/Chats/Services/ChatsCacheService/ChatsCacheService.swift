@@ -7,14 +7,15 @@
 
 import Foundation
 import ModelInterfaces
+import Services
 
-public protocol ChatsCacheServiceProtocol {
+public protocol ChatCacheServiceProtocol {
     var lastMessage: MessageModelProtocol? { get }
     func storeRecievedMessage(_ message: MessageModelProtocol)
     func removeAllNotLooked()
 }
 
-public final class ChatsCacheService {
+public final class ChatCacheService {
     private let chat: Chat?
     private let coreDataService: CoreDataServiceProtocol
     
@@ -27,7 +28,7 @@ public final class ChatsCacheService {
     }
 }
 
-extension ChatsCacheService: ChatsCacheServiceProtocol {
+extension ChatCacheService: ChatCacheServiceProtocol {
     public var lastMessage: MessageModelProtocol? {
         guard let messages = chat?.messages as? Set<Message> else { return nil }
         let sorted = messages.sorted(by: { $0.date! < $1.date! })
@@ -54,7 +55,7 @@ extension ChatsCacheService: ChatsCacheServiceProtocol {
     }
 }
 
-private extension ChatsCacheService {
+private extension ChatCacheService {
     func fillFields(message: Message, model: MessageModelProtocol) {
         message.id = model.id
         message.senderID = model.senderID

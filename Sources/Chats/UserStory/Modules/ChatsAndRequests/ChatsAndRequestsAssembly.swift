@@ -22,7 +22,7 @@ enum ChatsAndRequestsAssembly {
         let router = ChatsAndRequestsRouter(routeMap: routeMap)
         let interactor = ChatsAndRequestsInteractor(chatsAndRequestsManager: chatsAndRequestsManager,
                                                     chatsManager: chatsManager)
-        let stringFactory = ChatsAndRequestsStringFactory()
+        let stringFactory = ChatsStringFactory()
         let presenter = ChatsAndRequestsPresenter(router: router,
                                                   interactor: interactor,
                                                   alertManager: alertManager,

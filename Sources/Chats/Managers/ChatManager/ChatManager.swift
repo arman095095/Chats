@@ -56,7 +56,7 @@ extension ChatManager: ChatManagerProtocol {
     }
     
     public func observeNewMessages(friendID: String) {
-        let cacheService = ChatsCacheService(accountID: accountID,
+        let cacheService = ChatCacheService(accountID: accountID,
                                              friendID: friendID,
                                              coreDataService: coreDataService)
         let socket = messagingService.initMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
@@ -82,7 +82,7 @@ extension ChatManager: ChatManagerProtocol {
     }
     
     public func observeLookedMessages(friendID: String) {
-        let cacheService = ChatsCacheService(accountID: accountID,
+        let cacheService = ChatCacheService(accountID: accountID,
                                              friendID: friendID,
                                              coreDataService: coreDataService)
         let socket = messagingService.initLookedSendedMessagesSocket(accountID: accountID, from: friendID) { [weak self] looked in
