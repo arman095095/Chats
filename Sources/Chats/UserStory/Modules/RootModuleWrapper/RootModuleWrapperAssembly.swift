@@ -9,10 +9,16 @@
 import UIKit
 import Module
 import ChatsRouteMap
+import ModelInterfaces
+
+enum ChatModuleFlow {
+    case chatsAndRequests
+    case messanger(chat: MessangerChatModelProtocol)
+}
 
 enum RootModuleWrapperAssembly {
-    static func makeModule(routeMap: RouteMapPrivate) -> ChatsModule {
-        let wrapper = RootModuleWrapper(routeMap: routeMap)
+    static func makeModule(routeMap: RouteMapPrivate, flow: ChatModuleFlow) -> ChatsModule {
+        let wrapper = RootModuleWrapper(routeMap: routeMap, flow: flow)
         return ChatsModule(input: wrapper, view: wrapper.view()) {
             wrapper.output = $0
         }

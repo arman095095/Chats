@@ -15,20 +15,31 @@ final class RootModuleWrapper {
 
     private let routeMap: RouteMapPrivate
     weak var output: ChatsModuleOutput?
+    private let flow: ChatModuleFlow
     
-    init(routeMap: RouteMapPrivate) {
+    init(routeMap: RouteMapPrivate, flow: ChatModuleFlow) {
         self.routeMap = routeMap
+        self.flow = flow
     }
 
     func view() -> UIViewController {
-        let module = routeMap.chatsAndRequestsModule()
-        module.output = self
-        return module.view
+        switch flow {
+        case .chatsAndRequests:
+            let module = routeMap.chatsAndRequestsModule()
+            module.output = self
+            return module.view
+        case .messanger(let chat):
+            let module = routeMap.messangerModule(chat: chat)
+            module.output = self
+            return module.view
+        }
     }
 }
 
 extension RootModuleWrapper: ChatsModuleInput {
     
 }
+
+extension RootModuleWrapper: MessangerChatModuleOutput { }
 
 extension RootModuleWrapper: ChatsAndRequestsModuleOutput { }

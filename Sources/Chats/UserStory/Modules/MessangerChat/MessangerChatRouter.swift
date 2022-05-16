@@ -25,7 +25,7 @@ final class MessangerChatRouter {
 
 extension MessangerChatRouter: MessangerChatRouterInput {
     func openProfileModule(profile: ProfileModelProtocol) {
-        let module = routeMap.profileModule(with: profile)
+        let module = routeMap.profileModule(model: profile)
         self.transitionHandler?.navigationController?.pushViewController(module.view, animated: true)
     }
     

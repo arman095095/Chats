@@ -14,5 +14,5 @@ import MessangerRouteMap
 protocol RouteMapPrivate: AnyObject {
     func chatsAndRequestsModule() -> ChatsAndRequestsModule
     func profileModule(model: ProfileModelProtocol) -> ProfileModule
-    func messangerModule(chat: ChatModelProtocol) -> MessangerModule
+    func messangerModule(chat: MessangerChatModelProtocol) -> MessangerChatModule
 }

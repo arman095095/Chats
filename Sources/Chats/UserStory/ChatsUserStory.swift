@@ -16,6 +16,7 @@ import UserStoryFacade
 import ModelInterfaces
 import ProfileRouteMap
 import MessangerRouteMap
+import NetworkServices
 
 public final class ChatsUserStory {
     private let container: Container
@@ -26,8 +27,14 @@ public final class ChatsUserStory {
 }
 
 extension ChatsUserStory: ChatsRouteMap {
-    public func rootModule() -> ChatsModule {
-        let module = RootModuleWrapperAssembly.makeModule(routeMap: self)
+    public func chatsAndRequestsModule() -> ChatsModule {
+        let module = RootModuleWrapperAssembly.makeModule(routeMap: self, flow: .chatsAndRequests)
+        outputWrapper = module.input as? RootModuleWrapper
+        return module
+    }
+    
+    public func messangerModule(with chat: MessangerChatModelProtocol) -> ChatsModule {
+        let module = RootModuleWrapperAssembly.makeModule(routeMap: self, flow: .messanger(chat: chat))
         outputWrapper = module.input as? RootModuleWrapper
         return module
     }
@@ -35,10 +42,22 @@ extension ChatsUserStory: ChatsRouteMap {
 
 extension ChatsUserStory: RouteMapPrivate {
     
-    func messangerModule(chat: ChatModelProtocol) -> MessangerModule {
-        let safeResolver = container.synchronize()
-        guard let messangerUserStory = safeResolver.resolve(UserStoryFacadeProtocol.self)?.messangerUserStory else { fatalError(ErrorMessage.dependency.localizedDescription) }
-        let module = messangerUserStory.rootModule(with: chat)
+    func messangerModule(chat: MessangerChatModelProtocol) -> MessangerChatModule {
+        guard let remoteStorageService = container.synchronize().resolve(RemoteStorageServiceProtocol.self),
+              let chatManager = container.synchronize().resolve(ChatManagerProtocol.self),
+              let messagingManager = container.synchronize().resolve(MessagingManagerProtocol.self),
+              let cacheService = container.synchronize().resolve(MessagesCacheServiceProtocol.self),
+              let userID = container.synchronize().resolve(QuickAccessManagerProtocol.self)?.userID else {
+            fatalError(ErrorMessage.dependency.localizedDescription)
+        }
+        let module = MessangerChatAssembly.makeModule(messagingManager:messagingManager,
+                                                    
+                                                      cacheService: cacheService,
+                                                      remoteStorage: remoteStorageService,
+                                                      chat: chat,
+                                                      chatManager: chatManager,
+                                                      accountID: userID,
+                                                      routeMap: self)
         return module
     }
     
