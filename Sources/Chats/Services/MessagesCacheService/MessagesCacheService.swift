@@ -9,7 +9,7 @@ import Foundation
 import ModelInterfaces
 import Services
 
-public protocol MessagesCacheServiceProtocol {
+protocol MessagesCacheServiceProtocol {
     var storedMessages: [MessageModelProtocol] { get }
     var lastMessage: MessageModelProtocol? { get }
     var firstMessage: MessageModelProtocol? { get }

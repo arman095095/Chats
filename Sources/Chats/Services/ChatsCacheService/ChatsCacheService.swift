@@ -9,19 +9,19 @@ import Foundation
 import ModelInterfaces
 import Services
 
-public protocol ChatCacheServiceProtocol {
+protocol ChatCacheServiceProtocol {
     var lastMessage: MessageModelProtocol? { get }
     func storeRecievedMessage(_ message: MessageModelProtocol)
     func removeAllNotLooked()
 }
 
-public final class ChatCacheService {
+final class ChatCacheService {
     private let chat: Chat?
     private let coreDataService: CoreDataServiceProtocol
     
-    public init(accountID: String,
-                friendID: String,
-                coreDataService: CoreDataServiceProtocol) {
+    init(accountID: String,
+         friendID: String,
+         coreDataService: CoreDataServiceProtocol) {
         self.coreDataService = coreDataService
         let account = coreDataService.model(Account.self, id: accountID)
         self.chat = account?.chats?.first(where: { ($0 as? Chat)?.friendID == friendID }) as? Chat
@@ -29,13 +29,13 @@ public final class ChatCacheService {
 }
 
 extension ChatCacheService: ChatCacheServiceProtocol {
-    public var lastMessage: MessageModelProtocol? {
+    var lastMessage: MessageModelProtocol? {
         guard let messages = chat?.messages as? Set<Message> else { return nil }
         let sorted = messages.sorted(by: { $0.date! < $1.date! })
         return MessageModel(message: sorted.last)
     }
     
-    public func storeRecievedMessage(_ message: MessageModelProtocol) {
+    func storeRecievedMessage(_ message: MessageModelProtocol) {
         let messageObject = coreDataService.initModel(Message.self) { object in
             fillFields(message: object, model: message)
         }
@@ -43,7 +43,7 @@ extension ChatCacheService: ChatCacheServiceProtocol {
         coreDataService.saveContext()
     }
     
-    public func removeAllNotLooked() {
+    func removeAllNotLooked() {
         guard let notLooked = chat?.notLookedMessages else { return }
         chat?.removeFromNotLookedMessages(notLooked)
         guard let notLookedMessages = notLooked.allObjects as? [Message] else { return }

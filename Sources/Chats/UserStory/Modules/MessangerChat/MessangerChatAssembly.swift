@@ -20,7 +20,7 @@ enum MessangerChatAssembly {
                            cacheService: MessagesCacheServiceProtocol,
                            remoteStorage: RemoteStorageServiceProtocol,
                            chat: MessangerChatModelProtocol,
-                           chatManager: ChatManagerProtocol,
+                           chatManager: ChatObserveManagerProtocol,
                            accountID: String,
                            routeMap: RouteMapPrivate) -> MessangerChatModule {
         let messageCollectionView = MessagesCollectionView()

@@ -45,7 +45,7 @@ extension ChatsUserStory: RouteMapPrivate {
         MessagesCacheServiceAssembly().assemble(container: container, friendID: chat.friendID)
         MessagingManagerAssembly().assemble(container: container, chatID: chat.friendID)
         guard let remoteStorageService = container.synchronize().resolve(RemoteStorageServiceProtocol.self),
-              let chatManager = container.synchronize().resolve(ChatManagerProtocol.self),
+              let chatManager = container.synchronize().resolve(ChatObserveManagerProtocol.self),
               let messagingManager = container.synchronize().resolve(MessagingManagerProtocol.self),
               let cacheService = container.synchronize().resolve(MessagesCacheServiceProtocol.self),
               let userID = container.synchronize().resolve(QuickAccessManagerProtocol.self)?.userID else {
@@ -73,7 +73,7 @@ extension ChatsUserStory: RouteMapPrivate {
         let safeResolver = container.synchronize()
         guard let alertManager = safeResolver.resolve(AlertManagerProtocol.self),
               let chatsAndRequestsManager = safeResolver.resolve(ChatsAndRequestsManagerProtocol.self),
-              let chatManager = safeResolver.resolve(ChatManagerProtocol.self) else {
+              let chatManager = safeResolver.resolve(ChatObserveManagerProtocol.self) else {
             fatalError(ErrorMessage.dependency.localizedDescription)
         }
         let module = ChatsAndRequestsAssembly.makeModule(chatsAndRequestsManager: chatsAndRequestsManager,

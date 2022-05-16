@@ -9,9 +9,9 @@ import Foundation
 import ModelInterfaces
 import Services
 
-public typealias ChatsAndRequestsCacheServiceProtocol = ChatsCacheServiceProtocol & RequestsCacheServiceProtocol
+typealias ChatsAndRequestsCacheServiceProtocol = ChatsCacheServiceProtocol & RequestsCacheServiceProtocol
 
-public protocol ChatsCacheServiceProtocol {
+protocol ChatsCacheServiceProtocol {
     var storedChats: [ChatModelProtocol] { get }
     func store(chatModel: ChatModelProtocol)
     func removeChat(with id: String)
@@ -19,7 +19,7 @@ public protocol ChatsCacheServiceProtocol {
     func update(profileModel: ProfileModelProtocol, chatID: String)
 }
 
-public protocol RequestsCacheServiceProtocol {
+protocol RequestsCacheServiceProtocol {
     var storedRequests: [RequestModelProtocol] { get }
     func store(requestModel: RequestModelProtocol)
     @discardableResult
@@ -28,24 +28,24 @@ public protocol RequestsCacheServiceProtocol {
     func update(profileModel: ProfileModelProtocol, requestID: String)
 }
 
-public final class ChatsAndRequestsCacheService {
+final class ChatsAndRequestsCacheService {
     private let coreDataService: CoreDataServiceProtocol
     private let account: Account?
     
-    public init(accountID: String, coreDataService: CoreDataServiceProtocol) {
+    init(accountID: String, coreDataService: CoreDataServiceProtocol) {
         self.coreDataService = coreDataService
         self.account = coreDataService.model(Account.self, id: accountID)
     }
 }
 
 extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
-    public var storedChats: [ChatModelProtocol] {
+    var storedChats: [ChatModelProtocol] {
         guard let storedAccount = account,
               let storedChats = storedAccount.chats else { return [] }
         return storedChats.compactMap { ChatModel(chat: $0 as? Chat) }
     }
     
-    public func store(chatModel: ChatModelProtocol) {
+    func store(chatModel: ChatModelProtocol) {
         guard let storedAccount = account,
               let storedChats = storedAccount.chats as? Set<Chat> else { return }
         guard let chat = storedChats.first (where: { $0.friendID == chatModel.friendID }) else {
@@ -55,12 +55,12 @@ extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
         update(chat: chat, model: chatModel)
     }
     
-    public func chat(with id: String) -> ChatModelProtocol? {
+    func chat(with id: String) -> ChatModelProtocol? {
         guard let chat = chatObject(with: id) else { return nil }
         return ChatModel(chat: chat)
     }
     
-    public func update(profileModel: ProfileModelProtocol, chatID: String) {
+    func update(profileModel: ProfileModelProtocol, chatID: String) {
         guard let account = account else { return }
         guard let chat = account.chats?.first(where: { ($0 as? Chat)?.friendID == chatID }) as? Chat,
               let friend = chat.friend else { return }
@@ -69,7 +69,7 @@ extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
         }
     }
     
-    public func removeChat(with id: String) {
+    func removeChat(with id: String) {
         guard let account = account else { return }
         guard let chat = account.chats?.first(where: { ($0 as? Chat)?.friendID == id }) as? Chat else { return }
         account.removeFromChats(chat)
@@ -79,13 +79,13 @@ extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
 }
 
 extension ChatsAndRequestsCacheService: RequestsCacheServiceProtocol {
-    public var storedRequests: [RequestModelProtocol] {
+    var storedRequests: [RequestModelProtocol] {
         guard let storedAccount = account,
               let storedRequests = storedAccount.requests else { return [] }
         return storedRequests.compactMap { RequestModel(request: $0 as? Request) }
     }
     
-    public func store(requestModel: RequestModelProtocol) {
+    func store(requestModel: RequestModelProtocol) {
         guard let storedAccount = account,
               let storedRequests = storedAccount.requests as? Set<Request> else { return }
         guard let request = storedRequests.first (where: { $0.senderID == requestModel.senderID }) else {
@@ -96,7 +96,7 @@ extension ChatsAndRequestsCacheService: RequestsCacheServiceProtocol {
     }
     
     @discardableResult
-    public func removeRequest(with id: String) -> RequestModelProtocol? {
+    func removeRequest(with id: String) -> RequestModelProtocol? {
         guard let account = account else { return nil }
         guard let request = account.requests?.first(where: { ($0 as? Request)?.senderID == id }) as? Request else { return nil }
         let requestModel = RequestModel(request: request)
@@ -106,13 +106,13 @@ extension ChatsAndRequestsCacheService: RequestsCacheServiceProtocol {
         return requestModel
     }
     
-    public func request(with id: String) -> RequestModelProtocol? {
+    func request(with id: String) -> RequestModelProtocol? {
         guard let account = account else { return nil }
         guard let request = account.requests?.first(where: { ($0 as? Request)?.senderID == id }) as? Request else { return nil }
         return RequestModel(request: request)
     }
     
-    public func update(profileModel: ProfileModelProtocol, requestID: String) {
+    func update(profileModel: ProfileModelProtocol, requestID: String) {
         guard let account = account else { return }
         guard let request = account.requests?.first(where: { ($0 as? Request)?.senderID == requestID }) as? Request,
               let sender = request.sender else { return }

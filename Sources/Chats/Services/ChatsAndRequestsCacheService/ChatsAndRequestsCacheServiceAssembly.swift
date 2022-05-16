@@ -10,11 +10,9 @@ import Swinject
 import Managers
 import Services
 
-public final class ChatsAndRequestsCacheServiceAssembly: Assembly {
+final class ChatsAndRequestsCacheServiceAssembly: Assembly {
     
-    public init() { }
-    
-    public func assemble(container: Container) {
+    func assemble(container: Container) {
         container.register(ChatsAndRequestsCacheServiceProtocol.self) { r in
             guard let coreDataService = r.resolve(CoreDataServiceProtocol.self),
                   let userID = r.resolve(QuickAccessManagerProtocol.self)?.userID

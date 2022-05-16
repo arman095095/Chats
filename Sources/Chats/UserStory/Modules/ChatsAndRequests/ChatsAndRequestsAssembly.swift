@@ -15,7 +15,7 @@ typealias ChatsAndRequestsModule = Module<ChatsAndRequestsModuleInput, ChatsAndR
 
 enum ChatsAndRequestsAssembly {
     static func makeModule(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
-                           chatsManager: ChatManagerProtocol,
+                           chatsManager: ChatObserveManagerProtocol,
                            alertManager: AlertManagerProtocol,
                            routeMap: RouteMapPrivate) -> ChatsAndRequestsModule {
         let view = ChatsAndRequestsViewController()

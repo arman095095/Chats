@@ -10,30 +10,30 @@ import ModelInterfaces
 import NetworkServices
 import Services
 
-public protocol ChatManagerDelegate: AnyObject {
+protocol ChatObserveManagerDelegate: AnyObject {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol])
     func messagesLooked(friendID: String, _ value: Bool)
     func typing(friendID: String, _ value: Bool)
 }
 
-public protocol ChatManagerProtocol {
-    func addDelegate(_ delegate: ChatManagerDelegate)
+protocol ChatObserveManagerProtocol {
+    func addDelegate(_ delegate: ChatObserveManagerDelegate)
     func removeDelegate<T>(_ delegate: T)
     func observeNewMessages(friendID: String)
     func observeLookedMessages(friendID: String)
     func observeTypingStatus(friendID: String)
 }
 
-public final class ChatManager {
+final class ChatObserveManager {
     private let messagingService: MessagingServiceProtocol
     private let accountID: String
     private let coreDataService: CoreDataServiceProtocol
     private var sockets = [SocketProtocol]()
-    private var delegates = [ChatManagerDelegate]()
+    private var delegates = [ChatObserveManagerDelegate]()
     
-    public init(messagingService: MessagingServiceProtocol,
-                coreDataService: CoreDataServiceProtocol,
-                accountID: String) {
+    init(messagingService: MessagingServiceProtocol,
+         coreDataService: CoreDataServiceProtocol,
+         accountID: String) {
         self.messagingService = messagingService
         self.accountID = accountID
         self.coreDataService = coreDataService
@@ -44,21 +44,21 @@ public final class ChatManager {
     }
 }
 
-extension ChatManager: ChatManagerProtocol {
-
-    public func addDelegate(_ delegate: ChatManagerDelegate) {
+extension ChatObserveManager: ChatObserveManagerProtocol {
+    
+    func addDelegate(_ delegate: ChatObserveManagerDelegate) {
         delegates.append(delegate)
     }
     
-    public func removeDelegate<T>(_ delegate: T) {
+    func removeDelegate<T>(_ delegate: T) {
         guard let index = delegates.firstIndex(where: { ($0 as? T) != nil }) else { return }
         delegates.remove(at: index)
     }
     
-    public func observeNewMessages(friendID: String) {
+    func observeNewMessages(friendID: String) {
         let cacheService = ChatCacheService(accountID: accountID,
-                                             friendID: friendID,
-                                             coreDataService: coreDataService)
+                                            friendID: friendID,
+                                            coreDataService: coreDataService)
         let socket = messagingService.initMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
                                                          accountID: accountID,
                                                          from: friendID) { [weak self] result in
@@ -81,10 +81,10 @@ extension ChatManager: ChatManagerProtocol {
         sockets.append(socket)
     }
     
-    public func observeLookedMessages(friendID: String) {
+    func observeLookedMessages(friendID: String) {
         let cacheService = ChatCacheService(accountID: accountID,
-                                             friendID: friendID,
-                                             coreDataService: coreDataService)
+                                            friendID: friendID,
+                                            coreDataService: coreDataService)
         let socket = messagingService.initLookedSendedMessagesSocket(accountID: accountID, from: friendID) { [weak self] looked in
             defer {
                 self?.delegates.forEach { delegate in
@@ -97,7 +97,7 @@ extension ChatManager: ChatManagerProtocol {
         sockets.append(socket)
     }
     
-    public func observeTypingStatus(friendID: String) {
+    func observeTypingStatus(friendID: String) {
         let socket = messagingService.initTypingStatusSocket(from: accountID, friendID: friendID) { typing in
             guard let typing = typing else { return }
             self.delegates.forEach { delegate in

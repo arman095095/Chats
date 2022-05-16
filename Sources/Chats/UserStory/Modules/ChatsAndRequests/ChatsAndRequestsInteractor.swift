@@ -35,10 +35,10 @@ final class ChatsAndRequestsInteractor {
     
     weak var output: ChatsAndRequestsInteractorOutput?
     private let chatsAndRequestsManager: ChatsAndRequestsManagerProtocol
-    private let chatsManager: ChatManagerProtocol
+    private let chatsManager: ChatObserveManagerProtocol
     
     init(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
-         chatsManager: ChatManagerProtocol) {
+         chatsManager: ChatObserveManagerProtocol) {
         self.chatsAndRequestsManager = chatsAndRequestsManager
         self.chatsManager = chatsManager
     }
@@ -96,7 +96,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     }
 }
 
-extension ChatsAndRequestsInteractor: ChatManagerDelegate {
+extension ChatsAndRequestsInteractor: ChatObserveManagerDelegate {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
         output?.newMessagesAtChat(chatID: friendID, messages: messages)
     }
