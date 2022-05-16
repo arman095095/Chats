@@ -16,11 +16,11 @@ import MessageKit
 typealias MessangerChatModule = Module<MessangerChatModuleInput, MessangerChatModuleOutput>
 
 enum MessangerChatAssembly {
-    static func makeModule(messagingManager: MessagingManagerProtocol,
+    static func makeModule(messagingManager: MessagingSendManagerProtocol,
                            cacheService: MessagesCacheServiceProtocol,
                            remoteStorage: RemoteStorageServiceProtocol,
                            chat: MessangerChatModelProtocol,
-                           chatManager: ChatObserveManagerProtocol,
+                           chatManager: MessagingRecieveManagerProtocol,
                            accountID: String,
                            routeMap: RouteMapPrivate) -> MessangerChatModule {
         let messageCollectionView = MessagesCollectionView()

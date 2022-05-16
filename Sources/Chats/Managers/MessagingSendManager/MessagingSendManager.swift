@@ -11,7 +11,7 @@ import ModelInterfaces
 import Services
 import Utils
 
-protocol MessagingManagerProtocol: AnyObject {
+protocol MessagingSendManagerProtocol: AnyObject {
     var cachedMessages: [MessageModelProtocol] { get }
     func readNewMessages()
     func sendDidBeganTyping()
@@ -26,7 +26,7 @@ protocol MessagingManagerProtocol: AnyObject {
                           completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
 }
 
-final class MessagingManager {
+final class MessagingSendManager {
     
     private let accountID: String
     private let account: AccountModelProtocol
@@ -50,7 +50,7 @@ final class MessagingManager {
     }
 }
 
-extension MessagingManager: MessagingManagerProtocol {
+extension MessagingSendManager: MessagingSendManagerProtocol {
     
     var cachedMessages: [MessageModelProtocol] {
         cacheService.storedMessages
@@ -167,7 +167,7 @@ extension MessagingManager: MessagingManagerProtocol {
     }
 }
 
-private extension MessagingManager {
+private extension MessagingSendManager {
     
     func sendPreparedMessage(model: MessageNetworkModelProtocol,
                              message: MessageModel,

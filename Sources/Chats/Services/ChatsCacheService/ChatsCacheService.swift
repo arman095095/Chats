@@ -11,7 +11,9 @@ import Services
 
 protocol ChatCacheServiceProtocol {
     var lastMessage: MessageModelProtocol? { get }
+    var messages: [MessageModelProtocol] { get }
     func storeRecievedMessage(_ message: MessageModelProtocol)
+    func storeMessages(_ messages: [MessageModelProtocol])
     func removeAllNotLooked()
 }
 
@@ -33,6 +35,18 @@ extension ChatCacheService: ChatCacheServiceProtocol {
         guard let messages = chat?.messages as? Set<Message> else { return nil }
         let sorted = messages.sorted(by: { $0.date! < $1.date! })
         return MessageModel(message: sorted.last)
+    }
+    
+    var messages: [MessageModelProtocol] {
+        guard let messages = chat?.messages as? Set<Message> else { return [] }
+        let sorted = messages.sorted(by: { $0.date! < $1.date! })
+        return sorted.compactMap { MessageModel(message: $0) }
+    }
+    
+    func storeMessages(_ messages: [MessageModelProtocol]) {
+        messages.forEach {
+            storeRecievedMessage($0)
+        }
     }
     
     func storeRecievedMessage(_ message: MessageModelProtocol) {

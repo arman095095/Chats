@@ -12,9 +12,9 @@ import NetworkServices
 import Services
 import ModelInterfaces
 
-final class MessagingManagerAssembly{
+final class MessagingSendManagerAssembly{
     func assemble(container: Container, chatID: String)  {
-        container.register(MessagingManagerProtocol.self) { r in
+        container.register(MessagingSendManagerProtocol.self) { r in
             guard let userID = r.resolve(QuickAccessManagerProtocol.self)?.userID,
                   let account = r.resolve(AccountModelProtocol.self),
                   let messagingService = r.resolve(MessagingServiceProtocol.self),
@@ -22,7 +22,7 @@ final class MessagingManagerAssembly{
                   let remoteStorageService = r.resolve(RemoteStorageServiceProtocol.self) else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }
-            return MessagingManager(accountID: userID,
+            return MessagingSendManager(accountID: userID,
                                     account: account,
                                     chatID: chatID,
                                     messagingService: messagingService,

@@ -35,12 +35,12 @@ final class ChatsAndRequestsInteractor {
     
     weak var output: ChatsAndRequestsInteractorOutput?
     private let chatsAndRequestsManager: ChatsAndRequestsManagerProtocol
-    private let chatsManager: ChatObserveManagerProtocol
+    private let messagingRecieveManager: MessagingRecieveManagerProtocol
     
     init(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
-         chatsManager: ChatObserveManagerProtocol) {
+         messagingRecieveManager: MessagingRecieveManagerProtocol) {
         self.chatsAndRequestsManager = chatsAndRequestsManager
-        self.chatsManager = chatsManager
+        self.messagingRecieveManager = messagingRecieveManager
     }
 }
 
@@ -50,7 +50,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         let chats = chatsAndRequestsManager.getChatsAndRequests().chats
         let sorted = chats.sorted { chat1, chat2 in
             guard let date1 = chat1.lastMessage?.date,
-                  let date2 = chat2.lastMessage?.date else { return false }
+                  let date2 = chat2.lastMessage?.date else { return true }
             return date1 < date2
         }
         return sorted
@@ -64,7 +64,9 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         chatsAndRequestsManager.getChatsAndRequests { [weak self] result in
             switch result {
             case .success((let chats, let requests)):
-                self?.output?.successLoaded(chats, requests)
+                self?.messagingRecieveManager.getMessages(chats: chats) { chats in
+                    self?.output?.successLoaded(chats, requests)
+                }
             case .failure(let error):
                 self?.output?.failureLoad(message: error.localizedDescription)
             }
@@ -72,11 +74,11 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     }
     
     func startObserve() {
-        chatsManager.addDelegate(self)
+        messagingRecieveManager.addDelegate(self)
         cachedChats.forEach {
-            self.chatsManager.observeNewMessages(friendID: $0.friendID)
-            self.chatsManager.observeLookedMessages(friendID: $0.friendID)
-            self.chatsManager.observeTypingStatus(friendID: $0.friendID)
+            self.messagingRecieveManager.observeNewMessages(friendID: $0.friendID)
+            self.messagingRecieveManager.observeLookedMessages(friendID: $0.friendID)
+            self.messagingRecieveManager.observeTypingStatus(friendID: $0.friendID)
         }
         chatsAndRequestsManager.observeFriends { [weak self] newChats, removed in
             self?.output?.changed(newChats: newChats, removed: removed)
@@ -94,7 +96,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     }
     
     func stopObserve() {
-        chatsManager.removeDelegate(self)
+        messagingRecieveManager.removeDelegate(self)
     }
 
     func remove(chat: ChatModelProtocol) {
@@ -102,7 +104,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     }
 }
 
-extension ChatsAndRequestsInteractor: ChatObserveManagerDelegate {
+extension ChatsAndRequestsInteractor: MessagingRecieveDelegate {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
         output?.newMessagesAtChat(chatID: friendID, messages: messages)
     }
@@ -125,9 +127,9 @@ private extension ChatsAndRequestsInteractor {
             }
         }
         newChats.forEach {
-            chatsManager.observeNewMessages(friendID: $0.friendID)
-            chatsManager.observeLookedMessages(friendID: $0.friendID)
-            chatsManager.observeTypingStatus(friendID: $0.friendID)
+            messagingRecieveManager.observeNewMessages(friendID: $0.friendID)
+            messagingRecieveManager.observeLookedMessages(friendID: $0.friendID)
+            messagingRecieveManager.observeTypingStatus(friendID: $0.friendID)
         }
     }
     

@@ -106,22 +106,11 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
-    func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
-        guard let index = chats.firstIndex(where: { $0.id == chatID }),
-              let last = messages.last else { return }
-        switch last.type {
-        case .text(content: let content):
-            chats[index].lastMessageType = .text(content)
-        case .audio:
-            chats[index].lastMessageType = .audio
-        case .image:
-            chats[index].lastMessageType = .image
-        }
-        chats[index].newMessagesEnable = true
-        chats[index].newMessagesCount = messages.count
-        view?.reloadData(requests: requests, chats: chats)
-    }
     
+    func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
+        loadCache()
+    }
+
     func chatDidBeganTyping(chatID: String) {
         guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
         chats[index].typing = true

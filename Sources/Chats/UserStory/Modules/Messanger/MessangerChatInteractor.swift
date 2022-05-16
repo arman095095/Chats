@@ -40,13 +40,13 @@ protocol MessangerChatInteractorOutput: AnyObject {
 final class MessangerChatInteractor {
     
     weak var output: MessangerChatInteractorOutput?
-    private let messagingManager: MessagingManagerProtocol
-    private let chatManager: ChatObserveManagerProtocol
+    private let messagingManager: MessagingSendManagerProtocol
+    private let chatManager: MessagingRecieveManagerProtocol
     private let audioRecorder: AudioMessageRecorderProtocol
     private let audioPlayer: AudioMessagePlayerProtocol
     
-    init(messagingManager: MessagingManagerProtocol,
-         chatManager: ChatObserveManagerProtocol,
+    init(messagingManager: MessagingSendManagerProtocol,
+         chatManager: MessagingRecieveManagerProtocol,
          audioRecorder: AudioMessageRecorderProtocol,
          audioPlayer: AudioMessagePlayerProtocol) {
         self.messagingManager = messagingManager
@@ -56,7 +56,7 @@ final class MessangerChatInteractor {
     }
 }
 
-extension MessangerChatInteractor: ChatObserveManagerDelegate {
+extension MessangerChatInteractor: MessagingRecieveDelegate {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
         guard friendID == output?.chatID, !messages.isEmpty else { return }
         output?.successRecievedNewMessages(messagesCount: messages.count)

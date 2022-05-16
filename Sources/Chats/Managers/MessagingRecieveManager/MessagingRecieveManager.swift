@@ -10,26 +10,27 @@ import ModelInterfaces
 import NetworkServices
 import Services
 
-protocol ChatObserveManagerDelegate: AnyObject {
+protocol MessagingRecieveDelegate: AnyObject {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol])
     func messagesLooked(friendID: String, _ value: Bool)
     func typing(friendID: String, _ value: Bool)
 }
 
-protocol ChatObserveManagerProtocol {
-    func addDelegate(_ delegate: ChatObserveManagerDelegate)
+protocol MessagingRecieveManagerProtocol {
+    func addDelegate(_ delegate: MessagingRecieveDelegate)
     func removeDelegate<T>(_ delegate: T)
     func observeNewMessages(friendID: String)
     func observeLookedMessages(friendID: String)
     func observeTypingStatus(friendID: String)
+    func getMessages(chats: [ChatModelProtocol], completion: @escaping ([ChatModelProtocol]) -> ())
 }
 
-final class ChatObserveManager {
+final class MessagingRecieveManager {
     private let messagingService: MessagingServiceProtocol
     private let accountID: String
     private let coreDataService: CoreDataServiceProtocol
     private var sockets = [SocketProtocol]()
-    private var delegates = [ChatObserveManagerDelegate]()
+    private var delegates = [MessagingRecieveDelegate]()
     
     init(messagingService: MessagingServiceProtocol,
          coreDataService: CoreDataServiceProtocol,
@@ -44,15 +45,44 @@ final class ChatObserveManager {
     }
 }
 
-extension ChatObserveManager: ChatObserveManagerProtocol {
+extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     
-    func addDelegate(_ delegate: ChatObserveManagerDelegate) {
+    func addDelegate(_ delegate: MessagingRecieveDelegate) {
         delegates.append(delegate)
     }
     
     func removeDelegate<T>(_ delegate: T) {
         guard let index = delegates.firstIndex(where: { ($0 as? T) != nil }) else { return }
         delegates.remove(at: index)
+    }
+    
+    func getMessages(chats: [ChatModelProtocol], completion: @escaping ([ChatModelProtocol]) -> ()) {
+        var refreshedChats = [ChatModelProtocol]()
+        let group = DispatchGroup()
+        chats.forEach { chat in
+            let cachedService = ChatCacheService(accountID: accountID,
+                                              friendID: chat.friendID,
+                                              coreDataService: coreDataService)
+            let cachedChat = cachedService.lastMessage
+            group.enter()
+            self.messagingService.getMessages(from: accountID,
+                                              friendID: chat.friendID,
+                                              lastDate: cachedChat?.date) { result in
+                defer { group.leave() }
+                switch result {
+                case .success(let messages):
+                    let models = messages.compactMap { MessageModel(model: $0) }
+                    cachedService.storeMessages(models)
+                    chat.messages = cachedService.messages
+                    refreshedChats.append(chat)
+                case .failure:
+                    break
+                }
+            }
+            group.notify(queue: .main) {
+                completion(refreshedChats)
+            }
+        }
     }
     
     func observeNewMessages(friendID: String) {
