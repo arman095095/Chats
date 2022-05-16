@@ -187,7 +187,7 @@ extension ChatsAndRequestsPresenter: ProfileModuleOutput {
 
 private extension ChatsAndRequestsPresenter {
     func loadCache() {
-        self.chats = interactor.cachedChats.map { Item(chat: $0) }
+        self.chats = interactor.cachedChats.map { Item(chat: $0) }.sorted(by: { $0.lastMessageDate! > $1.lastMessageDate! })
         self.requests = interactor.cachedRequests.map { Item(request: $0) }
         view?.reloadData(requests: requests, chats: chats)
     }
