@@ -9,7 +9,6 @@
 import UIKit
 import ProfileRouteMap
 import ModelInterfaces
-import MessangerRouteMap
 
 protocol RouteMapPrivate: AnyObject {
     func chatsAndRequestsModule() -> ChatsAndRequestsModule

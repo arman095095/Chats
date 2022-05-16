@@ -20,8 +20,8 @@ final class ChatManagerAssembly: Assembly {
                   let accountID = quickAccessManager.userID else { fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return ChatManager(messagingService: messagingService,
-                        coreDataService: coreDataService,
-                        accountID: accountID)
+                               coreDataService: coreDataService,
+                               accountID: accountID)
         }.inObjectScope(.weak)
     }
 }

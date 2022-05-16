@@ -15,7 +15,6 @@ import Managers
 import UserStoryFacade
 import ModelInterfaces
 import ProfileRouteMap
-import MessangerRouteMap
 import NetworkServices
 
 public final class ChatsUserStory {
@@ -43,6 +42,8 @@ extension ChatsUserStory: ChatsRouteMap {
 extension ChatsUserStory: RouteMapPrivate {
     
     func messangerModule(chat: MessangerChatModelProtocol) -> MessangerChatModule {
+        MessagesCacheServiceAssembly().assemble(container: container, friendID: chat.friendID)
+        MessagingManagerAssembly().assemble(container: container, chatID: chat.friendID)
         guard let remoteStorageService = container.synchronize().resolve(RemoteStorageServiceProtocol.self),
               let chatManager = container.synchronize().resolve(ChatManagerProtocol.self),
               let messagingManager = container.synchronize().resolve(MessagingManagerProtocol.self),

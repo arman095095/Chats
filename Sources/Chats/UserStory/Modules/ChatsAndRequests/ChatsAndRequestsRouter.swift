@@ -33,6 +33,7 @@ extension ChatsAndRequestsRouter: ChatsAndRequestsRouterInput {
     }
     
     func openMessangerModule(chat: ChatModelProtocol) {
+        guard let chat = chat as? MessangerChatModelProtocol else { return }
         let module = routeMap.messangerModule(chat: chat)
         transitionHandler?.navigationController?.pushViewController(module.view, animated: true)
     }
