@@ -70,8 +70,8 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
     }
     
     func remove(chat: ChatModelProtocol) {
-        self.requestsService.removeFriend(with: chat.friendID, from: accountID) { _ in }
-        self.messagingService.removeChat(from: accountID, for: chat.friendID)
+        self.messagingService.removeChat(from: accountID, for: chat.friendID) { }
+        self.requestsService.removeFriend(with: chat.friendID, from: self.accountID) { _ in }
     }
     
     func addObserveFriendsAndRequestsProfiles(id: String, completion: @escaping () -> ()) {
