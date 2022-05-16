@@ -57,6 +57,22 @@ final class ChatsAndRequestsPresenter {
 }
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
+    
+    func viewDidLoad() {
+        view?.setupInitialState()
+        loadCache()
+        interactor.remoteLoad()
+        interactor.startObserve()
+    }
+    
+    var title: String {
+        stringFactory.title
+    }
+    
+    func filteredChats(text: String) {
+        
+    }
+    
     func select(at indexPath: IndexPath) {
         guard let section = Sections(rawValue: indexPath.section) else { return }
         switch section {
@@ -86,20 +102,6 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         default:
             break
         }
-    }
-    
-    func filteredChats(text: String) {
-    }
-    
-    var title: String {
-        stringFactory.title
-    }
-    
-    func viewDidLoad() {
-        view?.setupInitialState()
-        loadCache()
-        interactor.remoteLoad()
-        interactor.startObserve()
     }
 }
 

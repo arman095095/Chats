@@ -47,7 +47,13 @@ final class ChatsAndRequestsInteractor {
 extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     
     var cachedChats: [ChatModelProtocol] {
-        chatsAndRequestsManager.getChatsAndRequests().chats
+        let chats = chatsAndRequestsManager.getChatsAndRequests().chats
+        let sorted = chats.sorted { chat1, chat2 in
+            guard let date1 = chat1.lastMessage?.date,
+                  let date2 = chat2.lastMessage?.date else { return false }
+            return date1 < date2
+        }
+        return sorted
     }
     
     var cachedRequests: [RequestModelProtocol] {
