@@ -17,13 +17,13 @@ protocol MessagingSendManagerProtocol: AnyObject {
     func sendDidBeganTyping()
     func sendDidFinishTyping()
     func sendTextMessage(_ content: String,
-                         completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
+                         completion: @escaping (Result<Void, Error>) -> ())
     func sendAudioMessage(_ localURL: String,
                           duration: Float,
-                          completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
+                          completion: @escaping (Result<Void, Error>) -> ())
     func sendPhotoMessage(_ data: Data,
                           ratio: Double,
-                          completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
+                          completion: @escaping (Result<Void, Error>) -> ())
 }
 
 final class MessagingSendManager {
@@ -56,7 +56,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
         cacheService.storedMessages
     }
     
-    func sendTextMessage(_ content: String, completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
+    func sendTextMessage(_ content: String, completion: @escaping (Result<Void, Error>) -> ()) {
         let uuid = UUID().uuidString
         let date = Date()
         let message = MessageModel(senderID: accountID,
@@ -79,7 +79,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
         self.sendPreparedMessage(model: model, message: message, completion: completion)
     }
     
-    func sendAudioMessage(_ localURL: String, duration: Float, completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
+    func sendAudioMessage(_ localURL: String, duration: Float, completion: @escaping (Result<Void, Error>) -> ()) {
         let uuid = UUID().uuidString
         let date = Date()
         let message = MessageModel(senderID: accountID,
@@ -112,7 +112,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
         }
     }
     
-    func sendPhotoMessage(_ data: Data, ratio: Double, completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
+    func sendPhotoMessage(_ data: Data, ratio: Double, completion: @escaping (Result<Void, Error>) -> ()) {
         let uuid = UUID().uuidString
         let date = Date()
     
@@ -171,25 +171,15 @@ private extension MessagingSendManager {
     
     func sendPreparedMessage(model: MessageNetworkModelProtocol,
                              message: MessageModel,
-                             completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
-        self.messagingService.send(message: model) { [weak self] result in
-            guard let self = self else { return }
+                             completion: @escaping (Result<Void, Error>) -> ()) {
+        self.messagingService.send(message: model) { result in
             switch result {
-            case .success():
-                self.successSended(message: message)
-                completion(.success(message))
+            case .success:
+                break
             case .failure(let error):
                 completion(.failure(error))
             }
         }
-    }
-    
-    func successSended(message: MessageModelProtocol) {
-        let date = Date()
-        message.status = .sended
-        message.date = date
-        message.firstOfDate = self.isFirstToday(date: date)
-        self.cacheService.removeFromNotSended(message: message)
     }
     
     func isFirstToday(date: Date) -> Bool {
