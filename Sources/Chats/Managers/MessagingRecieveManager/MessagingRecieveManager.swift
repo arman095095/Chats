@@ -74,7 +74,11 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 defer { group.leave() }
                 switch result {
                 case .success(let messages):
-                    let models = messages.compactMap { MessageModel(model: $0) }
+                    let models: [MessageModelProtocol] = messages.compactMap {
+                        guard let message = MessageModel(model: $0) else { return nil }
+                        if message.adressID == self.accountID { message.sendingStatus = .incoming }
+                        return message
+                    }
                     cachedService.storeMessages(models)
                     chat.messages = cachedService.messages
                     refreshedChats.append(chat)
@@ -100,6 +104,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             case .success(let messageModels):
                 let messages: [MessageModelProtocol] = messageModels.compactMap {
                     guard let message = MessageModel(model: $0) else { return nil }
+                    if message.adressID == self.accountID { message.sendingStatus = .incoming }
                     cacheService.storeRecievedMessage(message)
                     return message
                 }
@@ -118,13 +123,11 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                                             friendID: friendID,
                                             coreDataService: coreDataService)
         let socket = messagingService.initLookedSendedMessagesSocket(accountID: accountID, from: friendID) { [weak self] looked in
-            defer {
-                self?.multicastDelegates.delegates.forEach { delegate in
-                    delegate.messagesLooked(friendID: friendID, looked)
-                }
-            }
             guard looked else { return }
             cacheService.removeAllNotLooked()
+            self?.multicastDelegates.delegates.forEach { delegate in
+                delegate.messagesLooked(friendID: friendID, looked)
+            }
         }
         sockets.append(socket)
     }

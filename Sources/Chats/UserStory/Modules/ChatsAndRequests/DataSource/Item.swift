@@ -37,11 +37,11 @@ enum LastMessageContentType: Hashable {
     }
 }
 
-enum LastMessageSendingStatus {
+enum LastMessageSendingStatus: String {
     case waiting
     case sended
     case looked
-    case another
+    case incoming
     
     var image: UIImage? {
         switch self {
@@ -51,7 +51,7 @@ enum LastMessageSendingStatus {
             return UIImage(named: LastMessageConstants.markSendedImageName, in: Bundle.module, with: nil)
         case .looked:
             return UIImage(named: LastMessageConstants.markLookedImageName, in: Bundle.module, with: nil)
-        case .another:
+        case .incoming:
             return UIImage()
         }
     }
@@ -94,8 +94,8 @@ struct Item: Hashable,
             self._lastMessageType = .image
         }
         switch chat.lastMessage?.sendingStatus {
-        case .none:
-            self.lastMessageSendingStatus = .another
+        case .none, .incoming:
+            self.lastMessageSendingStatus = .incoming
         case .looked:
             self.lastMessageSendingStatus = .looked
         case .sended:

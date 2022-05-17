@@ -30,7 +30,5 @@ final class MulticastDelegates<T> {
     func remove<I>(delegate: I) {
         guard let firstIndex = _delegates.firstIndex(where: { $0.delegateNode is I }) else { return }
         _delegates.remove(at: firstIndex)
-        print("Успешно удален")
-        print(String(describing: delegate.self))
     }
 }
