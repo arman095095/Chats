@@ -43,15 +43,27 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
     }
 
     var storedMessages: [MessageModelProtocol] {
-        chat?.messages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+        guard let messages = chat?.messages as? Set<Message> else { return [] }
+        let sorted = messages.sorted(by: { $0.date! < $1.date! })
+        return sorted.compactMap { MessageModel(message: $0) }
     }
     
     var lastMessage: MessageModelProtocol? {
-        MessageModel(message: chat?.messages?.allObjects.last as? Message)
+        guard let messages = chat?.messages as? Set<Message> else { return nil }
+        let sorted = messages.sorted(by: { $0.date! < $1.date! })
+        return MessageModel(message: sorted.last)
     }
     
     var firstMessage: MessageModelProtocol? {
-        MessageModel(message: chat?.messages?.allObjects.first as? Message)
+        guard let messages = chat?.messages as? Set<Message> else { return nil }
+        let sorted = messages.sorted(by: { $0.date! < $1.date! })
+        return MessageModel(message: sorted.first)
+    }
+    
+    func storeMessages(_ messages: [MessageModelProtocol]) {
+        messages.forEach {
+            storeRecievedMessage($0)
+        }
     }
     
     func storeSendedMessage(_ message: MessageModelProtocol) {
@@ -65,6 +77,12 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
     }
     
     func storeRecievedMessage(_ message: MessageModelProtocol) {
+        if let messageObject = chat?.messages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message {
+            coreDataService.update(messageObject) { object in
+                fillFields(message: object, model: message)
+            }
+            return
+        }
         let messageObject = coreDataService.initModel(Message.self) { object in
             fillFields(message: object, model: message)
         }

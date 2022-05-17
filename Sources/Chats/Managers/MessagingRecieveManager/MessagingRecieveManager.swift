@@ -63,9 +63,9 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             return
         }
         chats.forEach { chat in
-            let cachedService = ChatCacheService(accountID: accountID,
-                                              friendID: chat.friendID,
-                                              coreDataService: coreDataService)
+            let cachedService = MessagesCacheService(accountID: accountID,
+                                                     friendID: chat.friendID,
+                                                     coreDataService: coreDataService)
             let cachedChat = cachedService.lastMessage
             group.enter()
             self.messagingService.getMessages(from: accountID,
@@ -76,7 +76,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 case .success(let messages):
                     let models: [MessageModelProtocol] = messages.compactMap { MessageModel(model: $0) }
                     cachedService.storeMessages(models)
-                    chat.messages = cachedService.messages
+                    chat.messages = cachedService.storedMessages
                     refreshedChats.append(chat)
                 case .failure:
                     break
@@ -89,9 +89,9 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     }
     
     func observeNewMessages(friendID: String) {
-        let cacheService = ChatCacheService(accountID: accountID,
-                                            friendID: friendID,
-                                            coreDataService: coreDataService)
+        let cacheService = MessagesCacheService(accountID: accountID,
+                                                friendID: friendID,
+                                                coreDataService: coreDataService)
         let socket = messagingService.initMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
                                                          accountID: accountID,
                                                          from: friendID) { [weak self] result in
@@ -114,9 +114,9 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     }
     
     func observeLookedMessages(friendID: String) {
-        let cacheService = ChatCacheService(accountID: accountID,
-                                            friendID: friendID,
-                                            coreDataService: coreDataService)
+        let cacheService = MessagesCacheService(accountID: accountID,
+                                                friendID: friendID,
+                                                coreDataService: coreDataService)
         let socket = messagingService.initLookedSendedMessagesSocket(accountID: accountID, from: friendID) { [weak self] looked in
             guard looked else { return }
             cacheService.removeAllNotLooked()
