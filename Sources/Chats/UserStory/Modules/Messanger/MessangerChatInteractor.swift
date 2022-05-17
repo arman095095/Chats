@@ -24,6 +24,7 @@ protocol MessangerChatInteractorInput: AnyObject {
     func sendDidFinishTyping()
     func readNewMessages()
     func startObserve()
+    func stopObserving()
 }
 
 protocol MessangerChatInteractorOutput: AnyObject {
@@ -88,6 +89,10 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
     
     func startObserve() {
         chatManager.addDelegate(self)
+    }
+    
+    func stopObserving() {
+        chatManager.removeDelegate(self)
     }
 
     func sendAudioMessage(url: String, duration: Float) {

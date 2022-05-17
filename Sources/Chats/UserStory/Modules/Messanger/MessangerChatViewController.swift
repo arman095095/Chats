@@ -42,6 +42,11 @@ final class MessangerChatViewController: MessagesViewController {
         output.viewDidLoad()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        guard self.isMovingFromParent else { return }
+        output.viewWillDisappear()
+    }
+    
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: Int(3))) && output.canLoadMore {
             if output.loadMoreMessages() {

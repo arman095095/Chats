@@ -16,16 +16,21 @@ final class DelegateNode {
 }
 
 final class MulticastDelegates<T> {
-    private(set) var delegates = [DelegateNode]()
+    private var _delegates = [DelegateNode]()
+    
+    var delegates: [T] {
+        _delegates.compactMap { ($0.delegateNode as? T) }
+    }
     
     func add(delegate: T) {
         let node = DelegateNode(node: delegate as AnyObject)
-        delegates.append(node)
+        _delegates.append(node)
     }
     
-    func map() -> [T] {
-        delegates.compactMap {
-            ($0.delegateNode as? T)
-        }
+    func remove<I>(delegate: I) {
+        guard let firstIndex = _delegates.firstIndex(where: { $0.delegateNode is I }) else { return }
+        _delegates.remove(at: firstIndex)
+        print("Успешно удален")
+        print(String(describing: delegate.self))
     }
 }

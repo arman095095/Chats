@@ -15,6 +15,7 @@ protocol ChatsAndRequestsInteractorInput: AnyObject {
     var cachedRequests: [RequestModelProtocol] { get }
     func remoteLoad()
     func startObserve()
+    func stopObserving()
     func remove(chat: ChatModelProtocol)
 }
 
@@ -92,6 +93,10 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         chatsAndRequestsManager.observeFriendsAndRequestsProfiles { [weak self] in
             self?.output?.profilesUpdated()
         }
+    }
+    
+    func stopObserving() {
+        messagingRecieveManager.removeDelegate(self)
     }
 
     func remove(chat: ChatModelProtocol) {
