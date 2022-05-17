@@ -9,6 +9,7 @@ import Foundation
 import ModelInterfaces
 import NetworkServices
 import Services
+import Utils
 
 protocol MessagingRecieveDelegate: AnyObject {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol])
@@ -70,11 +71,21 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             group.enter()
             self.messagingService.getMessages(from: accountID,
                                               friendID: chat.friendID,
-                                              lastDate: cachedChat?.date) { result in
+                                              lastDate: cachedChat?.date) { [weak self] result in
+                guard let self = self else { return }
                 defer { group.leave() }
                 switch result {
                 case .success(let messages):
-                    let models: [MessageModelProtocol] = messages.compactMap { MessageModel(model: $0) }
+                    let models: [MessageModelProtocol] = messages.compactMap {
+                        guard let model = MessageModel(model: $0) else { return nil }
+                        switch model.status {
+                        case .sended, .waiting, .looked, .none:
+                            model.firstOfDate = self.isFirstToday(friendID: model.adressID, date: model.date)
+                        case .incomingNew, .incoming:
+                            model.firstOfDate = self.isFirstToday(friendID: model.senderID, date: model.date)
+                        }
+                        return model
+                    }
                     cachedService.storeMessages(models)
                     chat.messages = cachedService.storedMessages
                     refreshedChats.append(chat)
@@ -99,9 +110,15 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             switch result {
             case .success(let messageModels):
                 let messages: [MessageModelProtocol] = messageModels.compactMap {
-                    guard let message = MessageModel(model: $0) else { return nil }
-                    cacheService.storeRecievedMessage(message)
-                    return message
+                    guard let model = MessageModel(model: $0) else { return nil }
+                    switch model.status {
+                    case .sended, .waiting, .looked, .none:
+                        model.firstOfDate = self.isFirstToday(friendID: model.adressID, date: model.date)
+                    case .incomingNew, .incoming:
+                        model.firstOfDate = self.isFirstToday(friendID: model.senderID, date: model.date)
+                    }
+                    cacheService.storeRecievedMessage(model)
+                    return model
                 }
                 self.multicastDelegates.delegates.forEach { delegate in
                     delegate.newMessagesRecieved(friendID: friendID, messages: messages)
@@ -135,5 +152,23 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             }
         }
         sockets.append(socket)
+    }
+    
+    func isFirstToday(friendID: String, date: Date) -> Bool {
+        let cacheService = MessagesCacheService(accountID: accountID,
+                                                friendID: friendID,
+                                                coreDataService: coreDataService)
+        if cacheService.storedMessages.isEmpty {
+            return true
+        }
+        guard let lastMessage = cacheService.lastMessage else {
+            return true
+        }
+        let messageDate = DateFormatService().getLocaleDate(date: date)
+        let lastMessageDate = DateFormatService().getLocaleDate(date: lastMessage.date)
+        if !(lastMessageDate.day == messageDate.day && lastMessageDate.month == messageDate.month && lastMessageDate.year == messageDate.year) {
+            return true
+        }
+        return false
     }
 }
