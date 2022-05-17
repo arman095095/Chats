@@ -64,7 +64,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    date: date,
                                    id: uuid,
                                    firstOfDate: isFirstToday(date: date),
-                                   sendingStatus: .waiting,
+                                   status: .waiting,
                                    type: .text(content: content))
         cacheService.storeSendedMessage(message)
         let model = MessageNetworkModel(audioURL: nil,
@@ -86,7 +86,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    adressID: friendID,
                                    date: date, id: uuid,
                                    firstOfDate: isFirstToday(date: date),
-                                   sendingStatus: .waiting,
+                                   status: .waiting,
                                    type: .audio(url: localURL, duration: duration))
         cacheService.storeSendedMessage(message)
         let url = FileManager.getDocumentsDirectory().appendingPathComponent(localURL)
@@ -124,7 +124,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    date: date,
                                    id: uuid,
                                    firstOfDate: isFirstToday(date: date),
-                                   sendingStatus: .waiting,
+                                   status: .waiting,
                                    type: .image(url: url.absoluteString, ratio: ratio))
         cacheService.storeSendedMessage(message)
         remoteStorageService.uploadChat(image: data) { [weak self] result in
@@ -186,7 +186,7 @@ private extension MessagingSendManager {
     
     func successSended(message: MessageModelProtocol) {
         let date = Date()
-        message.sendingStatus = .sended
+        message.status = .sended
         message.date = date
         message.firstOfDate = self.isFirstToday(date: date)
         self.cacheService.removeFromNotSended(message: message)

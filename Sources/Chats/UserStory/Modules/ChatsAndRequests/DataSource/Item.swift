@@ -93,8 +93,8 @@ struct Item: Hashable,
         case .image:
             self._lastMessageType = .image
         }
-        switch chat.lastMessage?.sendingStatus {
-        case .none, .incoming:
+        switch chat.lastMessage?.status {
+        case .none, .incoming, .incomingNew:
             self.lastMessageSendingStatus = .incoming
         case .looked:
             self.lastMessageSendingStatus = .looked

@@ -68,7 +68,7 @@ extension ChatCacheService: ChatCacheServiceProtocol {
         chat?.removeFromNotLookedMessages(notLooked)
         guard let notLookedMessages = notLooked.allObjects as? [Message] else { return }
         notLookedMessages.forEach {
-            $0.sendingStatus = SendingStatus.looked.rawValue
+            $0.status = Status.looked.rawValue
             coreDataService.saveContext()
         }
         coreDataService.saveContext()
@@ -81,7 +81,7 @@ private extension ChatCacheService {
         message.senderID = model.senderID
         message.adressID = model.adressID
         message.firstOfDate = model.firstOfDate
-        message.sendingStatus = model.sendingStatus?.rawValue
+        message.status = model.status?.rawValue
         message.date = model.date
         switch model.type {
         case .text(content: let content):

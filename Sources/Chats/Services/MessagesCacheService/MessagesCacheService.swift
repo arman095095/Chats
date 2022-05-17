@@ -11,6 +11,7 @@ import Services
 
 protocol MessagesCacheServiceProtocol {
     var storedMessages: [MessageModelProtocol] { get }
+    var storedNewMessages: [MessageModelProtocol] { get }
     var lastMessage: MessageModelProtocol? { get }
     var firstMessage: MessageModelProtocol? { get }
     func storeSendedMessage(_ message: MessageModelProtocol)
@@ -36,6 +37,10 @@ final class MessagesCacheService {
 }
 
 extension MessagesCacheService: MessagesCacheServiceProtocol {
+    
+    var storedNewMessages: [MessageModelProtocol] {
+        chat?.notReadMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+    }
 
     var storedMessages: [MessageModelProtocol] {
         chat?.messages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
@@ -88,7 +93,7 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
         chat?.removeFromNotLookedMessages(notLooked)
         guard let notLookedMessages = notLooked.allObjects as? [Message] else { return }
         notLookedMessages.forEach {
-            $0.sendingStatus = SendingStatus.looked.rawValue
+            $0.status = Status.looked.rawValue
             coreDataService.saveContext()
         }
         coreDataService.saveContext()
@@ -107,7 +112,7 @@ private extension MessagesCacheService {
         message.senderID = model.senderID
         message.adressID = model.adressID
         message.firstOfDate = model.firstOfDate
-        message.sendingStatus = model.sendingStatus?.rawValue
+        message.status = model.status?.rawValue
         message.date = model.date
         switch model.type {
         case .text(content: let content):

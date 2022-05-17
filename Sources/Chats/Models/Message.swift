@@ -17,7 +17,7 @@ final class MessageModel: MessageModelProtocol {
     var date: Date
     var id: String
     var firstOfDate: Bool
-    var sendingStatus: SendingStatus?
+    var status: Status?
     var type: MessageContentType
     
     init(senderID: String,
@@ -25,14 +25,14 @@ final class MessageModel: MessageModelProtocol {
          date: Date,
          id: String,
          firstOfDate: Bool,
-         sendingStatus: SendingStatus,
+         status: Status,
          type: MessageContentType) {
         self.senderID = senderID
         self.adressID = adressID
         self.date = date
         self.id = id
         self.firstOfDate = firstOfDate
-        self.sendingStatus = sendingStatus
+        self.status = status
         self.type = type
     }
     
@@ -43,7 +43,7 @@ final class MessageModel: MessageModelProtocol {
         self.date = date
         self.id = model.id
         self.firstOfDate = false
-        self.sendingStatus = nil
+        self.status = Status(rawValue: model.status.rawValue)
         if let audioURL = model.audioURL,
            let duration = model.audioDuration {
             self.type = .audio(url: audioURL, duration: duration)
@@ -70,8 +70,8 @@ final class MessageModel: MessageModelProtocol {
         } else {
             self.type = .text(content: "")
         }
-        if let sendingStatus = message.sendingStatus {
-            self.sendingStatus = SendingStatus(rawValue: sendingStatus)
+        if let status = message.status {
+            self.status = Status(rawValue: status)
         }
         self.adressID = adressID
         self.senderID = senderID

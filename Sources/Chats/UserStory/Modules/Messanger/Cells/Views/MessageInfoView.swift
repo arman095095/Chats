@@ -8,7 +8,7 @@
 import UIKit
 import DesignSystem
 
-enum Status {
+enum StatusInfo {
     case waiting
     case sended
     case looked
@@ -45,7 +45,7 @@ final class MessageInfoView: UIView {
         case recieved(MessageType)
     }
     
-    var status: Status? {
+    var status: StatusInfo? {
         didSet {
             switch status {
             case .none:

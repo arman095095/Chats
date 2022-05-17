@@ -74,11 +74,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 defer { group.leave() }
                 switch result {
                 case .success(let messages):
-                    let models: [MessageModelProtocol] = messages.compactMap {
-                        guard let message = MessageModel(model: $0) else { return nil }
-                        if message.adressID == self.accountID { message.sendingStatus = .incoming }
-                        return message
-                    }
+                    let models: [MessageModelProtocol] = messages.compactMap { MessageModel(model: $0) }
                     cachedService.storeMessages(models)
                     chat.messages = cachedService.messages
                     refreshedChats.append(chat)
@@ -104,7 +100,6 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             case .success(let messageModels):
                 let messages: [MessageModelProtocol] = messageModels.compactMap {
                     guard let message = MessageModel(model: $0) else { return nil }
-                    if message.adressID == self.accountID { message.sendingStatus = .incoming }
                     cacheService.storeRecievedMessage(message)
                     return message
                 }
