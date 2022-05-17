@@ -18,7 +18,6 @@ protocol MessagingRecieveDelegate: AnyObject {
 
 protocol MessagingRecieveManagerProtocol {
     func addDelegate(_ delegate: MessagingRecieveDelegate)
-    func removeDelegate<T>(_ delegate: T)
     func observeNewMessages(friendID: String)
     func observeLookedMessages(friendID: String)
     func observeTypingStatus(friendID: String)
@@ -30,7 +29,7 @@ final class MessagingRecieveManager {
     private let accountID: String
     private let coreDataService: CoreDataServiceProtocol
     private var sockets = [SocketProtocol]()
-    private var delegates = [MessagingRecieveDelegate]()
+    private var multicastDelegates = MulticastDelegates<MessagingRecieveDelegate>()
     
     init(messagingService: MessagingServiceProtocol,
          coreDataService: CoreDataServiceProtocol,
@@ -48,12 +47,7 @@ final class MessagingRecieveManager {
 extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     
     func addDelegate(_ delegate: MessagingRecieveDelegate) {
-        delegates.append(delegate)
-    }
-    
-    func removeDelegate<T>(_ delegate: T) {
-        guard let index = delegates.firstIndex(where: { ($0 as? T) != nil }) else { return }
-        delegates.remove(at: index)
+        multicastDelegates.add(delegate: delegate)
     }
     
     func getMessages(chats: [ChatModelProtocol], completion: @escaping ([ChatModelProtocol]) -> ()) {
@@ -104,7 +98,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                     cacheService.storeRecievedMessage(message)
                     return message
                 }
-                self.delegates.forEach { delegate in
+                self.multicastDelegates.map().forEach { delegate in
                     delegate.newMessagesRecieved(friendID: friendID, messages: messages)
                 }
             case .failure:
@@ -120,7 +114,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                                             coreDataService: coreDataService)
         let socket = messagingService.initLookedSendedMessagesSocket(accountID: accountID, from: friendID) { [weak self] looked in
             defer {
-                self?.delegates.forEach { delegate in
+                self?.multicastDelegates.map().forEach { delegate in
                     delegate.messagesLooked(friendID: friendID, looked)
                 }
             }
@@ -133,7 +127,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     func observeTypingStatus(friendID: String) {
         let socket = messagingService.initTypingStatusSocket(from: accountID, friendID: friendID) { typing in
             guard let typing = typing else { return }
-            self.delegates.forEach { delegate in
+            self.multicastDelegates.map().forEach { delegate in
                 delegate.typing(friendID: friendID, typing)
             }
         }

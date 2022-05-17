@@ -27,7 +27,6 @@ protocol ChatsAndRequestsModuleInput: AnyObject {
 protocol ChatsAndRequestsViewOutput: AnyObject {
     var title: String { get }
     func viewDidLoad()
-    func viewWillDisappear()
     func select(at indexPath: IndexPath)
     func remove(at indexPath: IndexPath)
     func filteredChats(text: String)
@@ -64,10 +63,6 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         loadCache()
         interactor.remoteLoad()
         interactor.startObserve()
-    }
-    
-    func viewWillDisappear() {
-        interactor.stopObserve()
     }
     
     var title: String {

@@ -24,11 +24,6 @@ final class ChatsAndRequestsViewController: UIViewController {
         super.viewDidLoad()
         output?.viewDidLoad()
     }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        output?.viewWillDisappear()
-    }
 }
 
 extension ChatsAndRequestsViewController: ChatsAndRequestsViewInput {

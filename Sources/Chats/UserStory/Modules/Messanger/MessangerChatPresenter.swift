@@ -34,7 +34,6 @@ protocol MessangerChatViewOutput: AnyObject {
     var textPlaceholder: String { get }
     var titleDescription: MessengerTitleView.Descriptions? { get }
     func viewDidLoad()
-    func viewWillDisappear()
     func loadMoreMessages() -> Bool
     func message(at indexPath: IndexPath) -> MessageType?
     func firstMessageTime(at indexPath: IndexPath) -> String
@@ -91,10 +90,6 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         interactor.startObserve()
         loadMoreMessages()
         interactor.readNewMessages()
-    }
-    
-    func viewWillDisappear() {
-        interactor.stopObserve()
     }
     
     var displayName: String {
