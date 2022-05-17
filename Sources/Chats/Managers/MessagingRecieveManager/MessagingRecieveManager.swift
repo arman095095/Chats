@@ -59,6 +59,10 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     func getMessages(chats: [ChatModelProtocol], completion: @escaping ([ChatModelProtocol]) -> ()) {
         var refreshedChats = [ChatModelProtocol]()
         let group = DispatchGroup()
+        guard !chats.isEmpty else {
+            completion(chats)
+            return
+        }
         chats.forEach { chat in
             let cachedService = ChatCacheService(accountID: accountID,
                                               friendID: chat.friendID,
