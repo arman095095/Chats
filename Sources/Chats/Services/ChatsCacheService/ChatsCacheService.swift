@@ -50,6 +50,12 @@ extension ChatCacheService: ChatCacheServiceProtocol {
     }
     
     func storeRecievedMessage(_ message: MessageModelProtocol) {
+        if let messageObject = chat?.messages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message {
+            coreDataService.update(messageObject) { object in
+                fillFields(message: object, model: message)
+            }
+            return
+        }
         let messageObject = coreDataService.initModel(Message.self) { object in
             fillFields(message: object, model: message)
         }
