@@ -10,6 +10,7 @@ import UIKit
 import Module
 import ChatsRouteMap
 import ProfileRouteMap
+import ModelInterfaces
 
 final class RootModuleWrapper {
 
@@ -40,6 +41,8 @@ extension RootModuleWrapper: ChatsModuleInput {
     
 }
 
-extension RootModuleWrapper: MessangerChatModuleOutput { }
+extension RootModuleWrapper: MessangerChatModuleOutput {
+    func reloadChat(_ chat: ChatModelProtocol) { }
+}
 
 extension RootModuleWrapper: ChatsAndRequestsModuleOutput { }

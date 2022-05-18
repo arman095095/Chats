@@ -12,7 +12,7 @@ import ProfileRouteMap
 
 protocol ChatsAndRequestsRouterInput: AnyObject {
     func openProfileModule(profile: ProfileModelProtocol, output: ProfileModuleOutput)
-    func openMessangerModule(chat: ChatModelProtocol)
+    func openMessangerModule(chat: ChatModelProtocol, output: MessangerChatModuleOutput)
     func dismissProfileModule()
 }
 
@@ -32,9 +32,10 @@ extension ChatsAndRequestsRouter: ChatsAndRequestsRouterInput {
         transitionHandler?.navigationController?.pushViewController(module.view, animated: true)
     }
     
-    func openMessangerModule(chat: ChatModelProtocol) {
+    func openMessangerModule(chat: ChatModelProtocol, output: MessangerChatModuleOutput) {
         guard let chat = chat as? MessangerChatModelProtocol else { return }
         let module = routeMap.messangerModule(chat: chat)
+        module.output = output
         transitionHandler?.navigationController?.pushViewController(module.view, animated: true)
     }
     

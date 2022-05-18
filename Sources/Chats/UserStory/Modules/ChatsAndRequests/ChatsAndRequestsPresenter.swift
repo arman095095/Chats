@@ -87,7 +87,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         case .chats:
             let chatItem = chats[indexPath.row]
             guard case .chats(let model) = chatItem.type else { return }
-            router.openMessangerModule(chat: model)
+            router.openMessangerModule(chat: model, output: self)
         case .chatsEmpty:
             break
         }
@@ -184,5 +184,11 @@ private extension ChatsAndRequestsPresenter {
         self.chats = interactor.cachedChats.map { Item(chat: $0) }.sorted(by: { $0.lastMessageDate! > $1.lastMessageDate! })
         self.requests = interactor.cachedRequests.map { Item(request: $0) }
         view?.reloadData(requests: requests, chats: chats)
+    }
+}
+
+extension ChatsAndRequestsPresenter: MessangerChatModuleOutput {
+    func reloadChat(_ chat: ChatModelProtocol) {
+        loadCache()
     }
 }

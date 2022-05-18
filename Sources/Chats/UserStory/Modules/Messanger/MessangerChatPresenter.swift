@@ -17,7 +17,7 @@ protocol MessangerChatStringFactoryProtocol {
 }
 
 protocol MessangerChatModuleOutput: AnyObject {
-    
+    func reloadChat(_ chat: ChatModelProtocol)
 }
 
 protocol MessangerChatModuleInput: AnyObject {
@@ -95,6 +95,8 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     
     func viewWillDisappear() {
         interactor.stopObserving()
+        guard let chat = chat as? ChatModelProtocol else { return }
+        output?.reloadChat(chat)
     }
     
     var displayName: String {
