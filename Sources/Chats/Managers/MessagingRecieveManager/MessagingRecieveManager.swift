@@ -64,10 +64,10 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             return
         }
         chats.forEach { chat in
-            let cachedService = MessagesCacheService(accountID: accountID,
+            let cacheService = MessagesCacheService(accountID: accountID,
                                                      friendID: chat.friendID,
                                                      coreDataService: coreDataService)
-            let cachedChat = cachedService.lastMessage
+            let cachedChat = cacheService.lastMessage
             group.enter()
             self.messagingService.getMessages(from: accountID,
                                               friendID: chat.friendID,
@@ -84,10 +84,19 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                         case .incomingNew, .incoming:
                             model.firstOfDate = self.isFirstToday(friendID: model.senderID, date: model.date)
                         }
+                        switch $0.status {
+                        case .sended:
+                            cacheService.storeSendedMessage(model)
+                        case .looked:
+                            cacheService.storeLookedMessage(model)
+                        case .incomingNew:
+                            cacheService.storeIncomingMessage(model)
+                        case .incoming:
+                            cacheService.storeNewIncomingMessage(model)
+                        }
                         return model
                     }
-                    cachedService.storeMessages(models)
-                    chat.messages = cachedService.storedMessages
+                    chat.messages = cacheService.storedMessages
                     refreshedChats.append(chat)
                 case .failure:
                     break
@@ -117,7 +126,16 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                     case .incomingNew, .incoming:
                         model.firstOfDate = self.isFirstToday(friendID: model.senderID, date: model.date)
                     }
-                    cacheService.storeRecievedMessage(model)
+                    switch $0.status {
+                    case .sended:
+                        cacheService.storeSendedMessage(model)
+                    case .looked:
+                        cacheService.storeLookedMessage(model)
+                    case .incomingNew:
+                        cacheService.storeIncomingMessage(model)
+                    case .incoming:
+                        cacheService.storeNewIncomingMessage(model)
+                    }
                     return model
                 }
                 self.multicastDelegates.delegates.forEach { delegate in

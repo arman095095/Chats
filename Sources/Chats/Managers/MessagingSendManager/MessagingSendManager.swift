@@ -66,7 +66,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    firstOfDate: isFirstToday(date: date),
                                    status: .waiting,
                                    type: .text(content: content))
-        cacheService.storeSendedMessage(message)
+        cacheService.storeCreatedMessage(message)
         let model = MessageNetworkModel(audioURL: nil,
                                         photoURL: nil,
                                         adressID: friendID,
@@ -88,7 +88,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    firstOfDate: isFirstToday(date: date),
                                    status: .waiting,
                                    type: .audio(url: localURL, duration: duration))
-        cacheService.storeSendedMessage(message)
+        cacheService.storeCreatedMessage(message)
         let url = FileManager.getDocumentsDirectory().appendingPathComponent(localURL)
         guard let audioData = try? Data(contentsOf: url) else { return }
 
@@ -126,7 +126,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    firstOfDate: isFirstToday(date: date),
                                    status: .waiting,
                                    type: .image(url: url.absoluteString, ratio: ratio))
-        cacheService.storeSendedMessage(message)
+        cacheService.storeCreatedMessage(message)
         remoteStorageService.uploadChat(image: data) { [weak self] result in
             guard let self = self else { return }
             switch result {

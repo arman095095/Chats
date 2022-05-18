@@ -14,8 +14,11 @@ protocol MessagesCacheServiceProtocol {
     var storedNewMessages: [MessageModelProtocol] { get }
     var lastMessage: MessageModelProtocol? { get }
     var firstMessage: MessageModelProtocol? { get }
+    func storeCreatedMessage(_ message: MessageModelProtocol)
     func storeSendedMessage(_ message: MessageModelProtocol)
-    func storeRecievedMessage(_ message: MessageModelProtocol)
+    func storeLookedMessage(_ message: MessageModelProtocol)
+    func storeIncomingMessage(_ message: MessageModelProtocol)
+    func storeNewIncomingMessage(_ message: MessageModelProtocol)
     func update(_ message: MessageModelProtocol)
     func removeFromNotSended(message: MessageModelProtocol)
     func removeAllNotLooked()
@@ -60,33 +63,63 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
         return MessageModel(message: sorted.first)
     }
     
-    func storeMessages(_ messages: [MessageModelProtocol]) {
-        messages.forEach {
-            storeRecievedMessage($0)
+    func storeIncomingMessage(_ message: MessageModelProtocol) {
+        let object = coreDataService.initModel(Message.self) { mobject in
+            fillFields(message: mobject, model: message)
         }
+        chat?.addToMessages(object)
+        coreDataService.saveContext()
+    }
+    
+    func storeNewIncomingMessage(_ message: MessageModelProtocol) {
+        let object = coreDataService.initModel(Message.self) { mobject in
+            fillFields(message: mobject, model: message)
+        }
+        chat?.addToMessages(object)
+        chat?.addToNotReadMessages(object)
+        coreDataService.saveContext()
+    }
+    
+    func storeLookedMessage(_ message: MessageModelProtocol) {
+        guard let messageObject = chat?.messages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message else {
+            let object = coreDataService.initModel(Message.self) { mobject in
+                fillFields(message: mobject, model: message)
+            }
+            chat?.addToMessages(object)
+            coreDataService.saveContext()
+            return
+        }
+        coreDataService.update(messageObject) { object in
+            fillFields(message: object, model: message)
+        }
+        chat?.removeFromNotLookedMessages(messageObject)
+        coreDataService.saveContext()
     }
     
     func storeSendedMessage(_ message: MessageModelProtocol) {
+        guard let messageObject = chat?.messages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message else {
+            let object = coreDataService.initModel(Message.self) { mobject in
+                fillFields(message: mobject, model: message)
+            }
+            chat?.addToNotLookedMessages(object)
+            chat?.addToMessages(object)
+            coreDataService.saveContext()
+            return
+        }
+        coreDataService.update(messageObject) { object in
+            fillFields(message: object, model: message)
+        }
+        chat?.removeFromNotSendedMessages(messageObject)
+        coreDataService.saveContext()
+    }
+    
+    func storeCreatedMessage(_ message: MessageModelProtocol) {
         let messageObject = coreDataService.initModel(Message.self) { object in
             fillFields(message: object, model: message)
         }
         chat?.addToMessages(messageObject)
         chat?.addToNotSendedMessages(messageObject)
         chat?.addToNotLookedMessages(messageObject)
-        coreDataService.saveContext()
-    }
-    
-    func storeRecievedMessage(_ message: MessageModelProtocol) {
-        if let messageObject = chat?.messages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message {
-            coreDataService.update(messageObject) { object in
-                fillFields(message: object, model: message)
-            }
-            return
-        }
-        let messageObject = coreDataService.initModel(Message.self) { object in
-            fillFields(message: object, model: message)
-        }
-        chat?.addToMessages(messageObject)
         coreDataService.saveContext()
     }
     
