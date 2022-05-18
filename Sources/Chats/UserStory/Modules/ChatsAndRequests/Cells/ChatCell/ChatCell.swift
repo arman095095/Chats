@@ -19,7 +19,7 @@ protocol ChatCellViewModelProtocol {
     var userName: String? { get }
     var lastMessageType: LastMessageContentType? { get }
     var lastMessageSendingStatus: LastMessageSendingStatus? { get }
-    var lastMessageDate: String? { get }
+    var lastMessageDateString: String? { get }
     var online: Bool? { get }
     var newMessagesEnable: Bool? { get }
     var newMessagesCount: Int? { get }
@@ -48,7 +48,7 @@ final class ChatCell: UICollectionViewCell {
         lastMessegeLabel.text = viewModel.lastMessageType?.description
         nameLabel.text = viewModel.userName
         userImageView.set(imageURL: viewModel.imageURL)
-        dateLabel.text = viewModel.lastMessageDate
+        dateLabel.text = viewModel.lastMessageDateString
         markMessage.image = viewModel.lastMessageSendingStatus?.image
         onlineImageView.isHidden = !(viewModel.online ?? true)
         badgeLabelSetup(viewModel: viewModel)

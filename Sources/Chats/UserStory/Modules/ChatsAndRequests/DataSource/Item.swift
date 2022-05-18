@@ -66,7 +66,8 @@ struct Item: Hashable,
     var imageURL: String
     var userName: String?
     var lastMessageSendingStatus: LastMessageSendingStatus?
-    var lastMessageDate: String?
+    var lastMessageDate: Date?
+    var lastMessageDateString: String?
     var online: Bool?
     var typing: Bool?
     var newMessagesEnable: Bool?
@@ -80,7 +81,8 @@ struct Item: Hashable,
         self.online = chat.friend.online
         self.newMessagesEnable = !(chat.newMessagesCount == 0)
         self.newMessagesCount = chat.newMessagesCount
-        self.lastMessageDate = DateFormatService().convertForActiveChat(from: chat.lastMessage?.date)
+        self.lastMessageDate = chat.lastMessage?.date
+        self.lastMessageDateString = DateFormatService().convertForActiveChat(from: chat.lastMessage?.date)
         self.typing = chat.typing
         
         switch chat.lastMessage?.type {
@@ -139,7 +141,7 @@ extension Item {
         hasher.combine(userName)
         hasher.combine(imageURL)
         hasher.combine(lastMessageSendingStatus)
-        hasher.combine(lastMessageDate)
+        hasher.combine(lastMessageDateString)
         hasher.combine(_lastMessageType)
         hasher.combine(online)
         hasher.combine(newMessagesEnable)

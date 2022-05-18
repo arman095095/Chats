@@ -138,7 +138,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
 
     func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol]) {
         self.requests = requests.map { Item(request: $0) }
-        self.chats = chats.map { Item(chat: $0) }
+        self.chats = chats.map { Item(chat: $0) }.sorted(by: { $0.lastMessageDate! > $1.lastMessageDate! })
         view?.reloadData(requests: self.requests, chats: self.chats)
     }
     
