@@ -63,7 +63,6 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         view?.setupInitialState()
         loadCache()
         interactor.remoteLoad()
-        interactor.startObserve()
     }
     
     func viewWillDisappear() {
@@ -140,6 +139,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
         self.requests = requests.map { Item(request: $0) }
         self.chats = chats.map { Item(chat: $0) }.sorted(by: { $0.lastMessageDate! > $1.lastMessageDate! })
         view?.reloadData(requests: self.requests, chats: self.chats)
+        interactor.startObserve()
     }
     
     func failureLoad(message: String) {
