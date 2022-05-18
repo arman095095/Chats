@@ -81,7 +81,7 @@ struct Item: Hashable,
         self.online = chat.friend.online
         self.newMessagesEnable = !(chat.newMessagesCount == 0)
         self.newMessagesCount = chat.newMessagesCount
-        self.lastMessageDate = chat.lastMessage?.date
+        self.lastMessageDate = chat.lastMessage?.date ?? Date()
         self.lastMessageDateString = DateFormatService().convertForActiveChat(from: chat.lastMessage?.date)
         self.typing = chat.typing
         
