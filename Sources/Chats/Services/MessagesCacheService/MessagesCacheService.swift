@@ -101,6 +101,7 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
             let object = coreDataService.initModel(Message.self) { mobject in
                 fillFields(message: mobject, model: message)
             }
+            chat?.removeFromNotSendedMessages(object)
             chat?.addToNotLookedMessages(object)
             chat?.addToMessages(object)
             coreDataService.saveContext()

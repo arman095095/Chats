@@ -117,7 +117,6 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let messageModels):
-                
                 let messages: [MessageModelProtocol] = messageModels.compactMap {
                     guard let model = MessageModel(model: $0) else { return nil }
                     switch model.status {
