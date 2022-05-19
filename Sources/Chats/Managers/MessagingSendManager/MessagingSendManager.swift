@@ -173,7 +173,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
 private extension MessagingSendManager {
     
     func sendPreparedMessage(model: MessageNetworkModelProtocol,
-                             message: MessageModel,
+                             message: MessageModelProtocol,
                              completion: @escaping (Result<Void, Error>) -> ()) {
         self.messagingService.send(message: model) { result in
             switch result {
