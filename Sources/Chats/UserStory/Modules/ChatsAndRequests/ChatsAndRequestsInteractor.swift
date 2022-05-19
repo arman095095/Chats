@@ -77,7 +77,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         messagingRecieveManager.addDelegate(self)
         cachedChats.forEach {
             self.messagingRecieveManager.observeNewMessages(friendID: $0.friendID)
-            self.messagingRecieveManager.observeLookedMessages(friendID: $0.friendID)
+            self.messagingRecieveManager.observeEditedMessages(friendID: $0.friendID)
             self.messagingRecieveManager.observeTypingStatus(friendID: $0.friendID)
         }
         chatsAndRequestsManager.observeFriends { [weak self] newChats, removed in
@@ -110,8 +110,7 @@ extension ChatsAndRequestsInteractor: MessagingRecieveDelegate {
         output?.newMessagesAtChat(chatID: friendID, messages: messages)
     }
     
-    func messagesLooked(friendID: String, _ value: Bool) {
-        guard value else { return }
+    func messagesLooked(friendID: String, messages: [MessageModelProtocol]) {
         output?.messagesLookedAtChat(chatID: friendID)
     }
     
@@ -129,7 +128,7 @@ private extension ChatsAndRequestsInteractor {
         }
         newChats.forEach {
             messagingRecieveManager.observeNewMessages(friendID: $0.friendID)
-            messagingRecieveManager.observeLookedMessages(friendID: $0.friendID)
+            messagingRecieveManager.observeEditedMessages(friendID: $0.friendID)
             messagingRecieveManager.observeTypingStatus(friendID: $0.friendID)
         }
     }

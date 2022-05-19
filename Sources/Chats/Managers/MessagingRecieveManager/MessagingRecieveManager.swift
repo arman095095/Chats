@@ -13,13 +13,13 @@ import Utils
 
 enum MessagesSocketsKeys: String {
     case typing
-    case looked
-    case chat
+    case edited
+    case new
 }
 
 protocol MessagingRecieveDelegate: AnyObject {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol])
-    func messagesLooked(friendID: String, _ value: Bool)
+    func messagesLooked(friendID: String, messages: [MessageModelProtocol])
     func typing(friendID: String, _ value: Bool)
 }
 
@@ -27,7 +27,7 @@ protocol MessagingRecieveManagerProtocol {
     func addDelegate(_ delegate: MessagingRecieveDelegate)
     func removeDelegate<T>(_ delegate: T)
     func observeNewMessages(friendID: String)
-    func observeLookedMessages(friendID: String)
+    func observeEditedMessages(friendID: String)
     func observeTypingStatus(friendID: String)
     func getMessages(chats: [ChatModelProtocol], completion: @escaping ([ChatModelProtocol]) -> ())
 }
@@ -116,8 +116,8 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         let cacheService = MessagesCacheService(accountID: accountID,
                                                 friendID: friendID,
                                                 coreDataService: coreDataService)
-        sockets[MessagesSocketsKeys.chat.rawValue + friendID]?.remove()
-        let socket = messagingService.initMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
+        sockets[MessagesSocketsKeys.new.rawValue + friendID]?.remove()
+        let socket = messagingService.initNewMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
                                                          accountID: accountID,
                                                          from: friendID) { [weak self] result in
             guard let self = self else { return }
@@ -150,21 +150,25 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 break
             }
         }
-        sockets[MessagesSocketsKeys.chat.rawValue + friendID] = socket
+        sockets[MessagesSocketsKeys.new.rawValue + friendID] = socket
     }
     
-    func observeLookedMessages(friendID: String) {
+    func observeEditedMessages(friendID: String) {
         let cacheService = MessagesCacheService(accountID: accountID,
                                                 friendID: friendID,
                                                 coreDataService: coreDataService)
-        let socket = messagingService.initLookedSendedMessagesSocket(accountID: accountID, from: friendID) { [weak self] looked in
-            guard looked else { return }
-            cacheService.removeAllNotLooked()
-            self?.multicastDelegates.delegates.forEach { delegate in
-                delegate.messagesLooked(friendID: friendID, looked)
+        let socket = messagingService.initEditedMessagesSocket(accountID: accountID, from: friendID) { [weak self] result in
+            switch result {
+            case .success(let editedMessages):
+                cacheService.removeAllNotLooked()
+                self?.multicastDelegates.delegates.forEach { delegate in
+                    delegate.messagesLooked(friendID: friendID, messages: editedMessages.compactMap { MessageModel(model: $0) })
+                }
+            case .failure:
+                break
             }
         }
-        sockets[MessagesSocketsKeys.looked.rawValue] = socket
+        sockets[MessagesSocketsKeys.edited.rawValue] = socket
     }
     
     func observeTypingStatus(friendID: String) {
