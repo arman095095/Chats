@@ -149,18 +149,16 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
     
     func readNewMessages() {
         let newMessages = cacheService.storedNewMessages
-        guard !newMessages.isEmpty else { return }
         let ids = newMessages.map { $0.id }
+        newMessages.forEach {
+            $0.status = .incoming
+            cacheService.update($0)
+        }
+        cacheService.removeAllNewMessages()
+        guard !newMessages.isEmpty else { return }
         messagingService.sendLookedMessages(from: accountID,
                                             for: friendID,
-                                            messageIDs: ids) { result in
-            switch result {
-            case .success:
-                self.cacheService.removeAllNewMessages()
-            case .failure:
-                break
-            }
-        }
+                                            messageIDs: ids) { _ in }
     }
     
     func sendDidBeganTyping() {

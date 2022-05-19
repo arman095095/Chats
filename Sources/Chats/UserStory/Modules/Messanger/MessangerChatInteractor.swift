@@ -62,7 +62,7 @@ extension MessangerChatInteractor: MessagingRecieveDelegate {
         output?.successRecievedNewMessages(messagesCount: messages.count)
     }
     
-    func messagesLooked(friendID: String, messages: [MessageModelProtocol]) {
+    func messagesLooked(friendID: String) {
         guard friendID == output?.chatID else { return }
         output?.successLookedMessages()
     }

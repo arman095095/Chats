@@ -19,7 +19,7 @@ enum MessagesSocketsKeys: String {
 
 protocol MessagingRecieveDelegate: AnyObject {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol])
-    func messagesLooked(friendID: String, messages: [MessageModelProtocol])
+    func messagesLooked(friendID: String)
     func typing(friendID: String, _ value: Bool)
 }
 
@@ -27,7 +27,7 @@ protocol MessagingRecieveManagerProtocol {
     func addDelegate(_ delegate: MessagingRecieveDelegate)
     func removeDelegate<T>(_ delegate: T)
     func observeNewMessages(friendID: String)
-    func observeEditedMessages(friendID: String)
+    func observeLookedMessages(friendID: String)
     func observeTypingStatus(friendID: String)
     func getMessages(chats: [ChatModelProtocol], completion: @escaping ([ChatModelProtocol]) -> ())
 }
@@ -153,16 +153,21 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         sockets[MessagesSocketsKeys.new.rawValue + friendID] = socket
     }
     
-    func observeEditedMessages(friendID: String) {
+    func observeLookedMessages(friendID: String) {
         let cacheService = MessagesCacheService(accountID: accountID,
                                                 friendID: friendID,
                                                 coreDataService: coreDataService)
-        let socket = messagingService.initEditedMessagesSocket(accountID: accountID, from: friendID) { [weak self] result in
+        let socket = messagingService.initLookedMessagesSocket(accountID: accountID, from: friendID) { [weak self] result in
             switch result {
-            case .success(let editedMessages):
+            case .success:
+                let notLooked = cacheService.storedNotLookedMessages
+                notLooked.forEach {
+                    $0.status = .looked
+                    cacheService.update($0)
+                }
                 cacheService.removeAllNotLooked()
                 self?.multicastDelegates.delegates.forEach { delegate in
-                    delegate.messagesLooked(friendID: friendID, messages: editedMessages.compactMap { MessageModel(model: $0) })
+                    delegate.messagesLooked(friendID: friendID)
                 }
             case .failure:
                 break
