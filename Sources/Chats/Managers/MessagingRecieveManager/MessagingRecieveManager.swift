@@ -11,6 +11,12 @@ import NetworkServices
 import Services
 import Utils
 
+enum MessagesSocketsKeys: String {
+    case typing
+    case looked
+    case chat
+}
+
 protocol MessagingRecieveDelegate: AnyObject {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol])
     func messagesLooked(friendID: String, _ value: Bool)
@@ -30,7 +36,7 @@ final class MessagingRecieveManager {
     private let messagingService: MessagingServiceProtocol
     private let accountID: String
     private let coreDataService: CoreDataServiceProtocol
-    private var sockets = [SocketProtocol]()
+    private var sockets = [String: SocketProtocol]()
     private var multicastDelegates = MulticastDelegates<MessagingRecieveDelegate>()
     
     init(messagingService: MessagingServiceProtocol,
@@ -42,7 +48,7 @@ final class MessagingRecieveManager {
     }
     
     deinit {
-        sockets.forEach { $0.remove() }
+        sockets.values.forEach { $0.remove() }
     }
 }
 
@@ -110,6 +116,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         let cacheService = MessagesCacheService(accountID: accountID,
                                                 friendID: friendID,
                                                 coreDataService: coreDataService)
+        sockets[MessagesSocketsKeys.chat.rawValue + friendID]?.remove()
         let socket = messagingService.initMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
                                                          accountID: accountID,
                                                          from: friendID) { [weak self] result in
@@ -143,7 +150,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 break
             }
         }
-        sockets.append(socket)
+        sockets[MessagesSocketsKeys.chat.rawValue + friendID] = socket
     }
     
     func observeLookedMessages(friendID: String) {
@@ -157,7 +164,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 delegate.messagesLooked(friendID: friendID, looked)
             }
         }
-        sockets.append(socket)
+        sockets[MessagesSocketsKeys.looked.rawValue] = socket
     }
     
     func observeTypingStatus(friendID: String) {
@@ -167,7 +174,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 delegate.typing(friendID: friendID, typing)
             }
         }
-        sockets.append(socket)
+        sockets[MessagesSocketsKeys.typing.rawValue] = socket
     }
     
     func isFirstToday(friendID: String, date: Date) -> Bool {
