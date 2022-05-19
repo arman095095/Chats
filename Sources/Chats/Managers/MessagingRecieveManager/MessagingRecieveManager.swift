@@ -65,13 +65,12 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         }
         chats.forEach { chat in
             let cacheService = MessagesCacheService(accountID: accountID,
-                                                     friendID: chat.friendID,
-                                                     coreDataService: coreDataService)
-            let cachedChat = cacheService.lastMessage
+                                                    friendID: chat.friendID,
+                                                    coreDataService: coreDataService)
             group.enter()
             self.messagingService.getMessages(from: accountID,
                                               friendID: chat.friendID,
-                                              lastDate: cachedChat?.date) { [weak self] result in
+                                              lastDate: cacheService.lastMessage?.date) { [weak self] result in
                 guard let self = self else { return }
                 defer { group.leave() }
                 switch result {
@@ -90,9 +89,9 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                         case .looked:
                             cacheService.storeLookedMessage(model)
                         case .incomingNew:
-                            cacheService.storeIncomingMessage(model)
-                        case .incoming:
                             cacheService.storeNewIncomingMessage(model)
+                        case .incoming:
+                            cacheService.storeIncomingMessage(model)
                         }
                         return model
                     }
@@ -118,6 +117,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let messageModels):
+                
                 let messages: [MessageModelProtocol] = messageModels.compactMap {
                     guard let model = MessageModel(model: $0) else { return nil }
                     switch model.status {
@@ -132,9 +132,9 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                     case .looked:
                         cacheService.storeLookedMessage(model)
                     case .incomingNew:
-                        cacheService.storeIncomingMessage(model)
-                    case .incoming:
                         cacheService.storeNewIncomingMessage(model)
+                    case .incoming:
+                        cacheService.storeIncomingMessage(model)
                     }
                     return model
                 }

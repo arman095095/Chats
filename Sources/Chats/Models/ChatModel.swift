@@ -52,7 +52,6 @@ final class ChatModel: ChatModelProtocol,
         self.newMessages = chat.notReadMessages?.compactMap { MessageModel(message: $0 as? Message) }.sorted(by: { $0.date < $1.date}) ?? []
         self.notLookedMessages = chat.notLookedMessages?.compactMap { MessageModel(message: $0 as? Message) }.sorted(by: { $0.date < $1.date}) ?? []
         self.messages = chat.messages?.compactMap { MessageModel(message: $0 as? Message) }.sorted(by: { $0.date < $1.date}) ?? []
-        
     }
 }
 
