@@ -75,8 +75,8 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 defer { group.leave() }
                 switch result {
                 case .success(let messages):
-                    let models: [MessageModelProtocol] = messages.compactMap {
-                        guard let model = MessageModel(model: $0) else { return nil }
+                    messages.forEach {
+                        guard let model = MessageModel(model: $0) else { return }
                         switch model.status {
                         case .sended, .waiting, .looked, .none:
                             model.firstOfDate = self.isFirstToday(friendID: model.adressID, date: model.date)
@@ -93,7 +93,6 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                         case .incoming:
                             cacheService.storeIncomingMessage(model)
                         }
-                        return model
                     }
                     chat.messages = cacheService.storedMessages
                     refreshedChats.append(chat)
