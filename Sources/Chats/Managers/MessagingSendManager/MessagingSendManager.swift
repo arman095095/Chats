@@ -31,16 +31,16 @@ final class MessagingSendManager {
     private let accountID: String
     private let account: AccountModelProtocol
     private let friendID: String
-    private let messagingService: MessagingServiceProtocol
+    private let messagingService: MessagingNetworkServiceProtocol
     private let cacheService: MessagesCacheServiceProtocol
-    private let remoteStorageService: RemoteStorageServiceProtocol
+    private let remoteStorageService: ChatsRemoteStorageServiceProtocol
     
     init(accountID: String,
          account: AccountModelProtocol,
          chatID: String,
-         messagingService: MessagingServiceProtocol,
+         messagingService: MessagingNetworkServiceProtocol,
          cacheService: MessagesCacheServiceProtocol,
-         remoteStorageService: RemoteStorageServiceProtocol) {
+         remoteStorageService: ChatsRemoteStorageServiceProtocol) {
         self.accountID = accountID
         self.account = account
         self.friendID = chatID

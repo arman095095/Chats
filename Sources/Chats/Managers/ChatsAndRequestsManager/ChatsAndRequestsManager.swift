@@ -33,21 +33,21 @@ final class ChatsAndRequestsManager {
     private let account: AccountModelProtocol
     private let accountID: String
     private let accountService: AccountServiceProtocol
-    private let messagingService: MessagingServiceProtocol
+    private let messagingService: MessagingNetworkServiceProtocol
     private let accountCacheService: AccountCacheServiceProtocol
     private let chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol
     private let profileService: ProfilesServiceProtocol
-    private let requestsService: RequestsServiceProtocol
+    private let requestsService: ChatsAndRequestsNetworkServiceProtocol
     private var sockets = [String: SocketProtocol]()
     
     init(accountID: String,
          account: AccountModelProtocol,
          accountService: AccountServiceProtocol,
          accountCacheService: AccountCacheServiceProtocol,
-         messagingService: MessagingServiceProtocol,
+         messagingService: MessagingNetworkServiceProtocol,
          chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol,
          profileService: ProfilesServiceProtocol,
-         requestsService: RequestsServiceProtocol) {
+         requestsService: ChatsAndRequestsNetworkServiceProtocol) {
         self.accountID = accountID
         self.account = account
         self.accountService = accountService

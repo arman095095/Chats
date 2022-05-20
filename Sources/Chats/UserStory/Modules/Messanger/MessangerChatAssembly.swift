@@ -18,7 +18,7 @@ typealias MessangerChatModule = Module<MessangerChatModuleInput, MessangerChatMo
 enum MessangerChatAssembly {
     static func makeModule(messagingManager: MessagingSendManagerProtocol,
                            cacheService: MessagesCacheServiceProtocol,
-                           remoteStorage: RemoteStorageServiceProtocol,
+                           remoteStorage: ChatsRemoteStorageServiceProtocol,
                            chat: MessangerChatModelProtocol,
                            chatManager: MessagingRecieveManagerProtocol,
                            accountID: String,

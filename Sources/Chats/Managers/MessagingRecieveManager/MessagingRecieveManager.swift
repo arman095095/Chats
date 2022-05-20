@@ -33,13 +33,13 @@ protocol MessagingRecieveManagerProtocol {
 }
 
 final class MessagingRecieveManager {
-    private let messagingService: MessagingServiceProtocol
+    private let messagingService: MessagingNetworkServiceProtocol
     private let accountID: String
     private let coreDataService: CoreDataServiceProtocol
     private var sockets = [String: SocketProtocol]()
     private var multicastDelegates = MulticastDelegates<MessagingRecieveDelegate>()
     
-    init(messagingService: MessagingServiceProtocol,
+    init(messagingService: MessagingNetworkServiceProtocol,
          coreDataService: CoreDataServiceProtocol,
          accountID: String) {
         self.messagingService = messagingService

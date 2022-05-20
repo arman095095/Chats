@@ -17,9 +17,9 @@ final class MessagingSendManagerAssembly{
         container.register(MessagingSendManagerProtocol.self) { r in
             guard let userID = r.resolve(QuickAccessManagerProtocol.self)?.userID,
                   let account = r.resolve(AccountModelProtocol.self),
-                  let messagingService = r.resolve(MessagingServiceProtocol.self),
+                  let messagingService = r.resolve(MessagingNetworkServiceProtocol.self),
                   let cacheService = r.resolve(MessagesCacheServiceProtocol.self),
-                  let remoteStorageService = r.resolve(RemoteStorageServiceProtocol.self) else {
+                  let remoteStorageService = r.resolve(ChatsRemoteStorageServiceProtocol.self) else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return MessagingSendManager(accountID: userID,

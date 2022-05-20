@@ -36,14 +36,14 @@ final class AudioMessagePlayer: NSObject {
     var playingMessage: MessageType?
     private(set) var state: PlayerState = .stopped
     private weak var messageCollectionView: MessagesCollectionView?
-    private let remoteStorageService: RemoteStorageServiceProtocol
+    private let remoteStorageService: ChatsRemoteStorageServiceProtocol
     private let cacheService: MessagesCacheServiceProtocol
     
     internal var progressTimer: Timer?
     
     // MARK: - Init Methods
     public init(messageCollectionView: MessagesCollectionView,
-                remoteStorageService: RemoteStorageServiceProtocol,
+                remoteStorageService: ChatsRemoteStorageServiceProtocol,
                 cacheService: MessagesCacheServiceProtocol) {
         self.messageCollectionView = messageCollectionView
         self.remoteStorageService = remoteStorageService

@@ -44,7 +44,7 @@ extension ChatsUserStory: RouteMapPrivate {
     func messangerModule(chat: MessangerChatModelProtocol) -> MessangerChatModule {
         MessagesCacheServiceAssembly().assemble(container: container, friendID: chat.friendID)
         MessagingSendManagerAssembly().assemble(container: container, chatID: chat.friendID)
-        guard let remoteStorageService = container.synchronize().resolve(RemoteStorageServiceProtocol.self),
+        guard let remoteStorageService = container.synchronize().resolve(ChatsRemoteStorageServiceProtocol.self),
               let chatManager = container.synchronize().resolve(MessagingRecieveManagerProtocol.self),
               let messagingManager = container.synchronize().resolve(MessagingSendManagerProtocol.self),
               let cacheService = container.synchronize().resolve(MessagesCacheServiceProtocol.self),
