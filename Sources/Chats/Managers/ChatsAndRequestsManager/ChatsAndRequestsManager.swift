@@ -36,7 +36,7 @@ final class ChatsAndRequestsManager {
     private let messagingService: MessagingNetworkServiceProtocol
     private let accountCacheService: AccountCacheServiceProtocol
     private let chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol
-    private let profileService: ProfilesNetworkServiceProtocol
+    private let profileService: ProfileInfoNetworkServiceProtocol
     private let requestsService: ChatsAndRequestsNetworkServiceProtocol
     private var sockets = [String: SocketProtocol]()
     
@@ -46,7 +46,7 @@ final class ChatsAndRequestsManager {
          accountCacheService: AccountCacheServiceProtocol,
          messagingService: MessagingNetworkServiceProtocol,
          chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol,
-         profileService: ProfilesNetworkServiceProtocol,
+         profileService: ProfileInfoNetworkServiceProtocol,
          requestsService: ChatsAndRequestsNetworkServiceProtocol) {
         self.accountID = accountID
         self.account = account

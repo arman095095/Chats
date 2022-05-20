@@ -20,7 +20,7 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
                   let accountService = r.resolve(AccountNetworkServiceProtocol.self),
                   let chatsAndRequestsCacheService = r.resolve(ChatsAndRequestsCacheServiceProtocol.self),
                   let accountCacheService = r.resolve(AccountCacheServiceProtocol.self),
-                  let profileService = r.resolve(ProfilesNetworkServiceProtocol.self),
+                  let profileService = r.resolve(ProfileInfoNetworkServiceProtocol.self),
                   let requestsService = r.resolve(ChatsAndRequestsNetworkServiceProtocol.self),
                   let messagingService = r.resolve(MessagingNetworkServiceProtocol.self)  else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
