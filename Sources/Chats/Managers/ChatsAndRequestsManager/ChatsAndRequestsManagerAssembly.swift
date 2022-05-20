@@ -17,7 +17,6 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
         container.register(ChatsAndRequestsManagerProtocol.self) { r in
             guard let accountID = r.resolve(QuickAccessManagerProtocol.self)?.userID,
                   let account = r.resolve(AccountModelProtocol.self),
-                  let accountService = r.resolve(AccountNetworkServiceProtocol.self),
                   let chatsAndRequestsCacheService = r.resolve(ChatsAndRequestsCacheServiceProtocol.self),
                   let accountCacheService = r.resolve(AccountCacheServiceProtocol.self),
                   let profileService = r.resolve(ProfileInfoNetworkServiceProtocol.self),
@@ -27,7 +26,6 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
             }
             return ChatsAndRequestsManager(accountID: accountID,
                                            account: account,
-                                           accountService: accountService,
                                            accountCacheService: accountCacheService,
                                            messagingService: messagingService,
                                            chatsAndRequestsCacheService: chatsAndRequestsCacheService,

@@ -32,7 +32,6 @@ final class ChatsAndRequestsManager {
     
     private let account: AccountModelProtocol
     private let accountID: String
-    private let accountService: AccountNetworkServiceProtocol
     private let messagingService: MessagingNetworkServiceProtocol
     private let accountCacheService: AccountCacheServiceProtocol
     private let chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol
@@ -42,7 +41,6 @@ final class ChatsAndRequestsManager {
     
     init(accountID: String,
          account: AccountModelProtocol,
-         accountService: AccountNetworkServiceProtocol,
          accountCacheService: AccountCacheServiceProtocol,
          messagingService: MessagingNetworkServiceProtocol,
          chatsAndRequestsCacheService: ChatsAndRequestsCacheServiceProtocol,
@@ -50,7 +48,6 @@ final class ChatsAndRequestsManager {
          requestsService: ChatsAndRequestsNetworkServiceProtocol) {
         self.accountID = accountID
         self.account = account
-        self.accountService = accountService
         self.accountCacheService = accountCacheService
         self.chatsAndRequestsCacheService = chatsAndRequestsCacheService
         self.profileService = profileService
