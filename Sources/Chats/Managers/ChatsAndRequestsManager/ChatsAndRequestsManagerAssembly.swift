@@ -17,10 +17,10 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
         container.register(ChatsAndRequestsManagerProtocol.self) { r in
             guard let accountID = r.resolve(QuickAccessManagerProtocol.self)?.userID,
                   let account = r.resolve(AccountModelProtocol.self),
-                  let accountService = r.resolve(AccountServiceProtocol.self),
+                  let accountService = r.resolve(AccountNetworkServiceProtocol.self),
                   let chatsAndRequestsCacheService = r.resolve(ChatsAndRequestsCacheServiceProtocol.self),
                   let accountCacheService = r.resolve(AccountCacheServiceProtocol.self),
-                  let profileService = r.resolve(ProfilesServiceProtocol.self),
+                  let profileService = r.resolve(ProfilesNetworkServiceProtocol.self),
                   let requestsService = r.resolve(ChatsAndRequestsNetworkServiceProtocol.self),
                   let messagingService = r.resolve(MessagingNetworkServiceProtocol.self)  else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
