@@ -60,7 +60,7 @@
       "location" : "https://github.com/arman095095/ChatsRouteMap.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "77b218cef7e9eab46dfd5ab3f285eeec76fa4899"
+        "revision" : "7d27f03e7af14e824c447274c69b400c915df26d"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/grpc/grpc-ios.git",
       "state" : {
-        "revision" : "abd2d5a4347efa0454606a788678a5d8ec223738",
-        "version" : "1.44.0-grpc"
+        "revision" : "2af4f6e9c2b18beae228f50b1198c641be859d2b",
+        "version" : "1.44.2-grpc"
       }
     },
     {
@@ -124,6 +124,15 @@
       "state" : {
         "revision" : "4e9bbf2808b8fee444e84a48f5f3c12641987d3e",
         "version" : "1.7.2"
+      }
+    },
+    {
+      "identity" : "inputbaraccessoryview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathantannar4/InputBarAccessoryView",
+      "state" : {
+        "revision" : "2843b4454cfb6de5b4d1e5939fef2dd6257b69ee",
+        "version" : "5.5.0"
       }
     },
     {
@@ -141,16 +150,16 @@
       "location" : "https://github.com/arman095095/Managers.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "d4c38168fe3df7029d06c9a596d0934e7a177934"
+        "revision" : "4389a54754e683114756f2b8ff3d44bc712a3995"
       }
     },
     {
-      "identity" : "messangerroutemap",
+      "identity" : "messagekit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/arman095095/MessangerRouteMap.git",
+      "location" : "https://github.com/MessageKit/MessageKit",
       "state" : {
-        "branch" : "develop",
-        "revision" : "45122aeb1b4de6245a0e68509c8ca9bce9cbfaa1"
+        "revision" : "84236d91ac5783e3ecbefc15b82d854476720115",
+        "version" : "3.8.0"
       }
     },
     {
@@ -159,7 +168,7 @@
       "location" : "https://github.com/arman095095/ModelInterfaces.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "619d04b58fb7d4835288bc067b2a2b8a5f78caf8"
+        "revision" : "6d70c5ac74fb6d2c18fb8ec05050629d1c55efb6"
       }
     },
     {
@@ -186,7 +195,7 @@
       "location" : "https://github.com/arman095095/NetworkServices.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "94062e80852d187657d4ecf3157573b7d2d8f7de"
+        "revision" : "d160339a1a1e38895f2daff8a35b1f17004d52d2"
       }
     },
     {
@@ -231,7 +240,7 @@
       "location" : "https://github.com/arman095095/Services.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "78a3f990b42d2f8ab4599a65153d338d09cc7c32"
+        "revision" : "08fc87e651379cf854062330eb46e5d80c6f0d1b"
       }
     },
     {
@@ -285,7 +294,7 @@
       "location" : "https://github.com/arman095095/UserStoryFacade.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "a4ad8b8eb51244d0bcab58e456dcefeff2329a0d"
+        "revision" : "98c24e7943f8567fb0711207efef4c6f9b111532"
       }
     },
     {
@@ -294,7 +303,7 @@
       "location" : "https://github.com/arman095095/Utils.git",
       "state" : {
         "branch" : "develop",
-        "revision" : "0c1172bdde44965aed032461dedb5cdb52b5cc51"
+        "revision" : "51bfa07a6ba52a9552440c5e5ee71c7c79781822"
       }
     }
   ],
