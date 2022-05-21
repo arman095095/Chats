@@ -13,7 +13,7 @@ private let dependencies: [Package.Dependency] = [
     .package(url: "https://github.com/arman095095/Utils.git", branch: "develop"),
     .package(url: "https://github.com/arman095095/ChatsRouteMap.git", branch: "develop"),
     .package(url: "https://github.com/arman095095/UserStoryFacade.git", branch: "develop"),
-    .package(url: "https://github.com/MessageKit/MessageKit", from: "3.3.0")
+    .package(url: "https://github.com/arman095095/MessageKit.git", branch: "develop")
 ]
 
 let package = Package(
