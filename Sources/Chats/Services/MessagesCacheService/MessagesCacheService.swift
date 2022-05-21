@@ -43,7 +43,9 @@ final class MessagesCacheService {
 
 extension MessagesCacheService: MessagesCacheServiceProtocol {
     var storedNotSendedMessages: [MessageModelProtocol] {
-        chat?.notSendedMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+        guard let messages = chat?.notSendedMessages as? Set<Message> else { return [] }
+        let sorted = messages.sorted(by: { $0.date! < $1.date! })
+        return sorted.compactMap { MessageModel(message: $0) }
     }
     
     var storedNewMessages: [MessageModelProtocol] {

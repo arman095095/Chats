@@ -96,7 +96,9 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         chatsAndRequestsManager.observeFriends { [weak self] newChats, removed in
             self?.output?.changed(newChats: newChats, removed: removed)
             self?.addObservers(newChats: newChats)
+            self?.addSendingManagers(chats: newChats)
             self?.removeObservers(chats: removed)
+            self?.removeSendingManagers(chats: removed)
         }
         chatsAndRequestsManager.observeRequests { [weak self] newRequests, removed in
             self?.output?.changed(newRequests: newRequests, removed: removed)
@@ -167,14 +169,34 @@ private extension ChatsAndRequestsInteractor {
         }
     }
     
+    func addSendingManagers(chats: [ChatModelProtocol]) {
+        chats.forEach {
+            addSendingManager(friendID: $0.friendID)
+        }
+    }
+    
+    func removeSendingManagers(chats: [ChatModelProtocol]) {
+        chats.forEach {
+            removeSendingManager(friendID: $0.friendID)
+        }
+    }
+    
+    func addSendingManager(friendID: String) {
+        MessagesCacheServiceAssembly().assemble(container: container, friendID: friendID)
+        MessagingSendManagerAssembly().assemble(container: container, chatID: friendID)
+        guard let messagingSendManager = container.synchronize().resolve(MessagingSendManagerProtocol.self, name: friendID) else {
+            fatalError(ErrorMessage.dependency.localizedDescription)
+        }
+        self.sendingManagers[friendID] = messagingSendManager
+    }
+    
+    func removeSendingManager(friendID: String) {
+        self.sendingManagers[friendID] = nil
+    }
+    
     func initSendingManagers() {
         chatsAndRequestsManager.getChatsAndRequests().chats.forEach {
-            MessagesCacheServiceAssembly().assemble(container: container, friendID: $0.friendID)
-            MessagingSendManagerAssembly().assemble(container: container, chatID: $0.friendID)
-            guard let messagingSendManager = container.synchronize().resolve(MessagingSendManagerProtocol.self, name: $0.friendID) else {
-                fatalError(ErrorMessage.dependency.localizedDescription)
-            }
-            self.sendingManagers[$0.friendID] = messagingSendManager
+            addSendingManager(friendID: $0.friendID)
         }
     }
 }
