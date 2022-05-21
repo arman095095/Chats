@@ -90,6 +90,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         view?.setupInitialState()
         interactor.startObserve()
         loadMoreMessages()
+        canLoadMore = true
         interactor.readNewMessages()
         view?.reloadDataAndScroll(animated: false)
     }

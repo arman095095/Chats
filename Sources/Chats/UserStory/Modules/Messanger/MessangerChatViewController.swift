@@ -50,9 +50,9 @@ final class MessangerChatViewController: MessagesViewController {
         if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: Int(3))) && output.canLoadMore {
             if output.loadMoreMessages() {
                 self.messagesCollectionView.reloadDataAndKeepOffset()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     self.output.canLoadMore = true
-                })
+                }
             }
         }
     }
