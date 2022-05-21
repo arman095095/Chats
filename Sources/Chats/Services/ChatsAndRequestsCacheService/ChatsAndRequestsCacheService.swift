@@ -47,8 +47,8 @@ extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
     
     func store(chatModel: ChatModelProtocol) {
         guard let storedAccount = account,
-              let storedChats = storedAccount.chats as? Set<Chat> else { return }
-        guard let chat = storedChats.first (where: { $0.friendID == chatModel.friendID }) else {
+              let storedChats = storedAccount.chats else { return }
+        guard let chat = storedChats.first (where: { ($0 as? Chat)?.friendID == chatModel.friendID }) as? Chat else {
             create(chatModel: chatModel)
             return
         }
@@ -87,8 +87,8 @@ extension ChatsAndRequestsCacheService: RequestsCacheServiceProtocol {
     
     func store(requestModel: RequestModelProtocol) {
         guard let storedAccount = account,
-              let storedRequests = storedAccount.requests as? Set<Request> else { return }
-        guard let request = storedRequests.first (where: { $0.senderID == requestModel.senderID }) else {
+              let storedRequests = storedAccount.requests else { return }
+        guard let request = storedRequests.first (where: { ($0 as? Request)?.senderID == requestModel.senderID }) as? Request else {
             create(requestModel: requestModel)
             return
         }

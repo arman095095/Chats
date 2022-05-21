@@ -43,9 +43,7 @@ final class MessagesCacheService {
 
 extension MessagesCacheService: MessagesCacheServiceProtocol {
     var storedNotSendedMessages: [MessageModelProtocol] {
-        guard let messages = chat?.notSendedMessages as? Set<Message> else { return [] }
-        let sorted = messages.sorted(by: { $0.date! < $1.date! })
-        return sorted.compactMap { MessageModel(message: $0) }
+        chat?.notSendedMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
     }
     
     var storedNewMessages: [MessageModelProtocol] {
@@ -53,9 +51,7 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
     }
 
     var storedMessages: [MessageModelProtocol] {
-        guard let messages = chat?.messages as? Set<Message> else { return [] }
-        let sorted = messages.sorted(by: { $0.date! < $1.date! })
-        return sorted.compactMap { MessageModel(message: $0) }
+        chat?.messages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
     }
     
     var storedNotLookedMessages: [MessageModelProtocol] {
@@ -63,15 +59,13 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
     }
     
     var lastMessage: MessageModelProtocol? {
-        guard let messages = chat?.messages as? Set<Message> else { return nil }
-        let sorted = messages.sorted(by: { $0.date! < $1.date! })
-        return MessageModel(message: sorted.last)
+        guard let last = chat?.messages?.lastObject as? Message else { return nil }
+        return MessageModel(message: last)
     }
     
     var firstMessage: MessageModelProtocol? {
-        guard let messages = chat?.messages as? Set<Message> else { return nil }
-        let sorted = messages.sorted(by: { $0.date! < $1.date! })
-        return MessageModel(message: sorted.first)
+        guard let first = chat?.messages?.firstObject as? Message else { return nil }
+        return MessageModel(message: first)
     }
     
     func storeIncomingMessage(_ message: MessageModelProtocol) {
