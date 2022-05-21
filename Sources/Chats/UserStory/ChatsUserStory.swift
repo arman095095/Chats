@@ -42,12 +42,12 @@ extension ChatsUserStory: ChatsRouteMap {
 extension ChatsUserStory: RouteMapPrivate {
     
     func messangerModule(chat: MessangerChatModelProtocol) -> MessangerChatModule {
-        MessagesCacheServiceAssembly().assemble(container: container, friendID: chat.friendID)
-        MessagingSendManagerAssembly().assemble(container: container, chatID: chat.friendID)
         guard let remoteStorageService = container.synchronize().resolve(ChatsRemoteStorageServiceProtocol.self),
               let chatManager = container.synchronize().resolve(MessagingRecieveManagerProtocol.self),
-              let messagingManager = container.synchronize().resolve(MessagingSendManagerProtocol.self),
-              let cacheService = container.synchronize().resolve(MessagesCacheServiceProtocol.self),
+              let messagingManager = container.synchronize().resolve(MessagingSendManagerProtocol.self,
+                                                                     name: chat.friendID),
+              let cacheService = container.synchronize().resolve(MessagesCacheServiceProtocol.self,
+                                                                 name: chat.friendID),
               let userID = container.synchronize().resolve(QuickAccessManagerProtocol.self)?.userID else {
             fatalError(ErrorMessage.dependency.localizedDescription)
         }
@@ -79,7 +79,8 @@ extension ChatsUserStory: RouteMapPrivate {
         let module = ChatsAndRequestsAssembly.makeModule(chatsAndRequestsManager: chatsAndRequestsManager,
                                                          messagingRecieveManager: messagingRecieveManager,
                                                          alertManager: alertManager,
-                                                         routeMap: self)
+                                                         routeMap: self,
+                                                         container: container)
         module.output = outputWrapper
         return module
     }

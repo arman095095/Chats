@@ -12,7 +12,7 @@ import Services
 
 final class MessagesCacheServiceAssembly {
     func assemble(container: Container, friendID: String) {
-        container.register(MessagesCacheServiceProtocol.self) { r in
+        container.register(MessagesCacheServiceProtocol.self, name: friendID) { r in
             guard let userID = r.resolve(QuickAccessManagerProtocol.self)?.userID,
                   let coreDataService = r.resolve(CoreDataServiceProtocol.self) else {
                 fatalError(ErrorMessage.dependency.localizedDescription)

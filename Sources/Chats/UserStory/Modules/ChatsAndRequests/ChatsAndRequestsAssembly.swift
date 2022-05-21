@@ -10,6 +10,7 @@ import UIKit
 import Module
 import Managers
 import AlertManager
+import Swinject
 
 typealias ChatsAndRequestsModule = Module<ChatsAndRequestsModuleInput, ChatsAndRequestsModuleOutput>
 
@@ -17,11 +18,13 @@ enum ChatsAndRequestsAssembly {
     static func makeModule(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
                            messagingRecieveManager: MessagingRecieveManagerProtocol,
                            alertManager: AlertManagerProtocol,
-                           routeMap: RouteMapPrivate) -> ChatsAndRequestsModule {
+                           routeMap: RouteMapPrivate,
+                           container: Container) -> ChatsAndRequestsModule {
         let view = ChatsAndRequestsViewController()
         let router = ChatsAndRequestsRouter(routeMap: routeMap)
         let interactor = ChatsAndRequestsInteractor(chatsAndRequestsManager: chatsAndRequestsManager,
-                                                    messagingRecieveManager: messagingRecieveManager)
+                                                    messagingRecieveManager: messagingRecieveManager,
+                                                    container: container)
         let stringFactory = ChatsStringFactory()
         let presenter = ChatsAndRequestsPresenter(router: router,
                                                   interactor: interactor,

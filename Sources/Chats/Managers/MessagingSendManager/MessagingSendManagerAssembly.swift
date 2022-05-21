@@ -14,11 +14,11 @@ import ModelInterfaces
 
 final class MessagingSendManagerAssembly{
     func assemble(container: Container, chatID: String)  {
-        container.register(MessagingSendManagerProtocol.self) { r in
+        container.register(MessagingSendManagerProtocol.self, name: chatID) { r in
             guard let userID = r.resolve(QuickAccessManagerProtocol.self)?.userID,
                   let account = r.resolve(AccountModelProtocol.self),
                   let messagingService = r.resolve(MessagingNetworkServiceProtocol.self),
-                  let cacheService = r.resolve(MessagesCacheServiceProtocol.self),
+                  let cacheService = r.resolve(MessagesCacheServiceProtocol.self, name: chatID),
                   let remoteStorageService = r.resolve(ChatsRemoteStorageServiceProtocol.self) else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }

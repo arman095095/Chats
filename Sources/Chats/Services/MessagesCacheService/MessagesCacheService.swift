@@ -13,6 +13,7 @@ protocol MessagesCacheServiceProtocol {
     var storedMessages: [MessageModelProtocol] { get }
     var storedNewMessages: [MessageModelProtocol] { get }
     var storedNotLookedMessages: [MessageModelProtocol] { get }
+    var storedNotSendedMessages: [MessageModelProtocol] { get }
     var lastMessage: MessageModelProtocol? { get }
     var firstMessage: MessageModelProtocol? { get }
     func storeCreatedMessage(_ message: MessageModelProtocol)
@@ -41,6 +42,9 @@ final class MessagesCacheService {
 }
 
 extension MessagesCacheService: MessagesCacheServiceProtocol {
+    var storedNotSendedMessages: [MessageModelProtocol] {
+        chat?.notSendedMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+    }
     
     var storedNewMessages: [MessageModelProtocol] {
         chat?.notReadMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []

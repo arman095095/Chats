@@ -9,10 +9,12 @@
 import UIKit
 import Managers
 import ModelInterfaces
+import Swinject
 
 protocol ChatsAndRequestsInteractorInput: AnyObject {
     var cachedChats: [ChatModelProtocol] { get }
     var cachedRequests: [RequestModelProtocol] { get }
+    func sendNotSendedMessages()
     func remoteLoad()
     func startObserve()
     func stopObserving()
@@ -36,11 +38,15 @@ final class ChatsAndRequestsInteractor {
     weak var output: ChatsAndRequestsInteractorOutput?
     private let chatsAndRequestsManager: ChatsAndRequestsManagerProtocol
     private let messagingRecieveManager: MessagingRecieveManagerProtocol
+    private let container: Container
+    private var sendingManagers = [String: MessagingSendManagerProtocol]()
     
     init(chatsAndRequestsManager: ChatsAndRequestsManagerProtocol,
-         messagingRecieveManager: MessagingRecieveManagerProtocol) {
+         messagingRecieveManager: MessagingRecieveManagerProtocol,
+         container: Container) {
         self.chatsAndRequestsManager = chatsAndRequestsManager
         self.messagingRecieveManager = messagingRecieveManager
+        self.container = container
     }
 }
 
@@ -60,8 +66,15 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         chatsAndRequestsManager.getChatsAndRequests().requests
     }
     
+    func sendNotSendedMessages() {
+        sendingManagers.values.forEach {
+            $0.sendAllWaitingMessages()
+        }
+    }
+    
     func remoteLoad() {
         chatsAndRequestsManager.getChatsAndRequests { [weak self] result in
+            defer { self?.initSendingManagers() }
             switch result {
             case .success((let chats, let requests)):
                 self?.messagingRecieveManager.getMessages(chats: chats) { chats in
@@ -151,6 +164,17 @@ private extension ChatsAndRequestsInteractor {
     func removeObservers(requests: [RequestModelProtocol]) {
         requests.forEach {
             chatsAndRequestsManager.removeObserveFriendsAndRequestsProfiles(id: $0.senderID)
+        }
+    }
+    
+    func initSendingManagers() {
+        chatsAndRequestsManager.getChatsAndRequests().chats.forEach {
+            MessagesCacheServiceAssembly().assemble(container: container, friendID: $0.friendID)
+            MessagingSendManagerAssembly().assemble(container: container, chatID: $0.friendID)
+            guard let messagingSendManager = container.synchronize().resolve(MessagingSendManagerProtocol.self, name: $0.friendID) else {
+                fatalError(ErrorMessage.dependency.localizedDescription)
+            }
+            self.sendingManagers[$0.friendID] = messagingSendManager
         }
     }
 }
