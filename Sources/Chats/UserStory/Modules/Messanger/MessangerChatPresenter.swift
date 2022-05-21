@@ -133,7 +133,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         if messagesCount == chat.messages.count {
             return false
         }
-        if  messagesCount + increamentCount <= chat.messages.count {
+        if messagesCount + increamentCount <= chat.messages.count {
             self.count += increamentCount
             return true
         } else {
