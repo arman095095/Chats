@@ -91,6 +91,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         interactor.startObserve()
         loadMoreMessages()
         interactor.readNewMessages()
+        view?.reloadDataAndScroll()
     }
     
     func viewWillDisappear() {
@@ -159,7 +160,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     
     func sendMessage(text: String) {
         interactor.sendTextMessage(content: text)
-        view?.updateWithNewSendedMessage()
+        view?.reloadDataAndScroll()
     }
     
     func didBeganTyping(text: String) {
@@ -212,7 +213,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     func sendPhoto(photo: UIImage, ratio: CGFloat) {
         guard let data = photo.jpegData(compressionQuality: 0.4) else { return }
         interactor.sendPhotoMessage(data: data, ratio: Double(ratio))
-        view?.updateWithNewSendedMessage()
+        view?.reloadDataAndScroll()
     }
 }
 
@@ -233,20 +234,20 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
     
     func successRecievedNewMessages(messagesCount: Int) {
         interactor.readNewMessages()
-        view?.updateWithNewRecivedMessages(messagesCount: messagesCount)
+        view?.reloadDataWithNewRecivedMessages(messagesCount: messagesCount)
     }
     
     func successLookedMessages() {
-        view?.updateWithSuccessLookedMessages()
+        view?.reloadData()
     }
     
     func successSendedMessage() {
-        view?.updateWithSuccessSendedMessage()
+        view?.reloadData()
     }
     
     func successAudioRecorded(url: String, duration: Float) {
         interactor.sendAudioMessage(url: url, duration: duration)
-        view?.updateWithNewSendedMessage()
+        view?.reloadDataAndScroll()
     }
 }
 

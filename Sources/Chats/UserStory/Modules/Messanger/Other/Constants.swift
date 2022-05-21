@@ -15,5 +15,5 @@ struct Constants {
     static let placeholderImageName = "placeholder"
     static let topLabelHeight: CGFloat = 30
     static let zero: CGFloat = 0
-    static let messagesLimit = 8
+    static let messagesLimit = 15
 }

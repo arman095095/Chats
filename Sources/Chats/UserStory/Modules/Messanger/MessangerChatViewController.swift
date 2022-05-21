@@ -16,10 +16,9 @@ import ModelInterfaces
 
 protocol MessangerChatViewInput: AnyObject {
     func setupInitialState()
-    func updateWithNewSendedMessage()
-    func updateWithSuccessSendedMessage()
-    func updateWithNewRecivedMessages(messagesCount: Int)
-    func updateWithSuccessLookedMessages()
+    func reloadData()
+    func reloadDataAndScroll()
+    func reloadDataWithNewRecivedMessages(messagesCount: Int)
     func updateTopView()
 }
 
@@ -65,29 +64,34 @@ extension MessangerChatViewController: MessangerChatViewInput {
         setupInputBar()
         addGesture()
         setupTopBar()
-        messagesCollectionView.scrollToLastItem(animated: false)
     }
     
-    func updateWithSuccessSendedMessage() {
-        messagesCollectionView.reloadData()
+    func reloadDataAndKeepOffset() {
+        DispatchQueue.main.async {
+            self.messagesCollectionView.reloadDataAndKeepOffset()
+        }
+        
     }
     
-    func updateWithNewSendedMessage() {
-        messagesCollectionView.reloadData()
-        messagesCollectionView.scrollToLastItem(animated: true)
-    }
-    
-    func updateWithNewRecivedMessages(messagesCount: Int) {
-        if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: messagesCollectionView.numberOfSections - 1)) && messagesCount < 3 {
+    func reloadDataAndScroll() {
+        DispatchQueue.main.async {
             self.messagesCollectionView.reloadData()
-            self.messagesCollectionView.scrollToLastItem(animated: true)
-        } else {
+            self.messagesCollectionView.scrollToLastItem(at: .bottom, animated: false)
+        }
+    }
+    
+    func reloadData() {
+        DispatchQueue.main.async {
             self.messagesCollectionView.reloadData()
         }
     }
     
-    func updateWithSuccessLookedMessages() {
-        self.messagesCollectionView.reloadData()
+    func reloadDataWithNewRecivedMessages(messagesCount: Int) {
+        if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: messagesCollectionView.numberOfSections - 1)) && messagesCount < 3 {
+            reloadDataAndScroll()
+        } else {
+            reloadData()
+        }
     }
     
     func updateTopView() {
