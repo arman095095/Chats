@@ -232,6 +232,7 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
     }
     
     func successRecievedNewMessages(messagesCount: Int) {
+        interactor.readNewMessages()
         view?.updateWithNewRecivedMessages(messagesCount: messagesCount)
     }
     
