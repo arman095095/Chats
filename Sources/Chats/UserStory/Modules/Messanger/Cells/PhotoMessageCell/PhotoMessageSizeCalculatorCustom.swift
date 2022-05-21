@@ -16,9 +16,9 @@ class PhotoMessageSizeCalculatorCustom: MediaMessageSizeCalculator {
         incomingAvatarSize = .zero
     }
     
-    override func messageContainerSize(for message: MessageType) -> CGSize {
+    override func messageContainerSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
         guard let message = message as? MessageCellViewModelProtocol else { return .zero }
         let viewModel = PhotoMessageViewModel(message: message)
-        return super.messageContainerSize(for: viewModel)
+        return super.messageContainerSize(for: viewModel, at: indexPath)
     }
 }

@@ -114,14 +114,12 @@ extension MessangerChatViewController {
 
 //MARK: MessagesDataSource
 extension MessangerChatViewController: MessagesDataSource {
-    
+    var currentSender: SenderType {
+        MessageModel.Sender(senderId: output.accountID, displayName: output.displayName)
+    }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
         return output.messagesCount
-    }
-    
-    func currentSender() -> SenderType {
-        return MessageModel.Sender(senderId: output.accountID, displayName: output.displayName)
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
