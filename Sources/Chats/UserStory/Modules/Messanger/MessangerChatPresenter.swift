@@ -149,7 +149,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     }
     
     func firstMessageTime(at indexPath: IndexPath) -> String {
-        let message = chat.messages[indexPath.row]
+        let message = chat.messages[indexPath.section]
         return DateFormatService().convertForLabel(from: message.date)
     }
     
