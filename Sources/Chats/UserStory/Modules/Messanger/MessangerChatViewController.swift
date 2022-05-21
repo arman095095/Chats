@@ -17,7 +17,7 @@ import ModelInterfaces
 protocol MessangerChatViewInput: AnyObject {
     func setupInitialState()
     func reloadData()
-    func reloadDataAndScroll()
+    func reloadDataAndScroll(animated: Bool)
     func reloadDataWithNewRecivedMessages(messagesCount: Int)
     func updateTopView()
 }
@@ -73,10 +73,10 @@ extension MessangerChatViewController: MessangerChatViewInput {
         
     }
     
-    func reloadDataAndScroll() {
+    func reloadDataAndScroll(animated: Bool) {
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadData()
-            self.messagesCollectionView.scrollToLastItem(at: .bottom, animated: false)
+            self.messagesCollectionView.scrollToLastItem(at: .bottom, animated: animated)
         }
     }
     
@@ -88,7 +88,7 @@ extension MessangerChatViewController: MessangerChatViewInput {
     
     func reloadDataWithNewRecivedMessages(messagesCount: Int) {
         if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: messagesCollectionView.numberOfSections - 1)) && messagesCount < 3 {
-            reloadDataAndScroll()
+            reloadDataAndScroll(animated: true)
         } else {
             reloadData()
         }
@@ -231,7 +231,6 @@ private extension MessangerChatViewController {
     
     func setupViews() {
         messagesCollectionView.backgroundColor = UIColor.mainWhite()
-        messageInputBar = InputBarAccessoryView()
         messageInputBar.delegate = self
         messagesCollectionView.messageCellDelegate = self
         messagesCollectionView.messagesDataSource = self
@@ -241,7 +240,7 @@ private extension MessangerChatViewController {
         messagesCollectionView.register(TextMessageCellCustom.self)
         messagesCollectionView.register(PhotoMessageCellCustom.self)
         messagesCollectionView.register(AudioMessageCellCustom.self)
-        maintainPositionOnKeyboardFrameChanged = true
+        maintainPositionOnInputBarHeightChanged = true
     }
     
     func setupTopBar() {

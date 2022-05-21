@@ -91,7 +91,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         interactor.startObserve()
         loadMoreMessages()
         interactor.readNewMessages()
-        view?.reloadDataAndScroll()
+        view?.reloadDataAndScroll(animated: false)
     }
     
     func viewWillDisappear() {
@@ -160,7 +160,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     
     func sendMessage(text: String) {
         interactor.sendTextMessage(content: text)
-        view?.reloadDataAndScroll()
+        view?.reloadDataAndScroll(animated: true)
     }
     
     func didBeganTyping(text: String) {
@@ -213,7 +213,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     func sendPhoto(photo: UIImage, ratio: CGFloat) {
         guard let data = photo.jpegData(compressionQuality: 0.4) else { return }
         interactor.sendPhotoMessage(data: data, ratio: Double(ratio))
-        view?.reloadDataAndScroll()
+        view?.reloadDataAndScroll(animated: true)
     }
 }
 
@@ -247,7 +247,7 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
     
     func successAudioRecorded(url: String, duration: Float) {
         interactor.sendAudioMessage(url: url, duration: duration)
-        view?.reloadDataAndScroll()
+        view?.reloadDataAndScroll(animated: true)
     }
 }
 
