@@ -65,14 +65,15 @@ open class AudioMessageCellCustom: AudioMessageCell {
         guard let messageModel = message as? MessageCellViewModelProtocol else { return }
         let viewModel = AudioMessageViewModel(message: messageModel)
         super.configure(with: viewModel, at: indexPath, and: messagesCollectionView)
-        guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
+        guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate,
+              let dataSource = messagesCollectionView.messagesDataSource else {
             fatalError()
         }
         
         let playButtonLeftConstraint = messageContainerView.constraints.filter { $0.identifier == "left" }.first
         let durationLabelRightConstraint = messageContainerView.constraints.filter { $0.identifier == "right" }.first
 
-        if messagesCollectionView.messagesDataSource!.isFromCurrentSender(message: viewModel) {
+        if dataSource.isFromCurrentSender(message: viewModel) {
             playButtonLeftConstraint?.constant = 15
             durationLabelRightConstraint?.constant = -20
             messageInfoViewSended.dateLabel.text = dt.string(from: message.sentDate)
@@ -97,7 +98,7 @@ private extension AudioMessageCellCustom {
     func configureFromCurrentUser(message: MessageType) {
         messageInfoViewRecieved.isHidden = true
         messageInfoViewSended.isHidden = false
-        guard let status = (message as? MessageCellViewModelProtocol)?.status else { return }
+        guard let status = (message as? MessageCellViewModelProtocol)?.sendingStatus else { return }
         messageInfoViewSended.status = status
     }
     

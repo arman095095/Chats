@@ -19,9 +19,9 @@ enum StatusInfo {
         case .waiting:
             return "wait"
         case .sended:
-            return "sended1"
+            return "Sented1"
         case .looked:
-            return "sended2"
+            return "sended3"
         case .error:
             return "wait"
         }

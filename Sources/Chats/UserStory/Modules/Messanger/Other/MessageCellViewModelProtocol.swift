@@ -14,6 +14,6 @@ protocol MessageCellViewModelProtocol {
     var sentDate: Date { get }
     var content: String { get }
     var kind: MessageKind { get }
-    var status: StatusInfo? { get }
+    var sendingStatus: StatusInfo? { get }
     var firstOfDate: Bool { get }
 }

@@ -53,3 +53,24 @@ extension MessageModel: MessageType {
         }
     }
 }
+
+extension MessageModel: MessageCellViewModelProtocol {
+
+    var content: String {
+        guard case .text(let content) = type else { return "" }
+        return content
+    }
+    
+    var sendingStatus: StatusInfo? {
+        switch status {
+        case .waiting:
+            return .waiting
+        case .sended:
+            return .sended
+        case .looked:
+            return .looked
+        default:
+            return .none
+        }
+    }
+}

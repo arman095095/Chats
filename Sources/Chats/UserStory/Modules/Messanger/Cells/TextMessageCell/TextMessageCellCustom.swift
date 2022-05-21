@@ -52,9 +52,10 @@ open class TextMessageCellCustom: TextMessageCell {
         guard let messageModel = message as? MessageCellViewModelProtocol else { return }
         let viewModel = TextMessageViewModel(message: messageModel)
         super.configure(with: viewModel, at: indexPath, and: messagesCollectionView)
-        guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else { fatalError() }
+        guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate,
+              let dataSource = messagesCollectionView.messagesDataSource else { fatalError() }
         
-        if messagesCollectionView.messagesDataSource!.isFromCurrentSender(message: viewModel) {
+        if dataSource.isFromCurrentSender(message: viewModel) {
             messageInfoViewSended.dateLabel.text = dt.string(from: message.sentDate)
             messageInfoViewSended.dateLabel.textColor = displayDelegate.textColor(for: viewModel, at: indexPath, in: messagesCollectionView)
             configureFromCurrentUser(message: message)
@@ -72,7 +73,7 @@ private extension TextMessageCellCustom {
     func configureFromCurrentUser(message: MessageType) {
         messageInfoViewRecieved.isHidden = true
         messageInfoViewSended.isHidden = false
-        guard let status = (message as? MessageCellViewModelProtocol)?.status else { return }
+        guard let status = (message as? MessageCellViewModelProtocol)?.sendingStatus else { return }
         messageInfoViewSended.status = status
     }
     

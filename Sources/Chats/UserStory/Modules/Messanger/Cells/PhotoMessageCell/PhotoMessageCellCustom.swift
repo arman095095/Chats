@@ -72,10 +72,11 @@ class PhotoMessageCellCustom: MessageContentCell {
         guard let messageModel = message as? MessageCellViewModelProtocol else { return }
         let viewModel = PhotoMessageViewModel(message: messageModel)
         super.configure(with: viewModel, at: indexPath, and: messagesCollectionView)
-        guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
+        guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate,
+              let dataSource = messagesCollectionView.messagesDataSource else {
             return
         }
-        if messagesCollectionView.messagesDataSource!.isFromCurrentSender(message: viewModel) {
+        if dataSource.isFromCurrentSender(message: viewModel) {
             messageInfoViewSended.dateLabel.text = dt.string(from: message.sentDate)
             configureFromCurrentUser(message: message, viewModel: viewModel)
             setupContreintsFromCurrentUser()
@@ -105,7 +106,7 @@ private extension PhotoMessageCellCustom {
     private func configureFromCurrentUser(message: MessageType, viewModel: PhotoMessageViewModel) {
         messageInfoViewRecieved.isHidden = true
         messageInfoViewSended.isHidden = false
-        guard let status = (message as? MessageCellViewModelProtocol)?.status else { return }
+        guard let status = (message as? MessageCellViewModelProtocol)?.sendingStatus else { return }
         messageInfoViewSended.status = status
         switch status {
         case .waiting:
