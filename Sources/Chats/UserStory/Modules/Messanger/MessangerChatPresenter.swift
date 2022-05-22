@@ -31,11 +31,11 @@ protocol MessangerChatViewOutput: AnyObject {
     var displayName: String { get }
     var messagesCount: Int { get }
     var canLoadMore: Bool { get }
-    func allowLoadMore()
     var textPlaceholder: String { get }
     var titleDescription: MessengerTitleView.Descriptions? { get }
     func viewDidLoad()
     func viewWillDisappear()
+    func allowLoadMore()
     func loadMoreMessages() -> Bool
     func message(at indexPath: IndexPath) -> MessageType?
     func firstMessageTime(at indexPath: IndexPath) -> String
