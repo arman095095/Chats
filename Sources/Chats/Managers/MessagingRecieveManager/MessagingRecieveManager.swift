@@ -81,7 +81,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                 defer { group.leave() }
                 switch result {
                 case .success(let messages):
-                    messages.forEach {
+                    messages.sorted(by: { $0.date! < $1.date! }).forEach {
                         guard let model = MessageModel(model: $0) else { return }
                         switch model.status {
                         case .sended, .waiting, .looked, .none:
@@ -123,7 +123,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let messageModels):
-                let messages: [MessageModelProtocol] = messageModels.compactMap {
+                let messages: [MessageModelProtocol] = messageModels.sorted(by: { $0.date! < $1.date! }).compactMap {
                     guard let model = MessageModel(model: $0) else { return nil }
                     switch model.status {
                     case .sended, .waiting, .looked, .none:
