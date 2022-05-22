@@ -83,12 +83,12 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         switch section {
         case .requests:
             let requestItem = requests[indexPath.row]
-            guard case .requests(let model) = requestItem.type else { return }
-            router.openProfileModule(profile: model.sender, output: self)
+            guard let request = interactor.cachedRequest(with: requestItem.id) else { return }
+            router.openProfileModule(profile: request.sender, output: self)
         case .chats:
             let chatItem = chats[indexPath.row]
-            guard case .chats(let model) = chatItem.type else { return }
-            router.openMessangerModule(chat: model, output: self)
+            guard let chat = interactor.cachedChat(with: chatItem.id) else { return }
+            router.openMessangerModule(chat: chat, output: self)
         case .chatsEmpty:
             break
         }
@@ -102,8 +102,8 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         case .chats:
             let chatItem = chats.remove(at: indexPath.row)
             self.view?.reloadData(requests: requests, chats: chats)
-            guard case .chats(let model) = chatItem.type else { return }
-            interactor.remove(chat: model)
+            guard let chat = interactor.cachedChat(with: chatItem.id) else { return }
+            interactor.remove(chat: chat)
         default:
             break
         }
@@ -113,7 +113,9 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
     
     func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
-        loadCache()
+        guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
+        chats[index].updateWith(messages: messages)
+        view?.reloadData(requests: requests, chats: chats)
     }
 
     func chatDidBeganTyping(chatID: String) {
@@ -194,6 +196,9 @@ private extension ChatsAndRequestsPresenter {
 
 extension ChatsAndRequestsPresenter: MessangerChatModuleOutput {
     func reloadChat(_ chat: ChatModelProtocol) {
-        loadCache()
+        guard let index = chats.firstIndex(where: { $0.id == chat.friendID }) else { return }
+        chats[index] = Item(chat: chat)
+        print("чел \(chat.newMessagesCount)")
+        view?.reloadData(requests: requests, chats: chats)
     }
 }

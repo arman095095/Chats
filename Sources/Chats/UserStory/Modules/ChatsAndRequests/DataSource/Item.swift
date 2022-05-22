@@ -61,7 +61,6 @@ struct Item: Hashable,
              ChatCellViewModelProtocol,
              RequestCellViewModelProtocol {
     private var _lastMessageType: LastMessageContentType?
-    var type: ItemType
     var id: String
     var imageURL: String
     var userName: String?
@@ -72,7 +71,6 @@ struct Item: Hashable,
     var newMessagesCount: Int?
     
     init(chat: ChatModelProtocol) {
-        self.type = .chats(chat: chat)
         self.id = chat.friendID
         self.userName = chat.friend.userName
         self.imageURL = chat.friend.imageUrl
@@ -104,9 +102,41 @@ struct Item: Hashable,
     }
     
     init(request: RequestModelProtocol) {
-        self.type = .requests(request: request)
         self.id = request.senderID
         self.imageURL = request.sender.imageUrl
+    }
+}
+
+extension Item {
+    mutating func updateWith(messages: [MessageModelProtocol]) {
+        guard let last = messages.last else { return }
+        updateWith(lastMessage: last)
+        let newMessagesCount = messages.filter { $0.status == .incomingNew }.count
+        let oldCount: Int = self.newMessagesCount ?? 0
+        self.newMessagesCount = oldCount + newMessagesCount
+    }
+}
+
+private extension Item {
+    mutating func updateWith(lastMessage: MessageModelProtocol) {
+        switch lastMessage.type {
+        case .text(let content):
+            self._lastMessageType = .text(content)
+        case .audio:
+            self._lastMessageType = .audio
+        case .image:
+            self._lastMessageType = .image
+        }
+        switch lastMessage.status {
+        case .none, .incoming, .incomingNew:
+            self.lastMessageSendingStatus = .incoming
+        case .looked:
+            self.lastMessageSendingStatus = .looked
+        case .sended:
+            self.lastMessageSendingStatus = .sended
+        case .waiting:
+            self.lastMessageSendingStatus = .waiting
+        }
     }
 }
 

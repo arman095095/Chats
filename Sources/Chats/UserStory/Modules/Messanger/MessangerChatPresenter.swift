@@ -96,7 +96,7 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         interactor.startObserve()
         loadMoreMessages()
         canLoadMore = true
-        interactor.readNewMessages()
+        readAllNewMessages()
         view?.reloadDataAndScroll(animated: false)
     }
     
@@ -253,7 +253,7 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
         chat.messages.append(contentsOf: newMessages)
         count += newMessages.count
         canLoadMore = true
-        interactor.readNewMessages()
+        readAllNewMessages()
         view?.reloadDataWithNewRecivedMessages(messagesCount: messages.count)
     }
     
@@ -279,4 +279,11 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
 
 extension MessangerChatPresenter: MessangerChatModuleInput {
     
+}
+
+private extension MessangerChatPresenter {
+    func readAllNewMessages() {
+        interactor.readNewMessages()
+        chat.newMessages.removeAll()
+    }
 }

@@ -14,6 +14,8 @@ import Swinject
 protocol ChatsAndRequestsInteractorInput: AnyObject {
     var cachedChats: [ChatModelProtocol] { get }
     var cachedRequests: [RequestModelProtocol] { get }
+    func cachedChat(with id: String) -> ChatModelProtocol?
+    func cachedRequest(with id: String) -> RequestModelProtocol?
     func initSendingManagers()
     func sendNotSendedMessages()
     func remoteLoad()
@@ -65,6 +67,20 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     
     var cachedRequests: [RequestModelProtocol] {
         chatsAndRequestsManager.getChatsAndRequests().requests
+    }
+    
+    func cachedChat(with id: String) -> ChatModelProtocol? {
+        chatsAndRequestsManager
+            .getChatsAndRequests()
+            .chats
+            .first(where: { $0.friendID == id })
+    }
+    
+    func cachedRequest(with id: String) -> RequestModelProtocol? {
+        chatsAndRequestsManager
+            .getChatsAndRequests()
+            .requests
+            .first(where: { $0.senderID == id })
     }
     
     func sendNotSendedMessages() {
