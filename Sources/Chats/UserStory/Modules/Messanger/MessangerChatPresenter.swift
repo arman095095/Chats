@@ -239,7 +239,7 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
     }
     
     func successRecievedNewMessages(_ messages: [MessageModelProtocol]) {
-        var newMessagesCount = 0
+        var newMessages: [MessageModelProtocol] = []
         messages.forEach { message in
             switch message.status {
             case .sended:
@@ -247,13 +247,13 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
                 let message = chat.notSendedMessages.remove(at: firstIndex)
                 message.status = .sended
             case .incomingNew:
-                newMessagesCount += 1
-                chat.messages.append(message)
+                newMessages.append(message)
             default:
                 break
             }
         }
-        count += newMessagesCount
+        chat.messages.append(contentsOf: newMessages)
+        count += newMessages.count
         canLoadMore = true
         interactor.readNewMessages()
         view?.reloadDataWithNewRecivedMessages(messagesCount: messages.count)
