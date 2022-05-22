@@ -129,7 +129,10 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
     }
     
     func messagesLookedAtChat(chatID: String) {
-        loadCache()
+        guard let index = chats.firstIndex(where: { $0.id == chatID }),
+              case .sended = chats[index].lastMessageSendingStatus else { return }
+        chats[index].lastMessageSendingStatus = .looked
+        view?.reloadData(requests: requests, chats: chats)
     }
 
     func profilesUpdated() {
