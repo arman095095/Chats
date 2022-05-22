@@ -248,8 +248,6 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
     }
     
     func successCreatedMessage() {
-        count += 1
-        canLoadMore = true
         view?.reloadDataAndScroll(animated: true)
     }
     
