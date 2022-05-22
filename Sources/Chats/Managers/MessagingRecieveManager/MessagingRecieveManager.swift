@@ -177,9 +177,9 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     }
     
     func observeTypingStatus(friendID: String) {
-        let socket = messagingService.initTypingStatusSocket(from: accountID, friendID: friendID) { typing in
+        let socket = messagingService.initTypingStatusSocket(from: accountID, friendID: friendID) { [weak self] typing in
             guard let typing = typing else { return }
-            self.multicastDelegates.delegates.forEach { delegate in
+            self?.multicastDelegates.delegates.forEach { delegate in
                 delegate.typing(friendID: friendID, typing)
             }
         }

@@ -27,7 +27,7 @@ protocol ChatsAndRequestsModuleInput: AnyObject {
 protocol ChatsAndRequestsViewOutput: AnyObject {
     var title: String { get }
     func viewDidLoad()
-    func viewWillDisappear()
+    func stopObserve()
     func select(at indexPath: IndexPath)
     func remove(at indexPath: IndexPath)
     func filteredChats(text: String)
@@ -65,7 +65,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
         interactor.remoteLoad()
     }
     
-    func viewWillDisappear() {
+    func stopObserve() {
         interactor.stopObserving()
     }
     

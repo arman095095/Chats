@@ -25,9 +25,8 @@ final class ChatsAndRequestsViewController: UIViewController {
         output?.viewDidLoad()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        guard self.isMovingFromParent else { return }
-        output?.viewWillDisappear()
+    deinit {
+        output?.stopObserve()
     }
 }
 

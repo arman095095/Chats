@@ -72,10 +72,10 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
     }
     
     func addObserveFriendsAndRequestsProfiles(id: String, completion: @escaping () -> ()) {
-        let socket = profileService.initProfileSocket(userID: id) { result in
+        let socket = profileService.initProfileSocket(userID: id) { [weak self] result in
             switch result {
             case .success(let profile):
-                self.chatsAndRequestsCacheService.update(profileModel: ProfileModel(profile: profile),
+                self?.chatsAndRequestsCacheService.update(profileModel: ProfileModel(profile: profile),
                                                          chatID: profile.id)
                 completion()
             case .failure:
@@ -194,10 +194,10 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
                 break
             }
         }
-        let sendedSocket = requestsService.initSendedRequestsSocket(userID: accountID) { result in
+        let sendedSocket = requestsService.initSendedRequestsSocket(userID: accountID) { [weak self] result in
             switch result {
             case .success((let add, let removed)):
-                self.updateCurrentAccountSendedRequests(add: add, removed: removed)
+                self?.updateCurrentAccountSendedRequests(add: add, removed: removed)
             case .failure:
                 break
             }
