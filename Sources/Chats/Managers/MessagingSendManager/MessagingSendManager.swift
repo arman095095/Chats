@@ -17,13 +17,13 @@ protocol MessagingSendManagerProtocol: AnyObject {
     func sendDidBeganTyping()
     func sendDidFinishTyping()
     func sendTextMessage(_ content: String,
-                         completion: @escaping (Result<Void, Error>) -> ())
+                         completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
     func sendAudioMessage(_ localURL: String,
                           duration: Float,
-                          completion: @escaping (Result<Void, Error>) -> ())
+                          completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
     func sendPhotoMessage(_ data: Data,
                           ratio: Double,
-                          completion: @escaping (Result<Void, Error>) -> ())
+                          completion: @escaping (Result<MessageModelProtocol, Error>) -> ())
     func sendAllWaitingMessages()
 }
 
@@ -70,7 +70,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
         }
     }
     
-    func sendTextMessage(_ content: String, completion: @escaping (Result<Void, Error>) -> ()) {
+    func sendTextMessage(_ content: String, completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
         let uuid = UUID().uuidString
         let date = Date()
         let message = MessageModel(senderID: accountID,
@@ -81,7 +81,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    status: .waiting,
                                    type: .text(content: content))
         cacheService.storeCreatedMessage(message)
-        completion(.success(()))
+        completion(.success(message))
         let model = MessageNetworkModel(audioURL: nil,
                                         photoURL: nil,
                                         adressID: friendID,
@@ -94,7 +94,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
         self.sendMessage(model: model, message: message)
     }
     
-    func sendAudioMessage(_ localURL: String, duration: Float, completion: @escaping (Result<Void, Error>) -> ()) {
+    func sendAudioMessage(_ localURL: String, duration: Float, completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
         let uuid = UUID().uuidString
         let date = Date()
         let message = MessageModel(senderID: accountID,
@@ -105,7 +105,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    status: .waiting,
                                    type: .audio(url: localURL, duration: duration))
         cacheService.storeCreatedMessage(message)
-        completion(.success(()))
+        completion(.success(message))
         let url = FileManager.getDocumentsDirectory().appendingPathComponent(localURL)
         guard let audioData = try? Data(contentsOf: url) else { return }
 
@@ -129,7 +129,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
         }
     }
     
-    func sendPhotoMessage(_ data: Data, ratio: Double, completion: @escaping (Result<Void, Error>) -> ()) {
+    func sendPhotoMessage(_ data: Data, ratio: Double, completion: @escaping (Result<MessageModelProtocol, Error>) -> ()) {
         let uuid = UUID().uuidString
         let localURL = uuid.appending(".jpeg")
         let date = Date()
@@ -145,7 +145,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    status: .waiting,
                                    type: .image(url: localURL, ratio: ratio))
         cacheService.storeCreatedMessage(message)
-        completion(.success(()))
+        completion(.success(message))
         remoteStorageService.uploadChat(image: data) { [weak self] result in
             guard let self = self else { return }
             switch result {

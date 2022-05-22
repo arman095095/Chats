@@ -30,8 +30,8 @@ protocol MessangerChatInteractorInput: AnyObject {
 protocol MessangerChatInteractorOutput: AnyObject {
     var chatID: String { get }
     func successAudioRecorded(url: String, duration: Float)
-    func successRecievedNewMessages(messagesCount: Int)
-    func successCreatedMessage()
+    func successRecievedNewMessages(_ messages: [MessageModelProtocol])
+    func successCreatedMessage(_ message: MessageModelProtocol)
     func successLookedMessages()
     func friendIsTyping()
     func friendFinishTyping()
@@ -59,7 +59,7 @@ final class MessangerChatInteractor {
 extension MessangerChatInteractor: MessagingRecieveDelegate {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
         guard friendID == output?.chatID, !messages.isEmpty else { return }
-        output?.successRecievedNewMessages(messagesCount: messages.count)
+        output?.successRecievedNewMessages(messages)
     }
     
     func messagesLooked(friendID: String) {
@@ -98,8 +98,8 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
     func sendAudioMessage(url: String, duration: Float) {
         messagingManager.sendAudioMessage(url, duration: duration) { [weak self] result in
             switch result {
-            case .success:
-                self?.output?.successCreatedMessage()
+            case .success(let message):
+                self?.output?.successCreatedMessage(message)
             case .failure:
                 break
             }
@@ -109,8 +109,8 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
     func sendTextMessage(content: String) {
         messagingManager.sendTextMessage(content) { [weak self] result in
             switch result {
-            case .success:
-                self?.output?.successCreatedMessage()
+            case .success(let message):
+                self?.output?.successCreatedMessage(message)
             case .failure:
                 break
             }
@@ -120,8 +120,8 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
     func sendPhotoMessage(data: Data, ratio: Double) {
         messagingManager.sendPhotoMessage(data, ratio: ratio) { [weak self] result in
             switch result {
-            case .success:
-                self?.output?.successCreatedMessage()
+            case .success(let message):
+                self?.output?.successCreatedMessage(message)
             case .failure:
                 break
             }

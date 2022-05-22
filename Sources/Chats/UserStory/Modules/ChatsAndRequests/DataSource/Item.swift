@@ -113,10 +113,10 @@ struct Item: Hashable,
 extension Item {
     
     var newMessagesEnable: Bool? {
-        guard let newMessagesEnable = newMessagesEnable else {
+        guard let newMessagesCount = newMessagesCount else {
             return nil
         }
-        newMessagesCount != 0
+        return newMessagesCount != 0
     }
 
     var lastMessageDateString: String? {

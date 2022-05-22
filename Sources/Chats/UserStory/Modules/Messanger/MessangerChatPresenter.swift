@@ -238,16 +238,39 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
         view?.updateTopView()
     }
     
-    func successRecievedNewMessages(messagesCount: Int) {
+    func successRecievedNewMessages(_ messages: [MessageModelProtocol]) {
+        var newMessagesCount = 0
+        messages.forEach { message in
+            switch message.status {
+            case .sended:
+                guard let firstIndex = chat.notSendedMessages.firstIndex(where: { $0.id == message.id }) else { return }
+                let message = chat.notSendedMessages.remove(at: firstIndex)
+                message.status = .sended
+            case .incomingNew:
+                newMessagesCount += 1
+                chat.messages.append(message)
+            default:
+                break
+            }
+        }
+        count += newMessagesCount
+        canLoadMore = true
         interactor.readNewMessages()
-        view?.reloadDataWithNewRecivedMessages(messagesCount: messagesCount)
+        view?.reloadDataWithNewRecivedMessages(messagesCount: messages.count)
     }
     
     func successLookedMessages() {
+        chat.notLookedMessages.forEach { $0.status = .looked }
+        chat.notLookedMessages.removeAll()
         view?.reloadData()
     }
     
-    func successCreatedMessage() {
+    func successCreatedMessage(_ message: MessageModelProtocol) {
+        self.chat.messages.append(message)
+        self.chat.notSendedMessages.append(message)
+        self.chat.notLookedMessages.append(message)
+        count = chat.messages.count <= increamentCount ? chat.messages.count : increamentCount
+        allowLoadMore()
         view?.reloadDataAndScroll(animated: true)
     }
     
