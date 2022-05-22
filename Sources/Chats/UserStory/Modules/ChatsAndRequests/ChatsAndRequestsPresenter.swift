@@ -62,6 +62,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
     func viewDidLoad() {
         view?.setupInitialState()
         loadCache()
+        interactor.initSendingManagers()
         interactor.remoteLoad()
     }
     

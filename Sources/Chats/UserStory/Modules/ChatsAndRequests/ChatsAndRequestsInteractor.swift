@@ -14,6 +14,7 @@ import Swinject
 protocol ChatsAndRequestsInteractorInput: AnyObject {
     var cachedChats: [ChatModelProtocol] { get }
     var cachedRequests: [RequestModelProtocol] { get }
+    func initSendingManagers()
     func sendNotSendedMessages()
     func remoteLoad()
     func startObserve()
@@ -72,14 +73,20 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
         }
     }
     
+    func initSendingManagers() {
+        chatsAndRequestsManager.getChatsAndRequests().chats.forEach {
+            addSendingManager(friendID: $0.friendID)
+        }
+    }
+    
     func remoteLoad() {
         chatsAndRequestsManager.getChatsAndRequests { [weak self] result in
-            defer { self?.initSendingManagers() }
             switch result {
             case .success((let chats, let requests)):
                 self?.messagingRecieveManager.getMessages(chats: chats) { chats in
                     self?.output?.successLoaded(chats, requests)
                 }
+                self?.addSendingManagers(chats: chats)
             case .failure(let error):
                 self?.output?.failureLoad(message: error.localizedDescription)
             }
@@ -171,6 +178,7 @@ private extension ChatsAndRequestsInteractor {
     
     func addSendingManagers(chats: [ChatModelProtocol]) {
         chats.forEach {
+            guard !sendingManagers.keys.contains($0.friendID) else { return }
             addSendingManager(friendID: $0.friendID)
         }
     }
@@ -192,11 +200,5 @@ private extension ChatsAndRequestsInteractor {
     
     func removeSendingManager(friendID: String) {
         self.sendingManagers[friendID] = nil
-    }
-    
-    func initSendingManagers() {
-        chatsAndRequestsManager.getChatsAndRequests().chats.forEach {
-            addSendingManager(friendID: $0.friendID)
-        }
     }
 }
