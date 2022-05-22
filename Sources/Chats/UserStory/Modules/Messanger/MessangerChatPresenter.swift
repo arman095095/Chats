@@ -30,7 +30,8 @@ protocol MessangerChatViewOutput: AnyObject {
     var friendImageURL: URL? { get }
     var displayName: String { get }
     var messagesCount: Int { get }
-    var canLoadMore: Bool { get set }
+    var canLoadMore: Bool { get }
+    func allowLoadMore()
     var textPlaceholder: String { get }
     var titleDescription: MessengerTitleView.Descriptions? { get }
     func viewDidLoad()
@@ -63,8 +64,8 @@ final class MessangerChatPresenter {
     private var currentUserTyping: Bool
     private var count: Int
     private var increamentCount: Int
-    let accountID: String
-    var canLoadMore: Bool
+    private(set) var accountID: String
+    private(set) var canLoadMore: Bool
     
     init(router: MessangerChatRouterInput,
          interactor: MessangerChatInteractorInput,
@@ -86,6 +87,10 @@ final class MessangerChatPresenter {
 
 extension MessangerChatPresenter: MessangerChatViewOutput {
     
+    func allowLoadMore() {
+        canLoadMore = true
+    }
+
     func viewDidLoad() {
         view?.setupInitialState()
         interactor.startObserve()

@@ -51,7 +51,7 @@ final class MessangerChatViewController: MessagesViewController {
             if output.loadMoreMessages() {
                 self.messagesCollectionView.reloadDataAndKeepOffset()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.output.canLoadMore = true
+                    self.output.allowLoadMore()
                 }
             }
         }
