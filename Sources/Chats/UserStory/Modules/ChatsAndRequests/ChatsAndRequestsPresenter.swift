@@ -115,6 +115,8 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
     func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
         guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
         chats[index].updateWith(messages: messages)
+        let chat = chats.remove(at: index)
+        chats.insert(chat, at: 0)
         view?.reloadData(requests: requests, chats: chats)
     }
 
