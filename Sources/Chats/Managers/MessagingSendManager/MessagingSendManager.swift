@@ -81,6 +81,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    status: .waiting,
                                    type: .text(content: content))
         cacheService.storeCreatedMessage(message)
+        completion(.success(()))
         let model = MessageNetworkModel(audioURL: nil,
                                         photoURL: nil,
                                         adressID: friendID,
@@ -90,7 +91,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                         audioDuration: nil,
                                         id: uuid,
                                         date: date)
-        self.sendMessage(model: model, message: message, completion: completion)
+        self.sendMessage(model: model, message: message)
     }
     
     func sendAudioMessage(_ localURL: String, duration: Float, completion: @escaping (Result<Void, Error>) -> ()) {
@@ -104,6 +105,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    status: .waiting,
                                    type: .audio(url: localURL, duration: duration))
         cacheService.storeCreatedMessage(message)
+        completion(.success(()))
         let url = FileManager.getDocumentsDirectory().appendingPathComponent(localURL)
         guard let audioData = try? Data(contentsOf: url) else { return }
 
@@ -120,7 +122,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                                 audioDuration: duration,
                                                 id: uuid,
                                                 date: date)
-                self.sendMessage(model: model, message: message, completion: completion)
+                self.sendMessage(model: model, message: message)
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -143,6 +145,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                    status: .waiting,
                                    type: .image(url: localURL, ratio: ratio))
         cacheService.storeCreatedMessage(message)
+        completion(.success(()))
         remoteStorageService.uploadChat(image: data) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -156,7 +159,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
                                                 audioDuration: nil,
                                                 id: uuid,
                                                 date: date)
-                self.sendMessage(model: model, message: message, completion: completion)
+                self.sendMessage(model: model, message: message)
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -205,7 +208,7 @@ private extension MessagingSendManager {
                                                 audioDuration: duration,
                                                 id: message.id,
                                                 date: message.date)
-                self.sendMessage(model: model, message: message) { _ in }
+                self.sendMessage(model: model, message: message)
             case .failure:
                 break
             }
@@ -222,7 +225,7 @@ private extension MessagingSendManager {
                                         audioDuration: nil,
                                         id: message.id,
                                         date: message.date)
-        self.sendMessage(model: model, message: message) { _ in }
+        self.sendMessage(model: model, message: message)
     }
     
     func sendWaitingPhotoMessage(message: MessageModelProtocol, localURL: String, ratio: Double) {
@@ -241,7 +244,7 @@ private extension MessagingSendManager {
                                                 audioDuration: nil,
                                                 id: message.id,
                                                 date: message.date)
-                self.sendMessage(model: model, message: message) { _ in }
+                self.sendMessage(model: model, message: message)
             case .failure:
                 break
             }
@@ -249,16 +252,8 @@ private extension MessagingSendManager {
     }
     
     func sendMessage(model: MessageNetworkModelProtocol,
-                             message: MessageModelProtocol,
-                             completion: @escaping (Result<Void, Error>) -> ()) {
-        self.messagingService.send(message: model) { result in
-            switch result {
-            case .success:
-                break
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
+                     message: MessageModelProtocol) {
+        self.messagingService.send(message: model) { _ in }
     }
     
     func isFirstToday(date: Date) -> Bool {

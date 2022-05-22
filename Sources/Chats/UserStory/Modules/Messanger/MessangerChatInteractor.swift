@@ -31,7 +31,7 @@ protocol MessangerChatInteractorOutput: AnyObject {
     var chatID: String { get }
     func successAudioRecorded(url: String, duration: Float)
     func successRecievedNewMessages(messagesCount: Int)
-    func successSendedMessage()
+    func successCreatedMessage()
     func successLookedMessages()
     func friendIsTyping()
     func friendFinishTyping()
@@ -99,7 +99,7 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
         messagingManager.sendAudioMessage(url, duration: duration) { [weak self] result in
             switch result {
             case .success:
-                self?.output?.successSendedMessage()
+                self?.output?.successCreatedMessage()
             case .failure:
                 break
             }
@@ -110,7 +110,7 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
         messagingManager.sendTextMessage(content) { [weak self] result in
             switch result {
             case .success:
-                self?.output?.successSendedMessage()
+                self?.output?.successCreatedMessage()
             case .failure:
                 break
             }
@@ -121,7 +121,7 @@ extension MessangerChatInteractor: MessangerChatInteractorInput {
         messagingManager.sendPhotoMessage(data, ratio: ratio) { [weak self] result in
             switch result {
             case .success:
-                self?.output?.successSendedMessage()
+                self?.output?.successCreatedMessage()
             case .failure:
                 break
             }

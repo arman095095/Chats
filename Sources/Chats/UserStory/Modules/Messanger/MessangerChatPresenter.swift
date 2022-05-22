@@ -242,8 +242,10 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
         view?.reloadData()
     }
     
-    func successSendedMessage() {
-        view?.reloadData()
+    func successCreatedMessage() {
+        count += 1
+        canLoadMore = true
+        view?.reloadDataAndScroll(animated: true)
     }
     
     func successAudioRecorded(url: String, duration: Float) {
