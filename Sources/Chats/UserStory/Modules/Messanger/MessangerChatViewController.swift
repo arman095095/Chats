@@ -46,7 +46,7 @@ final class MessangerChatViewController: MessagesViewController {
         output.viewWillDisappear()
     }
     
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: Int(3))) && output.canLoadMore {
             if output.loadMoreMessages() {
                 self.messagesCollectionView.reloadDataAndKeepOffset()
@@ -114,7 +114,7 @@ extension MessangerChatViewController {
 
 //MARK: MessagesDataSource
 extension MessangerChatViewController: MessagesDataSource {
-    var currentSender: SenderType {
+    func currentSender() -> SenderType {
         MessageModel.Sender(senderId: output.accountID, displayName: output.displayName)
     }
     
@@ -240,7 +240,7 @@ private extension MessangerChatViewController {
         messagesCollectionView.register(TextMessageCellCustom.self)
         messagesCollectionView.register(PhotoMessageCellCustom.self)
         messagesCollectionView.register(AudioMessageCellCustom.self)
-        maintainPositionOnInputBarHeightChanged = true
+        maintainPositionOnKeyboardFrameChanged = true
     }
     
     func setupTopBar() {

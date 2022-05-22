@@ -15,9 +15,9 @@ class AudioMessageSizeCalculatorCustom: AudioMessageSizeCalculator {
         incomingAvatarSize = .zero
     }
     
-    override func messageContainerSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
+    override func messageContainerSize(for message: MessageType) -> CGSize {
         guard let message = message as? MessageCellViewModelProtocol else { return .zero }
         let viewModel = AudioMessageViewModel(message: message)
-        return super.messageContainerSize(for: viewModel, at: indexPath)
+        return super.messageContainerSize(for: viewModel)
     }
 }
