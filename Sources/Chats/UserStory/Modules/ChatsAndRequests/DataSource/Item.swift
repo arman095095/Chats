@@ -67,10 +67,8 @@ struct Item: Hashable,
     var userName: String?
     var lastMessageSendingStatus: LastMessageSendingStatus?
     var lastMessageDate: Date?
-    var lastMessageDateString: String?
     var online: Bool?
     var typing: Bool?
-    var newMessagesEnable: Bool?
     var newMessagesCount: Int?
     
     init(chat: ChatModelProtocol) {
@@ -79,10 +77,8 @@ struct Item: Hashable,
         self.userName = chat.friend.userName
         self.imageURL = chat.friend.imageUrl
         self.online = chat.friend.online
-        self.newMessagesEnable = !(chat.newMessagesCount == 0)
         self.newMessagesCount = chat.newMessagesCount
         self.lastMessageDate = chat.lastMessage?.date ?? Date()
-        self.lastMessageDateString = DateFormatService().convertForActiveChat(from: chat.lastMessage?.date)
         self.typing = chat.typing
         
         switch chat.lastMessage?.type {
@@ -115,6 +111,18 @@ struct Item: Hashable,
 }
 
 extension Item {
+    
+    var newMessagesEnable: Bool? {
+        guard let newMessagesEnable = newMessagesEnable else {
+            return nil
+        }
+        newMessagesCount != 0
+    }
+
+    var lastMessageDateString: String? {
+        DateFormatService().convertForActiveChat(from: lastMessageDate)
+    }
+
     var lastMessageType: LastMessageContentType? {
         get {
             typing == true ? .typing : _lastMessageType
