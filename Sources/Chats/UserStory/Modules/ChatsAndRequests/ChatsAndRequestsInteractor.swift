@@ -77,10 +77,7 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
     }
     
     func cachedRequest(with id: String) -> RequestModelProtocol? {
-        chatsAndRequestsManager
-            .getChatsAndRequests()
-            .requests
-            .first(where: { $0.senderID == id })
+        cachedRequests.first(where: { $0.senderID == id })
     }
     
     func sendNotSendedMessages() {

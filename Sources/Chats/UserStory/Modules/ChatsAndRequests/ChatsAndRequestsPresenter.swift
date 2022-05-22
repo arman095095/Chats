@@ -198,7 +198,6 @@ extension ChatsAndRequestsPresenter: MessangerChatModuleOutput {
     func reloadChat(_ chat: ChatModelProtocol) {
         guard let index = chats.firstIndex(where: { $0.id == chat.friendID }) else { return }
         chats[index] = Item(chat: chat)
-        print("чел \(chat.newMessagesCount)")
         view?.reloadData(requests: requests, chats: chats)
     }
 }
