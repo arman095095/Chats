@@ -63,7 +63,10 @@ public final class MessagingNetworkService {
 
 extension MessagingNetworkService: MessagingNetworkServiceProtocol {
     
-    public func getMessages(from id: String, friendID: String, lastDate: Date? ,completion: @escaping (Result<[MessageNetworkModelProtocol], Error>) -> Void) {
+    public func getMessages(from id: String,
+                            friendID: String,
+                            lastDate: Date?,
+                            completion: @escaping (Result<[MessageNetworkModelProtocol], Error>) -> Void) {
         let ref = usersRef
             .document(id)
             .collection(URLComponents.Paths.friendIDs.rawValue)
