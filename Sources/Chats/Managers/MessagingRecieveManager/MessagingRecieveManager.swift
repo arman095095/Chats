@@ -120,8 +120,8 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                                                 coreDataService: coreDataService)
         sockets[MessagesSocketsKeys.new.rawValue + friendID]?.remove()
         let socket = messagingService.initNewMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
-                                                         accountID: accountID,
-                                                         from: friendID) { [weak self] result in
+                                                            accountID: accountID,
+                                                            from: friendID) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let messageModels):
