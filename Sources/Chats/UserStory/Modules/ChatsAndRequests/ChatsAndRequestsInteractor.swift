@@ -32,7 +32,9 @@ protocol ChatsAndRequestsInteractorOutput: AnyObject {
     func chatDidFinishTyping(chatID: String)
     func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol])
     func messagesLookedAtChat(chatID: String)
-    func profilesUpdated()
+    func profilesUpdated(with: ProfileModelProtocol)
+    func chatProfileUpdated(with profile: ProfileModelProtocol, chatID: String)
+    func requestProfileUpdated(with profile: ProfileModelProtocol, requestID: String)
     func failureLoad(message: String)
 }
 
@@ -125,8 +127,9 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
             self?.addObservers(newRequests: newRequests)
             self?.removeObservers(requests: removed)
         }
-        chatsAndRequestsManager.observeFriendsAndRequestsProfiles { [weak self] in
-            self?.output?.profilesUpdated()
+        chatsAndRequestsManager.observeFriendsAndRequestsProfiles { [weak self] profile in
+            guard let profile = profile else { return }
+            self?.output?.profilesUpdated(with: profile)
         }
     }
     
@@ -157,9 +160,10 @@ extension ChatsAndRequestsInteractor: MessagingRecieveDelegate {
 
 private extension ChatsAndRequestsInteractor {
     func addObservers(newChats: [ChatModelProtocol]) {
-        newChats.forEach {
-            chatsAndRequestsManager.addObserveFriendsAndRequestsProfiles(id: $0.friendID) { [weak self] in
-                self?.output?.profilesUpdated()
+        newChats.forEach { chat in
+            chatsAndRequestsManager.addObserveFriendsAndRequestsProfiles(id: chat.friendID) { [weak self] profile in
+                guard let profile = profile else { return }
+                self?.output?.chatProfileUpdated(with: profile, chatID: chat.friendID)
             }
         }
         newChats.forEach {
@@ -170,9 +174,10 @@ private extension ChatsAndRequestsInteractor {
     }
     
     func addObservers(newRequests: [RequestModelProtocol]) {
-        newRequests.forEach {
-            chatsAndRequestsManager.addObserveFriendsAndRequestsProfiles(id: $0.senderID) { [weak self] in
-                self?.output?.profilesUpdated()
+        newRequests.forEach { request in
+            chatsAndRequestsManager.addObserveFriendsAndRequestsProfiles(id: request.senderID) { [weak self] profile in
+                guard let profile = profile else { return }
+                self?.output?.requestProfileUpdated(with: profile, requestID: request.senderID)
             }
         }
     }

@@ -22,8 +22,8 @@ protocol ChatsAndRequestsManagerProtocol {
     func getChatsAndRequests(completion: @escaping (Result<([ChatModelProtocol], [RequestModelProtocol]), Error>) -> ())
     func observeFriends(completion: @escaping ([ChatModelProtocol], [ChatModelProtocol]) -> Void)
     func observeRequests(completion: @escaping ([RequestModelProtocol], [RequestModelProtocol]) -> Void)
-    func addObserveFriendsAndRequestsProfiles(id: String, completion: @escaping () -> ())
-    func observeFriendsAndRequestsProfiles(completion: @escaping () -> ())
+    func addObserveFriendsAndRequestsProfiles(id: String, completion: @escaping (ProfileModelProtocol?) -> ())
+    func observeFriendsAndRequestsProfiles(completion: @escaping (ProfileModelProtocol?) -> ())
     func removeObserveFriendsAndRequestsProfiles(id: String)
     func remove(chat: ChatModelProtocol)
 }
@@ -71,15 +71,16 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
         self.requestsService.removeFriend(with: chat.friendID, from: self.accountID) { _ in }
     }
     
-    func addObserveFriendsAndRequestsProfiles(id: String, completion: @escaping () -> ()) {
+    func addObserveFriendsAndRequestsProfiles(id: String, completion: @escaping (ProfileModelProtocol?) -> ()) {
         let socket = profileService.initProfileSocket(userID: id) { [weak self] result in
             switch result {
             case .success(let profile):
-                self?.chatsAndRequestsCacheService.update(profileModel: ProfileModel(profile: profile),
-                                                         chatID: profile.id)
-                completion()
+                let profileModel = ProfileModel(profile: profile)
+                self?.chatsAndRequestsCacheService.update(profileModel: profileModel,
+                                                          chatID: profile.id)
+                completion(profileModel)
             case .failure:
-                break
+                completion(nil)
             }
         }
         sockets[ChatsAndRequestsSocketsKeys.profile.rawValue + id] = socket
@@ -89,7 +90,7 @@ extension ChatsAndRequestsManager: ChatsAndRequestsManagerProtocol {
         sockets.removeValue(forKey: ChatsAndRequestsSocketsKeys.profile.rawValue + id)
     }
     
-    func observeFriendsAndRequestsProfiles(completion: @escaping () -> ()) {
+    func observeFriendsAndRequestsProfiles(completion: @escaping (ProfileModelProtocol?) -> ()) {
         account.friendIds.forEach {
             self.addObserveFriendsAndRequestsProfiles(id: $0, completion: completion)
         }

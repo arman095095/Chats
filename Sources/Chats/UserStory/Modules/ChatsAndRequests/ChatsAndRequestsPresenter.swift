@@ -112,6 +112,36 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
 
 extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
     
+    func profilesUpdated(with profile: ProfileModelProtocol) {
+        if let index = chats.firstIndex(where: { $0.id == profile.id }) {
+            chats[index].imageURL = profile.imageUrl
+            chats[index].userName = profile.userName
+            chats[index].online = profile.online
+            view?.reloadData(requests: requests, chats: chats)
+        } else if let index = requests.firstIndex(where: { $0.id == profile.id }) {
+            requests[index].imageURL = profile.imageUrl
+            requests[index].userName = profile.userName
+            requests[index].online = profile.online
+            view?.reloadData(requests: requests, chats: chats)
+        }
+    }
+    
+    func chatProfileUpdated(with profile: ProfileModelProtocol, chatID: String) {
+        guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
+        chats[index].imageURL = profile.imageUrl
+        chats[index].userName = profile.userName
+        chats[index].online = profile.online
+        view?.reloadData(requests: requests, chats: chats)
+    }
+    
+    func requestProfileUpdated(with profile: ProfileModelProtocol, requestID: String) {
+        guard let index = requests.firstIndex(where: { $0.id == requestID }) else { return }
+        requests[index].imageURL = profile.imageUrl
+        requests[index].userName = profile.userName
+        requests[index].online = profile.online
+        view?.reloadData(requests: requests, chats: chats)
+    }
+    
     func newMessagesAtChat(chatID: String, messages: [MessageModelProtocol]) {
         guard let index = chats.firstIndex(where: { $0.id == chatID }) else { return }
         chats[index].updateWith(messages: messages)
@@ -137,10 +167,6 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
               case .sended = chats[index].lastMessageSendingStatus else { return }
         chats[index].lastMessageSendingStatus = .looked
         view?.reloadData(requests: requests, chats: chats)
-    }
-
-    func profilesUpdated() {
-        loadCache()
     }
 
     func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol]) {

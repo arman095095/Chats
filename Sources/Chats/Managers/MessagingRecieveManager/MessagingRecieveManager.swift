@@ -101,14 +101,16 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                         }
                     }
                     chat.messages = cacheService.storedMessages
+                    chat.newMessages = cacheService.storedNewMessages
+                    chat.notSendedMessages = cacheService.storedNotSendedMessages
                     refreshedChats.append(chat)
                 case .failure:
                     break
                 }
             }
-            group.notify(queue: .main) {
-                completion(refreshedChats)
-            }
+        }
+        group.notify(queue: .main) {
+            completion(refreshedChats)
         }
     }
     
