@@ -115,16 +115,15 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     }
     
     func observeNewMessages(friendID: String) {
-        let cacheService = MessagesCacheService(accountID: accountID,
-                                                friendID: friendID,
-                                                coreDataService: coreDataService)
-        sockets[MessagesSocketsKeys.new.rawValue + friendID]?.remove()
-        let socket = messagingService.initNewMessagesSocket(lastMessageDate: cacheService.lastMessage?.date,
+        let socket = messagingService.initNewMessagesSocket(lastMessageDate: lastMessageDate(id:),
                                                             accountID: accountID,
                                                             from: friendID) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let messageModels):
+                let cacheService = MessagesCacheService(accountID: self.accountID,
+                                                        friendID: friendID,
+                                                        coreDataService: self.coreDataService)
                 let messages: [MessageModelProtocol] = messageModels.sorted(by: { $0.date! < $1.date! }).compactMap {
                     guard let model = MessageModel(model: $0) else { return nil }
                     switch model.status {
@@ -145,6 +144,7 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                     }
                     return model
                 }
+                guard !messages.isEmpty else { return }
                 self.multicastDelegates.delegates.forEach { delegate in
                     delegate.newMessagesRecieved(friendID: friendID, messages: messages)
                 }
@@ -204,5 +204,12 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             return true
         }
         return false
+    }
+    
+    private func lastMessageDate(id: String) -> Date? {
+        let cacheService = MessagesCacheService(accountID: accountID,
+                                                friendID: id,
+                                                coreDataService: coreDataService)
+        return cacheService.lastMessage?.date
     }
 }

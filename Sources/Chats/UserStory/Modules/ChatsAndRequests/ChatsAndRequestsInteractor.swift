@@ -144,8 +144,6 @@ extension ChatsAndRequestsInteractor: ChatsAndRequestsInteractorInput {
 
 extension ChatsAndRequestsInteractor: MessagingRecieveDelegate {
     func newMessagesRecieved(friendID: String, messages: [MessageModelProtocol]) {
-        messagingRecieveManager.observeNewMessages(friendID: friendID)
-        guard !messages.isEmpty else { return }
         output?.newMessagesAtChat(chatID: friendID, messages: messages)
     }
     

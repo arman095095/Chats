@@ -13,7 +13,7 @@ import UIKit
 public protocol MessagingNetworkServiceProtocol {
     func send(message: MessageNetworkModelProtocol,
               completion: @escaping (Result<Void, Error>) -> Void)
-    func initNewMessagesSocket(lastMessageDate: Date?,
+    func initNewMessagesSocket(lastMessageDate: @escaping ((String) -> Date?),
                                accountID: String,
                                from id: String,
                                completion: @escaping (Result<[MessageNetworkModelProtocol], Error>) -> Void) -> SocketProtocol
@@ -173,7 +173,7 @@ extension MessagingNetworkService: MessagingNetworkServiceProtocol {
             }
     }
     
-    public func initNewMessagesSocket(lastMessageDate: Date?,
+    public func initNewMessagesSocket(lastMessageDate: @escaping ((String) -> Date?),
                                       accountID: String,
                                       from id: String,
                                       completion: @escaping (Result<[MessageNetworkModelProtocol], Error>) -> Void) -> SocketProtocol {
@@ -192,13 +192,13 @@ extension MessagingNetworkService: MessagingNetworkServiceProtocol {
             querySnapshot.documentChanges.forEach { change in
                 guard case .added = change.type else { return }
                 guard let message = MessageNetworkModel(queryDocumentSnapshot: change.document) else { return }
-                guard message.date != lastMessageDate else { return }
+                guard message.date != lastMessageDate(id) else { return }
                 newMessages.append(message)
             }
             completion(.success(newMessages))
         }
         var listener: ListenerRegistration
-        if let lastMessageDate = lastMessageDate {
+        if let lastMessageDate = lastMessageDate(id) {
             let query = ref.whereField(URLComponents.Parameters.date.rawValue, isGreaterThan: lastMessageDate)
             listener = query.addSnapshotListener(handler)
         } else {
