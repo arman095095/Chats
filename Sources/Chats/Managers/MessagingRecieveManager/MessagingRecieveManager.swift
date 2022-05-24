@@ -119,14 +119,14 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     }
     
     func observeNewMessages(friendID: String) {
-        let handler: ((String) -> Date?) = { [weak self] friendID in
+        let lastMessageDateHandler: ((String) -> Date?) = { [weak self] friendID in
             guard let self = self else { return nil }
             let cacheService = MessagesCacheService(accountID: self.accountID,
                                                     friendID: friendID,
                                                     coreDataService: self.coreDataService)
             return cacheService.lastMessage?.date
         }
-        let socket = messagingService.initNewMessagesSocket(lastMessageDate: handler,
+        let socket = messagingService.initNewMessagesSocket(lastMessageDate: lastMessageDateHandler,
                                                             accountID: accountID,
                                                             from: friendID) { [weak self] result in
             guard let self = self else { return }
