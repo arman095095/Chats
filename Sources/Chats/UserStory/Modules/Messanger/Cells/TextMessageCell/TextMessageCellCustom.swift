@@ -26,8 +26,8 @@ open class TextMessageCellCustom: TextMessageCell {
     open override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
         if let attributes = layoutAttributes as? MessagesCollectionViewLayoutAttributes {
-            setupContreintsFromCurrentUser(attributes: attributes)
-            setupContreintsFromNoCurrentUser(attributes: attributes)
+            setupContraintsFromCurrentUser(attributes: attributes)
+            setupContraintsFromNoCurrentUser(attributes: attributes)
         }
     }
     
@@ -82,14 +82,14 @@ private extension TextMessageCellCustom {
         messageInfoViewRecieved.isHidden = false
     }
     
-    func setupContreintsFromCurrentUser(attributes: MessagesCollectionViewLayoutAttributes) {
+    func setupContraintsFromCurrentUser(attributes: MessagesCollectionViewLayoutAttributes) {
         messageInfoViewSended.trailingAnchor.constraint(equalTo: messageContainerView.trailingAnchor, constant: -14).isActive = true
         messageInfoViewSended.bottomAnchor.constraint(equalTo: messageContainerView.bottomAnchor, constant: -attributes.messageLabelInsets.top).isActive = true
         messageInfoViewSended.heightAnchor.constraint(equalToConstant: 8).isActive = true
         messageInfoViewSended.widthAnchor.constraint(equalToConstant: 41).isActive = true
     }
     
-    func setupContreintsFromNoCurrentUser(attributes: MessagesCollectionViewLayoutAttributes) {
+    func setupContraintsFromNoCurrentUser(attributes: MessagesCollectionViewLayoutAttributes) {
         messageInfoViewRecieved.trailingAnchor.constraint(equalTo: messageContainerView.trailingAnchor, constant: -14).isActive = true
         messageInfoViewRecieved.bottomAnchor.constraint(equalTo: messageContainerView.bottomAnchor, constant: -attributes.messageLabelInsets.top).isActive = true
         messageInfoViewRecieved.heightAnchor.constraint(equalToConstant: 8).isActive = true

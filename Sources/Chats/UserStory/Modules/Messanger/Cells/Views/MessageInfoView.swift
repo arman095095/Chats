@@ -51,7 +51,9 @@ final class MessageInfoView: UIView {
             case .none:
                 removeAnimationFromSendStatusImage()
             case .some(let stat):
-                sendStatusImageView.image = UIImage(named: stat.imageName, in: Bundle.module, with: nil)
+                sendStatusImageView.image = UIImage(named: stat.imageName,
+                                                    in: Bundle.module,
+                                                    with: nil)
                 switch stat {
                 case .waiting:
                     addAnimationToSendStatusImage()
@@ -161,7 +163,7 @@ private extension MessageInfoView {
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
         sendStatusImageView.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.textAlignment = .right
-        sendStatusImageView.tintColor = .systemGray2
+        sendStatusImageView.tintColor = UIColor.mainApp()
         dateLabel.font = UIFont.systemFont(ofSize: 10,weight: .light)
         sendStatusImageView.contentMode = .scaleAspectFill
         
