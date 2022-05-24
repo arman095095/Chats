@@ -13,6 +13,6 @@ final class MessagingNetworkServiceAssembly: Assembly {
     func assemble(container: Container) {
         container.register(MessagingNetworkServiceProtocol.self) { r in
             MessagingNetworkService(networkService: Firestore.firestore())
-        }
+        }.inObjectScope(.weak)
     }
 }

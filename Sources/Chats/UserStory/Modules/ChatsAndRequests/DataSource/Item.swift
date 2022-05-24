@@ -164,6 +164,7 @@ extension Item {
 }
 
 extension Item {
+
     static func == (lhs: Item, rhs: Item) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
