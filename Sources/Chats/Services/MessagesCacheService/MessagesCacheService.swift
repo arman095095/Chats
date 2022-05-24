@@ -173,6 +173,7 @@ private extension MessagesCacheService {
             message.audioURL = url
             message.audioDuration = duration
         case .image(url: let url, ratio: let ratio):
+            if let _ = message.photoURL { return }
             message.photoURL = url
             message.photoRatio = ratio
         }

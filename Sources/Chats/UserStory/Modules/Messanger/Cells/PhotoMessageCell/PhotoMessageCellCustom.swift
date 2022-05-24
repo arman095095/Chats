@@ -122,7 +122,9 @@ private extension PhotoMessageCellCustom {
         }
         switch viewModel.kind {
         case .photo(let item):
-            if let image = item.image { imageView.image = image }
+            guard let urlString = item.url?.absoluteString else { return }
+            let url = FileManager.getDocumentsDirectory().appendingPathComponent(urlString)
+            imageView.set(localURL: url)
         default:
             break
         }
