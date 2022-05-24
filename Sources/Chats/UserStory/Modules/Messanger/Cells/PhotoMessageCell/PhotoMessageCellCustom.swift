@@ -115,9 +115,7 @@ private extension PhotoMessageCellCustom {
         case .sended:
             activityIndicator.completeLoading(success: true)
             activityIndicator.isHidden = true
-        case .looked:
-            break
-        case .error:
+        default:
             break
         }
         switch viewModel.kind {
