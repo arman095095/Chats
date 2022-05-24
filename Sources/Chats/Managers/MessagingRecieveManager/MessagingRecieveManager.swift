@@ -85,9 +85,13 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                         guard let model = MessageModel(model: $0) else { return }
                         switch model.status {
                         case .sended, .waiting, .looked, .none:
-                            model.firstOfDate = self.isFirstToday(friendID: model.adressID, date: model.date)
+                            model.firstOfDate = self.isFirstToday(friendID: model.adressID,
+                                                                  date: model.date,
+                                                                  messageID: model.id)
                         case .incomingNew, .incoming:
-                            model.firstOfDate = self.isFirstToday(friendID: model.senderID, date: model.date)
+                            model.firstOfDate = self.isFirstToday(friendID: model.senderID,
+                                                                  date: model.date,
+                                                                  messageID: model.id)
                         }
                         switch $0.status {
                         case .sended:
@@ -128,9 +132,13 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
                     guard let model = MessageModel(model: $0) else { return nil }
                     switch model.status {
                     case .sended, .waiting, .looked, .none:
-                        model.firstOfDate = self.isFirstToday(friendID: model.adressID, date: model.date)
+                        model.firstOfDate = self.isFirstToday(friendID: model.adressID,
+                                                              date: model.date, messageID:
+                                                                model.id)
                     case .incomingNew, .incoming:
-                        model.firstOfDate = self.isFirstToday(friendID: model.senderID, date: model.date)
+                        model.firstOfDate = self.isFirstToday(friendID: model.senderID,
+                                                              date: model.date,
+                                                              messageID: model.id)
                     }
                     switch $0.status {
                     case .sended:
@@ -188,11 +196,14 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         sockets[MessagesSocketsKeys.typing.rawValue] = socket
     }
     
-    func isFirstToday(friendID: String, date: Date) -> Bool {
+    func isFirstToday(friendID: String, date: Date, messageID: String) -> Bool {
         let cacheService = MessagesCacheService(accountID: accountID,
                                                 friendID: friendID,
                                                 coreDataService: coreDataService)
         guard let lastMessage = cacheService.lastMessage else { return true }
+        if lastMessage.id == messageID {
+            return lastMessage.firstOfDate
+        }
         let messageDate = DateFormatService().getLocaleDate(date: date)
         let lastMessageDate = DateFormatService().getLocaleDate(date: lastMessage.date)
         return !(lastMessageDate.day == messageDate.day && lastMessageDate.month == messageDate.month && lastMessageDate.year == messageDate.year)
