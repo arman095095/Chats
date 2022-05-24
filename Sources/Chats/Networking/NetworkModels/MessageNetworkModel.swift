@@ -85,15 +85,19 @@ public final class MessageNetworkModel: MessageNetworkModelProtocol {
     
     init?(queryDocumentSnapshot: QueryDocumentSnapshot) {
         let mmessegeDictionary = queryDocumentSnapshot.data()
-        
         guard let senderID = mmessegeDictionary[URLComponents.Parameters.senderID.rawValue] as? String,
               let id = mmessegeDictionary[URLComponents.Parameters.id.rawValue] as? String,
-              let date = mmessegeDictionary[URLComponents.Parameters.date.rawValue] as? Timestamp,
               let content = mmessegeDictionary[URLComponents.Parameters.content.rawValue] as? String,
               let adressID = mmessegeDictionary[URLComponents.Parameters.adressID.rawValue] as? String,
               let statusString = mmessegeDictionary[URLComponents.Parameters.status.rawValue] as? String,
               let status = MessageStatus(rawValue: statusString)
         else { return nil }
+        
+        if let date = mmessegeDictionary[URLComponents.Parameters.date.rawValue] as? Timestamp {
+            self.date = date.dateValue()
+        } else {
+            self.date = Date()
+        }
         
         if let urlPhotoString = mmessegeDictionary[URLComponents.Parameters.photoURL.rawValue] as? String,
            let imageRatio = mmessegeDictionary[URLComponents.Parameters.imageRatio.rawValue] as? Double {
@@ -108,7 +112,6 @@ public final class MessageNetworkModel: MessageNetworkModelProtocol {
         self.adressID = adressID
         self.content = content
         self.status = status
-        self.date = date.dateValue()
         self.id = id
     }
     
