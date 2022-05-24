@@ -38,6 +38,8 @@ protocol MessangerChatViewOutput: AnyObject {
     func allowLoadMore()
     func loadMoreMessages() -> Bool
     func message(at indexPath: IndexPath) -> MessageType?
+    func attributedTextForTopLabel(at indexPath: IndexPath) -> NSAttributedString?
+    func cellTopLabelHeight(at indexPath: IndexPath) -> CGFloat
     func firstMessageTime(at indexPath: IndexPath) -> String
     func configureAudioCell(cell: AudioMessageCell, message: MessageType)
     func deviceVibrate()
@@ -153,6 +155,20 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
         let index = chat.messages.count - count + indexPath.section
         let message = chat.messages[index]
         return message as? MessageType
+    }
+    
+    func attributedTextForTopLabel(at indexPath: IndexPath) -> NSAttributedString? {
+        let message = chat.messages[indexPath.section]
+        if message.firstOfDate {
+            return NSAttributedString(string: firstMessageTime(at: indexPath), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 10), NSAttributedString.Key.foregroundColor: UIColor.darkGray])
+        }
+        else { return nil }
+    }
+    
+    func cellTopLabelHeight(at indexPath: IndexPath) -> CGFloat {
+        let message = chat.messages[indexPath.section]
+        if message.firstOfDate { return Constants.topLabelHeight }
+        else { return Constants.zero }
     }
     
     func firstMessageTime(at indexPath: IndexPath) -> String {

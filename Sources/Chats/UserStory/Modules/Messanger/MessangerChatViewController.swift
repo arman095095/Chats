@@ -87,10 +87,12 @@ extension MessangerChatViewController: MessangerChatViewInput {
     }
     
     func reloadDataWithNewRecivedMessages(messagesCount: Int) {
-        if messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: messagesCollectionView.numberOfSections - 1)) && messagesCount < 3 {
-            reloadDataAndScroll(animated: true)
-        } else {
-            reloadData()
+        DispatchQueue.main.async {
+            if self.messagesCollectionView.indexPathsForVisibleItems.contains(IndexPath(item: 0, section: self.messagesCollectionView.numberOfSections - 1)) && messagesCount < 3 {
+                self.reloadDataAndScroll(animated: true)
+            } else {
+                self.reloadData()
+            }
         }
     }
     
@@ -119,7 +121,7 @@ extension MessangerChatViewController: MessagesDataSource {
     }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return output.messagesCount
+        output.messagesCount
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
@@ -128,11 +130,7 @@ extension MessangerChatViewController: MessagesDataSource {
     }
     
     func cellTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
-        guard let viewModel = message as? MessageCellViewModelProtocol else { return nil }
-        if viewModel.firstOfDate {
-            return NSAttributedString(string: output.firstMessageTime(at: indexPath), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 10), NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-        }
-        else { return nil }
+        output.attributedTextForTopLabel(at: indexPath)
     }
 }
 
@@ -148,9 +146,7 @@ extension MessangerChatViewController: MessagesLayoutDelegate {
     }
     
     func cellTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
-        guard let message = message as? MessageCellViewModelProtocol else { return Constants.zero }
-        if message.firstOfDate { return Constants.topLabelHeight }
-        else { return Constants.zero }
+        output.cellTopLabelHeight(at: indexPath)
     }
 }
 
