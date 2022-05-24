@@ -80,14 +80,14 @@ open class AudioMessageCellCustom: AudioMessageCell {
             messageInfoViewSended.dateLabel.textColor = displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView)
             messageInfoViewSended.sendStatusImageView.tintColor = displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView)
             configureFromCurrentUser(message: message)
-            setupContreintsFromCurrentUser()
+            setupContraintsFromCurrentUser()
         } else {
             playButtonLeftConstraint?.constant = 20
             durationLabelRightConstraint?.constant = -20
             messageInfoViewRecieved.dateLabel.text = dt.string(from: message.sentDate)
             messageInfoViewRecieved.dateLabel.textColor = displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView)
             configureFromNoCurrentUser()
-            setupContreintsFromNoCurrentUser()
+            setupContraintsFromNoCurrentUser()
         }
     }
 }
@@ -107,14 +107,14 @@ private extension AudioMessageCellCustom {
         messageInfoViewRecieved.isHidden = false
     }
     
-    func setupContreintsFromCurrentUser() {
+    func setupContraintsFromCurrentUser() {
         messageInfoViewSended.trailingAnchor.constraint(equalTo: messageContainerView.trailingAnchor, constant: -14).isActive = true
         messageInfoViewSended.bottomAnchor.constraint(equalTo: messageContainerView.bottomAnchor, constant: -7).isActive = true
         messageInfoViewSended.heightAnchor.constraint(equalToConstant: 8).isActive = true
         messageInfoViewSended.widthAnchor.constraint(equalToConstant: 41).isActive = true
     }
     
-    func setupContreintsFromNoCurrentUser() {
+    func setupContraintsFromNoCurrentUser() {
         messageInfoViewRecieved.trailingAnchor.constraint(equalTo: messageContainerView.trailingAnchor, constant: -14).isActive = true
         messageInfoViewRecieved.bottomAnchor.constraint(equalTo: messageContainerView.bottomAnchor, constant: -7).isActive = true
         messageInfoViewRecieved.heightAnchor.constraint(equalToConstant: 8).isActive = true

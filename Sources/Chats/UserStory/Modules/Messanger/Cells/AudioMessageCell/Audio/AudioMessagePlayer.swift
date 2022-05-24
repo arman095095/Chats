@@ -176,8 +176,9 @@ private extension AudioMessagePlayer {
     }
     
     func download(url: URL, for message: MessageType, in audioCell: AudioMessageCell) {
-        (audioCell as! AudioMessageCellCustom).activityIndicator.isHidden = false
-        (audioCell as! AudioMessageCellCustom).activityIndicator.startLoading()
+        guard let customAudioCell = audioCell as? AudioMessageCellCustom else { return }
+        customAudioCell.activityIndicator.isHidden = false
+        customAudioCell.activityIndicator.startLoading()
         remoteStorageService.download(url: url) { [weak self] (result) in
             switch result {
             case .success(let data):
@@ -191,8 +192,8 @@ private extension AudioMessagePlayer {
                 }
                 guard let player = try? AVAudioPlayer(contentsOf: newURL) else { return }
                 self?.play(player: player, audioCell: audioCell, message: message)
-                (audioCell as! AudioMessageCellCustom).activityIndicator.completeLoading(success: true)
-                (audioCell as! AudioMessageCellCustom).activityIndicator.isHidden = true
+                customAudioCell.activityIndicator.completeLoading(success: true)
+                customAudioCell.activityIndicator.isHidden = true
             case .failure(let error):
                 print(error.localizedDescription)
             }
