@@ -192,18 +192,10 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         let cacheService = MessagesCacheService(accountID: accountID,
                                                 friendID: friendID,
                                                 coreDataService: coreDataService)
-        if cacheService.storedMessages.isEmpty {
-            return true
-        }
-        guard let lastMessage = cacheService.lastMessage else {
-            return true
-        }
+        guard let lastMessage = cacheService.lastMessage else { return true }
         let messageDate = DateFormatService().getLocaleDate(date: date)
         let lastMessageDate = DateFormatService().getLocaleDate(date: lastMessage.date)
-        if !(lastMessageDate.day == messageDate.day && lastMessageDate.month == messageDate.month && lastMessageDate.year == messageDate.year) {
-            return true
-        }
-        return false
+        return !(lastMessageDate.day == messageDate.day && lastMessageDate.month == messageDate.month && lastMessageDate.year == messageDate.year)
     }
     
     private func lastMessageDate(id: String) -> Date? {
