@@ -119,7 +119,14 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
     }
     
     func observeNewMessages(friendID: String) {
-        let socket = messagingService.initNewMessagesSocket(lastMessageDate: lastMessageDate(id:),
+        let handler: ((String) -> Date?) = { [weak self] friendID in
+            guard let self = self else { return nil }
+            let cacheService = MessagesCacheService(accountID: self.accountID,
+                                                    friendID: friendID,
+                                                    coreDataService: self.coreDataService)
+            return cacheService.lastMessage?.date
+        }
+        let socket = messagingService.initNewMessagesSocket(lastMessageDate: handler,
                                                             accountID: accountID,
                                                             from: friendID) { [weak self] result in
             guard let self = self else { return }
@@ -207,12 +214,5 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         let messageDate = DateFormatService().getLocaleDate(date: date)
         let lastMessageDate = DateFormatService().getLocaleDate(date: lastMessage.date)
         return !(lastMessageDate.day == messageDate.day && lastMessageDate.month == messageDate.month && lastMessageDate.year == messageDate.year)
-    }
-    
-    private func lastMessageDate(id: String) -> Date? {
-        let cacheService = MessagesCacheService(accountID: accountID,
-                                                friendID: id,
-                                                coreDataService: coreDataService)
-        return cacheService.lastMessage?.date
     }
 }
