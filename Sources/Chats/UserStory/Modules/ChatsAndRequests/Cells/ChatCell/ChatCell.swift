@@ -39,8 +39,6 @@ final class ChatCell: UICollectionViewCell {
     private let deleteButton = UIButton(type: .system)
     private var containerLeadingAnchor: NSLayoutConstraint!
     private var deleteButtonWidthAnchor: NSLayoutConstraint!
-    private var lastMessageTrailingAnchor: NSLayoutConstraint!
-    private var badgeWidthConstreint: NSLayoutConstraint!
     private var deleteButtonHidden = true
     weak var output: ChatCellOuput?
     
@@ -51,7 +49,7 @@ final class ChatCell: UICollectionViewCell {
         dateLabel.text = viewModel.lastMessageDateString
         markMessage.image = viewModel.lastMessageSendingStatus?.image
         onlineImageView.isHidden = !(viewModel.online ?? true)
-        badgeLabelSetup(viewModel: viewModel)
+        badge.setBadgeCount(count: viewModel.newMessagesCount)
     }
     
     func animateSelect() {
@@ -68,7 +66,6 @@ final class ChatCell: UICollectionViewCell {
         onlineImageView.isHidden = true
         containerLeadingAnchor.constant = Constants.zero
         deleteButtonWidthAnchor.constant = Constants.zero
-        lastMessageTrailingAnchor.constant = -Constants.messageAndContainerInset
         markMessage.image = nil
         deleteButtonHidden = true
         badge.isHidden = true
@@ -88,20 +85,6 @@ final class ChatCell: UICollectionViewCell {
 
 //MARK: Setup UI
 private extension ChatCell {
-    
-    func badgeLabelSetup(viewModel: ChatCellViewModelProtocol) {
-        if !(viewModel.newMessagesEnable ?? false) {
-            badge.isHidden = true
-            lastMessageTrailingAnchor.constant = -Constants.messageAndContainerInset
-        }
-        else {
-            badge.isHidden = false
-            badge.setBadgeCount(count: viewModel.newMessagesCount ?? 0)
-           // badgeWidthConstreint.constant = viewModel.badgeWidth
-            lastMessageTrailingAnchor.constant = -Constants.badgeAndMessageInset - Constants.badgeHeight
-            layoutIfNeeded()
-        }
-    }
     
     func setupViews() {
         self.backgroundColor = .systemGray6
@@ -187,15 +170,11 @@ private extension ChatCell {
         
         badge.topAnchor.constraint(equalTo: self.dateLabel.bottomAnchor,constant: 8).isActive = true
         badge.trailingAnchor.constraint(equalTo: self.gradientView.leadingAnchor, constant: -10).isActive = true
-        badge.heightAnchor.constraint(equalToConstant: Constants.badgeHeight).isActive = true
-        badgeWidthConstreint = badge.widthAnchor.constraint(equalToConstant: Constants.badgeHeight)
-        badgeWidthConstreint.isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: userImageView.trailingAnchor, constant: 15).isActive = true
         nameLabel.topAnchor.constraint(equalTo: self.userImageView.topAnchor).isActive = true
         
         lastMessegeLabel.leadingAnchor.constraint(equalTo: userImageView.trailingAnchor, constant: 15).isActive = true
-        lastMessageTrailingAnchor = lastMessegeLabel.trailingAnchor.constraint(equalTo: gradientView.leadingAnchor,constant: -8)
-        lastMessageTrailingAnchor.isActive = true
+        lastMessegeLabel.trailingAnchor.constraint(equalTo: badge.leadingAnchor, constant: -8).isActive = true
         lastMessegeLabel.topAnchor.constraint(equalTo: self.containerView.centerYAnchor, constant: -UIFont.systemFont(ofSize: 15, weight: .regular).lineHeight/2).isActive = true
         
         dateLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor).isActive = true
@@ -298,13 +277,9 @@ private extension ChatCell {
     struct Constants {
         static let cellID = "ChatCellId"
         static let zero: CGFloat = 0
-        static let badgeAndMessageInset: CGFloat = 12
         static let messageAndContainerInset: CGFloat = 8
         static let imageChatHeight: CGFloat = 65
-        static let badgeHeight: CGFloat = 20
-        static let badgeInset: CGFloat = 10
         static let chatHeight: CGFloat = 75
-        static let badgeTextFont = UIFont.systemFont(ofSize: 17)
         static let nameLabelFont = UIFont.systemFont(ofSize: 16, weight: .medium)
         static let lastMessegeLabelFont = UIFont.systemFont(ofSize: 15, weight: .regular)
         static let markMessageTintColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
