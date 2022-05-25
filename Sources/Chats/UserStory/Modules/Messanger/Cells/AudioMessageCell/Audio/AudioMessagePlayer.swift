@@ -31,20 +31,19 @@ protocol AudioMessagePlayerProtocol: AnyObject {
 
 final class AudioMessagePlayer: NSObject {
     
-    private var audioPlayer: AVAudioPlayer?
-    private weak var playingCell: AudioMessageCell?
-    var playingMessage: MessageType?
     private(set) var state: PlayerState = .stopped
+    private(set) var playingMessage: MessageType?
+    private var audioPlayer: AVAudioPlayer?
+    private var progressTimer: Timer?
+    private weak var playingCell: AudioMessageCell?
     private weak var messageCollectionView: MessagesCollectionView?
     private let remoteStorageService: ChatsRemoteStorageServiceProtocol
     private let cacheService: MessagesCacheServiceProtocol
     
-    internal var progressTimer: Timer?
-    
     // MARK: - Init Methods
-    public init(messageCollectionView: MessagesCollectionView,
-                remoteStorageService: ChatsRemoteStorageServiceProtocol,
-                cacheService: MessagesCacheServiceProtocol) {
+    init(messageCollectionView: MessagesCollectionView,
+         remoteStorageService: ChatsRemoteStorageServiceProtocol,
+         cacheService: MessagesCacheServiceProtocol) {
         self.messageCollectionView = messageCollectionView
         self.remoteStorageService = remoteStorageService
         self.cacheService = cacheService
