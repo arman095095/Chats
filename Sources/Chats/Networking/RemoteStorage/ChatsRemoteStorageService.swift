@@ -79,13 +79,12 @@ extension ChatsRemoteStorageService: ChatsRemoteStorageServiceProtocol {
     public func download(url: URL, completion: @escaping (Result<Data, Error>) -> Void) {
         let ref = storage.reference(forURL: url.absoluteString)
         let megaByte = Int64(1*1024*1024)
-        ref.getData(maxSize: megaByte) { [weak self] (data, error) in
+        ref.getData(maxSize: megaByte) { (data, error) in
             if let error = error {
                 completion(.failure(error))
                 return
             }
             guard let data = data else { return }
-            self?.delete(from: url)
             completion(.success(data))
         }
     }

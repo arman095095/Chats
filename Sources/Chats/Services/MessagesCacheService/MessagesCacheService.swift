@@ -170,6 +170,7 @@ private extension MessagesCacheService {
         case .text(content: let content):
             message.textContent = content
         case .audio(url: let url, duration: let duration):
+            if let _ = message.audioURL { return }
             message.audioURL = url
             message.audioDuration = duration
         case .image(url: let url, ratio: let ratio):
