@@ -8,6 +8,26 @@
 import UIKit
 import MessageKit
 
+enum StatusInfo {
+    case waiting
+    case sended
+    case looked
+    case error
+    
+    var imageName: String {
+        switch self {
+        case .waiting:
+            return "wait"
+        case .sended:
+            return "Sented1"
+        case .looked:
+            return "sended3"
+        case .error:
+            return "wait"
+        }
+    }
+}
+
 protocol MessageCellViewModelProtocol {
     var sender: SenderType { get }
     var messageId: String { get }

@@ -35,8 +35,8 @@ open class TextMessageCellCustom: TextMessageCell {
         super.prepareForReuse()
         messageInfoViewSended.removeAnimationFromSendStatusImage()
         messageInfoViewRecieved.removeAnimationFromSendStatusImage()
-        messageInfoViewSended.sendStatusImageView.image = nil
-        messageInfoViewRecieved.sendStatusImageView.image = nil
+        messageInfoViewSended.setup(image: nil)
+        messageInfoViewRecieved.setup(image: nil)
     }
     
     open override func setupSubviews() {
@@ -56,12 +56,12 @@ open class TextMessageCellCustom: TextMessageCell {
               let dataSource = messagesCollectionView.messagesDataSource else { fatalError() }
         
         if dataSource.isFromCurrentSender(message: viewModel) {
-            messageInfoViewSended.dateLabel.text = dt.string(from: message.sentDate)
-            messageInfoViewSended.dateLabel.textColor = displayDelegate.textColor(for: viewModel, at: indexPath, in: messagesCollectionView)
+            messageInfoViewSended.setup(date: dt.string(from: message.sentDate))
+            messageInfoViewSended.setupDateTextColor(displayDelegate.textColor(for: viewModel, at: indexPath, in: messagesCollectionView))
             configureFromCurrentUser(message: message)
         } else {
-            messageInfoViewRecieved.dateLabel.text = dt.string(from: message.sentDate)
-            messageInfoViewRecieved.dateLabel.textColor = displayDelegate.textColor(for: viewModel, at: indexPath, in: messagesCollectionView)
+            messageInfoViewRecieved.setup(date: dt.string(from: message.sentDate))
+            messageInfoViewRecieved.setupDateTextColor(displayDelegate.textColor(for: viewModel, at: indexPath, in: messagesCollectionView))
             configureFromNoCurrentUser()
         }
     }

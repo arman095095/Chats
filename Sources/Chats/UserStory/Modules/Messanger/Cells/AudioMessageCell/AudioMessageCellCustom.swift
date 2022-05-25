@@ -35,9 +35,9 @@ open class AudioMessageCellCustom: AudioMessageCell {
         super.prepareForReuse()
         messageInfoViewSended.removeAnimationFromSendStatusImage()
         messageInfoViewRecieved.removeAnimationFromSendStatusImage()
-        messageInfoViewRecieved.sendStatusImageView.image = nil
-        messageInfoViewSended.sendStatusImageView.image = nil
-        messageInfoViewRecieved.sendStatusImageView.image = nil
+        messageInfoViewRecieved.setup(image: nil)
+        messageInfoViewSended.setup(image: nil)
+        messageInfoViewRecieved.setup(image: nil)
         activityIndicator.completeLoading(success: true)
         activityIndicator.isHidden = true
     }
@@ -76,16 +76,16 @@ open class AudioMessageCellCustom: AudioMessageCell {
         if dataSource.isFromCurrentSender(message: viewModel) {
             playButtonLeftConstraint?.constant = 15
             durationLabelRightConstraint?.constant = -20
-            messageInfoViewSended.dateLabel.text = dt.string(from: message.sentDate)
-            messageInfoViewSended.dateLabel.textColor = displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView)
-            messageInfoViewSended.sendStatusImageView.tintColor = displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView)
+            messageInfoViewSended.setup(date: dt.string(from: message.sentDate))
+            messageInfoViewSended.setupDateTextColor(displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView))
+            messageInfoViewSended.setupSendStatusColor(displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView))
             configureFromCurrentUser(message: message)
             setupContraintsFromCurrentUser()
         } else {
             playButtonLeftConstraint?.constant = 20
             durationLabelRightConstraint?.constant = -20
-            messageInfoViewRecieved.dateLabel.text = dt.string(from: message.sentDate)
-            messageInfoViewRecieved.dateLabel.textColor = displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView)
+            messageInfoViewRecieved.setup(date: dt.string(from: message.sentDate))
+            messageInfoViewRecieved.setupDateTextColor(displayDelegate.audioTintColor(for: viewModel, at: indexPath, in: messagesCollectionView))
             configureFromNoCurrentUser()
             setupContraintsFromNoCurrentUser()
         }

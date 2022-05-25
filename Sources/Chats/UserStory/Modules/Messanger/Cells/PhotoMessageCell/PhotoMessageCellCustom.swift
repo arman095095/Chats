@@ -63,8 +63,8 @@ class PhotoMessageCellCustom: MessageContentCell {
         imageView.image = nil
         messageInfoViewSended.removeAnimationFromSendStatusImage()
         messageInfoViewRecieved.removeAnimationFromSendStatusImage()
-        messageInfoViewSended.sendStatusImageView.image = nil
-        messageInfoViewRecieved.sendStatusImageView.image = nil
+        messageInfoViewSended.setup(image: nil)
+        messageInfoViewRecieved.setup(image: nil)
         activityIndicator.completeLoading(success: true)
         activityIndicator.isHidden = true
     }
@@ -78,11 +78,11 @@ class PhotoMessageCellCustom: MessageContentCell {
             return
         }
         if dataSource.isFromCurrentSender(message: viewModel) {
-            messageInfoViewSended.dateLabel.text = dt.string(from: message.sentDate)
+            messageInfoViewSended.setup(date: dt.string(from: message.sentDate))
             configureFromCurrentUser(message: message, viewModel: viewModel)
             setupContreintsFromCurrentUser()
         } else {
-            messageInfoViewRecieved.dateLabel.text = dt.string(from: message.sentDate)
+            messageInfoViewRecieved.setup(date: dt.string(from: message.sentDate))
             configureFromNoCurrentUser(message: message, viewModel: viewModel, delegate: displayDelegate, indexPath: indexPath, messagesCollectionView: messagesCollectionView)
             setupConstreintsFromNoCurrentUser()
         }

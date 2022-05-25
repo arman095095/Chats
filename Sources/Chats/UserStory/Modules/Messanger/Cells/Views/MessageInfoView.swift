@@ -8,42 +8,10 @@
 import UIKit
 import DesignSystem
 
-enum StatusInfo {
-    case waiting
-    case sended
-    case looked
-    case error
-    
-    var imageName: String {
-        switch self {
-        case .waiting:
-            return "wait"
-        case .sended:
-            return "Sented1"
-        case .looked:
-            return "sended3"
-        case .error:
-            return "wait"
-        }
-    }
-}
-
 final class MessageInfoView: UIView {
     
-    let dateLabel = UILabel()
-    let sendStatusImageView = UIImageView()
-    
-    enum InfoType {
-        
-        enum MessageType {
-            case audio
-            case photo
-            case text
-        }
-        
-        case sender(MessageType)
-        case recieved(MessageType)
-    }
+    private let dateLabel = UILabel()
+    private let sendStatusImageView = UIImageView()
     
     var status: StatusInfo? {
         didSet {
@@ -90,6 +58,22 @@ final class MessageInfoView: UIView {
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setup(date: String?) {
+        self.dateLabel.text = date
+    }
+    
+    func setupDateTextColor(_ color: UIColor) {
+        dateLabel.textColor = color
+    }
+    
+    func setupSendStatusColor(_ color: UIColor) {
+        sendStatusImageView.tintColor = color
+    }
+    
+    func setup(image: UIImage?) {
+        self.sendStatusImageView.image = image
     }
     
     func removeAnimationFromSendStatusImage() {
@@ -174,5 +158,19 @@ private extension MessageInfoView {
         sendStatusImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         sendStatusImageView.heightAnchor.constraint(equalToConstant: 8).isActive = true
         sendStatusImageView.widthAnchor.constraint(equalToConstant: 9).isActive = true
+    }
+}
+
+extension MessageInfoView {
+    enum InfoType {
+        
+        enum MessageType {
+            case audio
+            case photo
+            case text
+        }
+        
+        case sender(MessageType)
+        case recieved(MessageType)
     }
 }
