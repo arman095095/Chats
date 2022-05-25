@@ -64,25 +64,6 @@ public final class MessageNetworkModel: MessageNetworkModelProtocol {
         self.status = .sended
     }
     
-    public init(model: MessageModelProtocol) {
-        self.content = ""
-        switch model.type {
-        case .text(content: let content):
-            self.content = content
-        case .audio(url: let url, duration: let duration):
-            self.audioURL = url
-            self.audioDuration = duration
-        case .image(url: let url, ratio: let ratio):
-            self.imageRatio = ratio
-            self.photoURL = url
-        }
-        self.senderID = model.senderID
-        self.adressID = model.adressID
-        self.date = model.date
-        self.id = model.id
-        self.status = .sended
-    }
-    
     init?(queryDocumentSnapshot: QueryDocumentSnapshot) {
         let mmessegeDictionary = queryDocumentSnapshot.data()
         guard let senderID = mmessegeDictionary[URLComponents.Parameters.senderID.rawValue] as? String,
