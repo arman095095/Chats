@@ -65,6 +65,7 @@ class PhotoMessageCellCustom: MessageContentCell {
         messageInfoViewRecieved.removeAnimationFromSendStatusImage()
         messageInfoViewSended.sendStatusImageView.image = nil
         messageInfoViewRecieved.sendStatusImageView.image = nil
+        activityIndicator.completeLoading(success: true)
         activityIndicator.isHidden = true
     }
     
@@ -122,7 +123,11 @@ private extension PhotoMessageCellCustom {
         case .photo(let item):
             guard let urlString = item.url?.absoluteString else { return }
             let url = FileManager.getDocumentsDirectory().appendingPathComponent(urlString)
-            imageView.set(localURL: url)
+            do {
+                try imageView.set(localURL: url)
+            } catch {
+                imageView.set(imageURL: item.url)
+            }
         default:
             break
         }
