@@ -10,7 +10,7 @@ import AVFoundation
 import MessageKit
 import NetworkServices
 import Services
-import ModelInterfaces
+import ChatsRouteMap
 
 /// The `PlayerState` indicates the current audio controller state
 enum PlayerState {

@@ -8,7 +8,7 @@
 
 import UIKit
 import MessageKit
-import ModelInterfaces
+import ChatsRouteMap
 import Utils
 
 protocol MessangerChatStringFactoryProtocol {

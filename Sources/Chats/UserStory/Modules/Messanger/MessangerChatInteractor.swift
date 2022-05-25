@@ -9,7 +9,7 @@
 import UIKit
 import MessageKit
 import Managers
-import ModelInterfaces
+import ChatsRouteMap
 
 protocol MessangerChatInteractorInput: AnyObject {
     func configureAudioCell(cell: AudioMessageCell, message: MessageType)

@@ -8,6 +8,7 @@
 
 import UIKit
 import ModelInterfaces
+import ChatsRouteMap
 import ProfileRouteMap
 
 protocol ChatsAndRequestsRouterInput: AnyObject {

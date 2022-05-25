@@ -9,6 +9,7 @@
 import UIKit
 import AlertManager
 import ModelInterfaces
+import ChatsRouteMap
 import ProfileRouteMap
 import Utils
 

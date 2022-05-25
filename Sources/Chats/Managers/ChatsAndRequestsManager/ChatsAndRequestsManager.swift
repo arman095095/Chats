@@ -9,6 +9,7 @@ import Foundation
 import Services
 import NetworkServices
 import ModelInterfaces
+import ChatsRouteMap
 
 enum ChatsAndRequestsSocketsKeys: String {
     case fixedFriends

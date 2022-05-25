@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import ModelInterfaces
 import Services
+import ChatsRouteMap
 
 protocol MessagesCacheServiceProtocol {
     var storedMessages: [MessageModelProtocol] { get }

@@ -8,7 +8,7 @@
 
 import UIKit
 import Module
-import ModelInterfaces
+import ChatsRouteMap
 import NetworkServices
 import Managers
 import MessageKit

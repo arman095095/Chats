@@ -7,7 +7,7 @@
 
 import UIKit
 import Utils
-import ModelInterfaces
+import ChatsRouteMap
 
 enum ItemType {
     case chats(chat: ChatModelProtocol)

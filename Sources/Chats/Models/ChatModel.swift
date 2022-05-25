@@ -8,6 +8,7 @@
 import Foundation
 import ModelInterfaces
 import NetworkServices
+import ChatsRouteMap
 import Services
 
 final class ChatModel: ChatModelProtocol,

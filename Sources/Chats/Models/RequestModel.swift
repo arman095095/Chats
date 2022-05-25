@@ -7,6 +7,7 @@
 
 import Foundation
 import ModelInterfaces
+import ChatsRouteMap
 import NetworkServices
 import Services
 

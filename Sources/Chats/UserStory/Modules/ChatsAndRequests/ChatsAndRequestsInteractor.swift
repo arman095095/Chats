@@ -8,6 +8,7 @@
 
 import UIKit
 import Managers
+import ChatsRouteMap
 import ModelInterfaces
 import Swinject
 
