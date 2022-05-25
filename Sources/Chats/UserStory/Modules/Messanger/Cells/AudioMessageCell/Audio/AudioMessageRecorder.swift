@@ -17,8 +17,8 @@ protocol AudioMessageRecorderProtocol {
 final class AudioMessageRecorder: NSObject, AVAudioPlayerDelegate, AudioMessageRecorderProtocol {
 
     //Variables
-    private var audioRecorder: AVAudioRecorder!
-    private var isAudioRecordingGranted: Bool!
+    private var audioRecorder: AVAudioRecorder?
+    private var isAudioRecordingGranted: Bool?
     private var name: String?
 
     private func checkAllowed() {
@@ -52,8 +52,7 @@ final class AudioMessageRecorder: NSObject, AVAudioPlayerDelegate, AudioMessageR
     
     //MARK:- StartRecord
     func beginRecord() {
-
-        if isAudioRecordingGranted {
+        if isAudioRecordingGranted == true {
             //Create the session.
             let session = AVAudioSession.sharedInstance()
 
@@ -74,9 +73,9 @@ final class AudioMessageRecorder: NSObject, AVAudioPlayerDelegate, AudioMessageR
                 let audioFilename = FileManager.getDocumentsDirectory().appendingPathComponent(name)
                 //Create the audio recording, and assign ourselves as the delegate
                 audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
-                audioRecorder.delegate = self
-                audioRecorder.isMeteringEnabled = true
-                audioRecorder.record()
+                audioRecorder?.delegate = self
+                audioRecorder?.isMeteringEnabled = true
+                audioRecorder?.record()
             }
             catch let error {
                 print("Error for start audio recording: \(error.localizedDescription)")
@@ -93,9 +92,10 @@ final class AudioMessageRecorder: NSObject, AVAudioPlayerDelegate, AudioMessageR
     }
     
     private func finishAudioRecording(success: Bool) -> (String,Float)? {
-        audioRecorder.stop()
+        audioRecorder?.stop()
         if success {
-            guard let player = try? AVAudioPlayer(contentsOf: audioRecorder.url) else { return nil }
+            guard let url = audioRecorder?.url,
+                  let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
             let duration = player.duration
             guard let url = name else { return nil }
             name = nil
