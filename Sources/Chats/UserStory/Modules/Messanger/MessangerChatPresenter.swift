@@ -288,7 +288,7 @@ extension MessangerChatPresenter: MessangerChatInteractorOutput {
         self.chat.notLookedMessages.append(message)
         count = chat.messages.count <= increamentCount ? chat.messages.count : increamentCount
         allowLoadMore()
-        view?.reloadDataAndScroll(animated: true)
+        view?.reloadDataAndScroll(animated: false)
     }
     
     func successAudioRecorded(url: String, duration: Float) {
