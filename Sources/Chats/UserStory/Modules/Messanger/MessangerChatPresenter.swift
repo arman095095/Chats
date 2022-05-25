@@ -158,7 +158,8 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     }
     
     func attributedTextForTopLabel(at indexPath: IndexPath) -> NSAttributedString? {
-        let message = chat.messages[indexPath.section]
+        let index = chat.messages.count - count + indexPath.section
+        let message = chat.messages[index]
         if message.firstOfDate {
             return NSAttributedString(string: firstMessageTime(at: indexPath), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 10), NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         }
@@ -166,13 +167,15 @@ extension MessangerChatPresenter: MessangerChatViewOutput {
     }
     
     func cellTopLabelHeight(at indexPath: IndexPath) -> CGFloat {
-        let message = chat.messages[indexPath.section]
+        let index = chat.messages.count - count + indexPath.section
+        let message = chat.messages[index]
         if message.firstOfDate { return Constants.topLabelHeight }
         else { return Constants.zero }
     }
     
     func firstMessageTime(at indexPath: IndexPath) -> String {
-        let message = chat.messages[indexPath.section]
+        let index = chat.messages.count - count + indexPath.section
+        let message = chat.messages[index]
         return DateFormatService().convertForLabel(from: message.date)
     }
     

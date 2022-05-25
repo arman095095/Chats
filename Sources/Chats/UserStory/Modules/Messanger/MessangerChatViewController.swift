@@ -66,13 +66,6 @@ extension MessangerChatViewController: MessangerChatViewInput {
         setupTopBar()
     }
     
-    func reloadDataAndKeepOffset() {
-        DispatchQueue.main.async {
-            self.messagesCollectionView.reloadDataAndKeepOffset()
-        }
-        
-    }
-    
     func reloadDataAndScroll(animated: Bool) {
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadData()
