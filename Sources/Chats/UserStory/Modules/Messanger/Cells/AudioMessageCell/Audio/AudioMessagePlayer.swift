@@ -190,7 +190,7 @@ private extension AudioMessagePlayer {
                 if let messageModel = message as? MessageModelProtocol {
                     guard case .audio(url: _, duration: let duration) = messageModel.type else { return }
                     messageModel.type = .audio(url: name, duration: duration)
-                    self?.cacheService.update(messageModel)
+                    self?.cacheService.updateWithLocalURL(messageModel)
                 }
                 guard let player = try? AVAudioPlayer(contentsOf: newURL) else { return }
                 self?.play(player: player, audioCell: audioCell, message: message)

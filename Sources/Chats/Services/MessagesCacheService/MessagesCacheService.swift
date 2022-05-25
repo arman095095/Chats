@@ -22,6 +22,7 @@ protocol MessagesCacheServiceProtocol {
     func storeIncomingMessage(_ message: MessageModelProtocol)
     func storeNewIncomingMessage(_ message: MessageModelProtocol)
     func update(_ message: MessageModelProtocol)
+    func updateWithLocalURL(_ message: MessageModelProtocol)
     func removeFromNotSended(message: MessageModelProtocol)
     func removeAllNotLooked()
     func removeAllNewMessages()
@@ -136,6 +137,13 @@ extension MessagesCacheService: MessagesCacheServiceProtocol {
         }
     }
     
+    func updateWithLocalURL(_ message: MessageModelProtocol) {
+        guard let messageObject = chat?.messages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message else { return }
+        coreDataService.update(messageObject) { object in
+            fillFieldsWithURL(message: messageObject, model: message)
+        }
+    }
+    
     func removeFromNotSended(message: MessageModelProtocol) {
         guard let messageObject = chat?.notSendedMessages?.first(where: { ($0 as? Message)?.id == message.id }) as? Message else { return }
         coreDataService.update(messageObject) { object in
@@ -175,6 +183,25 @@ private extension MessagesCacheService {
             message.audioDuration = duration
         case .image(url: let url, ratio: let ratio):
             if let _ = message.photoURL { return }
+            message.photoURL = url
+            message.photoRatio = ratio
+        }
+    }
+    
+    func fillFieldsWithURL(message: Message, model: MessageModelProtocol) {
+        message.id = model.id
+        message.senderID = model.senderID
+        message.adressID = model.adressID
+        message.firstOfDate = model.firstOfDate
+        message.status = model.status?.rawValue
+        message.date = model.date
+        switch model.type {
+        case .text(content: let content):
+            message.textContent = content
+        case .audio(url: let url, duration: let duration):
+            message.audioURL = url
+            message.audioDuration = duration
+        case .image(url: let url, ratio: let ratio):
             message.photoURL = url
             message.photoRatio = ratio
         }
