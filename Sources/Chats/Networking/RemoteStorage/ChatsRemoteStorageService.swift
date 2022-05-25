@@ -38,7 +38,7 @@ extension ChatsRemoteStorageService: ChatsRemoteStorageServiceProtocol {
     public func uploadChat(audio: Data, completion: @escaping (Result<String, Error>) -> Void) {
         let metadata = StorageMetadata()
         metadata.contentType = StorageURLComponents.Parameters.audioM4A.rawValue
-        let audioName = [UUID().uuidString,Date().description,StorageURLComponents.Parameters.m4a.rawValue].joined()
+        let audioName = [UUID().uuidString,Date().description, StorageURLComponents.Parameters.m4a.rawValue].joined()
         audioRef.child(audioName).putData(audio, metadata: metadata) { [weak self] (metadata, error) in
             if let error = error {
                 completion(.failure(error))

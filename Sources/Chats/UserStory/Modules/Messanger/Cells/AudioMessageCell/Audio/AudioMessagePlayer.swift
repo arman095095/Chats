@@ -158,7 +158,9 @@ private extension AudioMessagePlayer {
     }
     
     @objc func didFireProgressTimer(_ timer: Timer) {
-        guard let player = audioPlayer, let collectionView = messageCollectionView, let cell = playingCell else {
+        guard let player = audioPlayer,
+              let collectionView = messageCollectionView,
+              let cell = playingCell else {
             return
         }
         if let playingCellIndexPath = collectionView.indexPath(for: cell) {
