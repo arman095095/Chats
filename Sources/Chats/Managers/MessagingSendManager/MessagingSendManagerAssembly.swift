@@ -19,15 +19,17 @@ final class MessagingSendManagerAssembly{
                   let account = r.resolve(AccountModelProtocol.self),
                   let messagingService = r.resolve(MessagingNetworkServiceProtocol.self),
                   let cacheService = r.resolve(MessagesCacheServiceProtocol.self, name: chatID),
-                  let remoteStorageService = r.resolve(ChatsRemoteStorageServiceProtocol.self) else {
+                  let remoteStorageService = r.resolve(ChatsRemoteStorageServiceProtocol.self),
+                  let queue = r.resolve(DispatchQueueProtocol.self) else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return MessagingSendManager(accountID: userID,
-                                    account: account,
-                                    chatID: chatID,
-                                    messagingService: messagingService,
-                                    cacheService: cacheService,
-                                    remoteStorageService: remoteStorageService)
+                                        account: account,
+                                        chatID: chatID,
+                                        messagingService: messagingService,
+                                        queue: queue,
+                                        cacheService: cacheService,
+                                        remoteStorageService: remoteStorageService)
         }.inObjectScope(.weak)
     }
 }

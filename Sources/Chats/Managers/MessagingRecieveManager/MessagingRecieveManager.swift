@@ -36,15 +36,18 @@ final class MessagingRecieveManager {
     private let messagingService: MessagingNetworkServiceProtocol
     private let accountID: String
     private let coreDataService: CoreDataServiceProtocol
+    private let queue: DispatchQueueProtocol
     private var sockets = [String: SocketProtocol]()
     private var multicastDelegates = MulticastDelegates<MessagingRecieveDelegate>()
     
     init(messagingService: MessagingNetworkServiceProtocol,
          coreDataService: CoreDataServiceProtocol,
+         queue: DispatchQueueProtocol,
          accountID: String) {
         self.messagingService = messagingService
         self.accountID = accountID
         self.coreDataService = coreDataService
+        self.queue = queue
     }
     
     deinit {
@@ -69,52 +72,54 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             completion(chats)
             return
         }
-        chats.forEach { chat in
-            let cacheService = MessagesCacheService(accountID: accountID,
-                                                    friendID: chat.friendID,
-                                                    coreDataService: coreDataService)
-            group.enter()
-            self.messagingService.getMessages(from: accountID,
-                                              friendID: chat.friendID,
-                                              lastDate: cacheService.lastMessage?.date) { [weak self] result in
-                guard let self = self else { return }
-                defer { group.leave() }
-                switch result {
-                case .success(let messages):
-                    messages.sorted(by: { $0.date! < $1.date! }).forEach {
-                        guard let model = MessageModel(model: $0) else { return }
-                        switch model.status {
-                        case .sended, .waiting, .looked, .none:
-                            model.firstOfDate = self.isFirstToday(friendID: model.adressID,
-                                                                  date: model.date,
-                                                                  messageID: model.id)
-                        case .incomingNew, .incoming:
-                            model.firstOfDate = self.isFirstToday(friendID: model.senderID,
-                                                                  date: model.date,
-                                                                  messageID: model.id)
+        queue.async {
+            chats.forEach { chat in
+                let cacheService = MessagesCacheService(accountID: self.accountID,
+                                                        friendID: chat.friendID,
+                                                        coreDataService: self.coreDataService)
+                group.enter()
+                self.messagingService.getMessages(from: self.accountID,
+                                                  friendID: chat.friendID,
+                                                  lastDate: cacheService.lastMessage?.date) { [weak self] result in
+                    guard let self = self else { return }
+                    defer { group.leave() }
+                    switch result {
+                    case .success(let messages):
+                        messages.sorted(by: { $0.date! < $1.date! }).forEach {
+                            guard let model = MessageModel(model: $0) else { return }
+                            switch model.status {
+                            case .sended, .waiting, .looked, .none:
+                                model.firstOfDate = self.isFirstToday(friendID: model.adressID,
+                                                                      date: model.date,
+                                                                      messageID: model.id)
+                            case .incomingNew, .incoming:
+                                model.firstOfDate = self.isFirstToday(friendID: model.senderID,
+                                                                      date: model.date,
+                                                                      messageID: model.id)
+                            }
+                            switch $0.status {
+                            case .sended:
+                                cacheService.storeSendedMessage(model)
+                            case .looked:
+                                cacheService.storeLookedMessage(model)
+                            case .incomingNew:
+                                cacheService.storeNewIncomingMessage(model)
+                            case .incoming:
+                                cacheService.storeIncomingMessage(model)
+                            }
                         }
-                        switch $0.status {
-                        case .sended:
-                            cacheService.storeSendedMessage(model)
-                        case .looked:
-                            cacheService.storeLookedMessage(model)
-                        case .incomingNew:
-                            cacheService.storeNewIncomingMessage(model)
-                        case .incoming:
-                            cacheService.storeIncomingMessage(model)
-                        }
+                        chat.messages = cacheService.storedMessages
+                        chat.newMessages = cacheService.storedNewMessages
+                        chat.notSendedMessages = cacheService.storedNotSendedMessages
+                        refreshedChats.append(chat)
+                    case .failure:
+                        break
                     }
-                    chat.messages = cacheService.storedMessages
-                    chat.newMessages = cacheService.storedNewMessages
-                    chat.notSendedMessages = cacheService.storedNotSendedMessages
-                    refreshedChats.append(chat)
-                case .failure:
-                    break
                 }
             }
-        }
-        group.notify(queue: .main) {
-            completion(refreshedChats)
+            group.notify(queue: .main) {
+                completion(refreshedChats)
+            }
         }
     }
     
@@ -132,36 +137,40 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let messageModels):
-                let cacheService = MessagesCacheService(accountID: self.accountID,
-                                                        friendID: friendID,
-                                                        coreDataService: self.coreDataService)
-                let messages: [MessageModelProtocol] = messageModels.sorted(by: { $0.date! < $1.date! }).compactMap {
-                    guard let model = MessageModel(model: $0) else { return nil }
-                    switch model.status {
-                    case .sended, .waiting, .looked, .none:
-                        model.firstOfDate = self.isFirstToday(friendID: model.adressID,
-                                                              date: model.date, messageID:
-                                                                model.id)
-                    case .incomingNew, .incoming:
-                        model.firstOfDate = self.isFirstToday(friendID: model.senderID,
-                                                              date: model.date,
-                                                              messageID: model.id)
+                self.queue.async {
+                    let cacheService = MessagesCacheService(accountID: self.accountID,
+                                                            friendID: friendID,
+                                                            coreDataService: self.coreDataService)
+                    let messages: [MessageModelProtocol] = messageModels.sorted(by: { $0.date! < $1.date! }).compactMap {
+                        guard let model = MessageModel(model: $0) else { return nil }
+                        switch model.status {
+                        case .sended, .waiting, .looked, .none:
+                            model.firstOfDate = self.isFirstToday(friendID: model.adressID,
+                                                                  date: model.date, messageID:
+                                                                    model.id)
+                        case .incomingNew, .incoming:
+                            model.firstOfDate = self.isFirstToday(friendID: model.senderID,
+                                                                  date: model.date,
+                                                                  messageID: model.id)
+                        }
+                        switch $0.status {
+                        case .sended:
+                            cacheService.storeSendedMessage(model)
+                        case .looked:
+                            cacheService.storeLookedMessage(model)
+                        case .incomingNew:
+                            cacheService.storeNewIncomingMessage(model)
+                        case .incoming:
+                            cacheService.storeIncomingMessage(model)
+                        }
+                        return model
                     }
-                    switch $0.status {
-                    case .sended:
-                        cacheService.storeSendedMessage(model)
-                    case .looked:
-                        cacheService.storeLookedMessage(model)
-                    case .incomingNew:
-                        cacheService.storeNewIncomingMessage(model)
-                    case .incoming:
-                        cacheService.storeIncomingMessage(model)
+                    guard !messages.isEmpty else { return }
+                    self.multicastDelegates.delegates.forEach { delegate in
+                        DispatchQueue.main.async {
+                            delegate.newMessagesRecieved(friendID: friendID, messages: messages)
+                        }
                     }
-                    return model
-                }
-                guard !messages.isEmpty else { return }
-                self.multicastDelegates.delegates.forEach { delegate in
-                    delegate.newMessagesRecieved(friendID: friendID, messages: messages)
                 }
             case .failure:
                 break
@@ -177,14 +186,18 @@ extension MessagingRecieveManager: MessagingRecieveManagerProtocol {
         let socket = messagingService.initLookedMessagesSocket(accountID: accountID, from: friendID) { [weak self] result in
             switch result {
             case .success:
-                let notLooked = cacheService.storedNotLookedMessages
-                notLooked.forEach {
-                    $0.status = .looked
-                    cacheService.update($0)
-                }
-                cacheService.removeAllNotLooked()
-                self?.multicastDelegates.delegates.forEach { delegate in
-                    delegate.messagesLooked(friendID: friendID)
+                self?.queue.async {
+                    let notLooked = cacheService.storedNotLookedMessages
+                    notLooked.forEach {
+                        $0.status = .looked
+                        cacheService.update($0)
+                    }
+                    cacheService.removeAllNotLooked()
+                    DispatchQueue.main.async {
+                        self?.multicastDelegates.delegates.forEach { delegate in
+                            delegate.messagesLooked(friendID: friendID)
+                        }
+                    }
                 }
             case .failure:
                 break

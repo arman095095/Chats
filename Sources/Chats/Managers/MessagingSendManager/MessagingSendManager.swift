@@ -34,18 +34,21 @@ final class MessagingSendManager {
     private let friendID: String
     private let messagingService: MessagingNetworkServiceProtocol
     private let cacheService: MessagesCacheServiceProtocol
+    private let queue: DispatchQueueProtocol
     private let remoteStorageService: ChatsRemoteStorageServiceProtocol
     
     init(accountID: String,
          account: AccountModelProtocol,
          chatID: String,
          messagingService: MessagingNetworkServiceProtocol,
+         queue: DispatchQueueProtocol,
          cacheService: MessagesCacheServiceProtocol,
          remoteStorageService: ChatsRemoteStorageServiceProtocol) {
         self.accountID = accountID
         self.account = account
         self.friendID = chatID
         self.messagingService = messagingService
+        self.queue = queue
         self.cacheService = cacheService
         self.remoteStorageService = remoteStorageService
     }
@@ -54,14 +57,17 @@ final class MessagingSendManager {
 extension MessagingSendManager: MessagingSendManagerProtocol {
     
     func sendAllWaitingMessages() {
-        cacheService.storedNotSendedMessages.forEach {
-            switch $0.type {
-            case .text(content: let content):
-                sendWaitingTextMessage(message: $0, content: content)
-            case .audio(url: let url, duration: let duration):
-                sendWaitingAudioMessage(message: $0, localURL: url, duration: duration)
-            case .image(url: let url, ratio: let ratio):
-                sendWaitingPhotoMessage(message: $0, localURL: url, ratio: ratio)
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            self.cacheService.storedNotSendedMessages.forEach {
+                switch $0.type {
+                case .text(content: let content):
+                    self.sendWaitingTextMessage(message: $0, content: content)
+                case .audio(url: let url, duration: let duration):
+                    self.sendWaitingAudioMessage(message: $0, localURL: url, duration: duration)
+                case .image(url: let url, ratio: let ratio):
+                    self.sendWaitingPhotoMessage(message: $0, localURL: url, ratio: ratio)
+                }
             }
         }
     }
@@ -163,17 +169,20 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
     }
     
     func readNewMessages() {
-        let newMessages = cacheService.storedNewMessages
-        let ids: [String] = newMessages.lazy.map { $0.id }
-        newMessages.forEach {
-            $0.status = .incoming
-            cacheService.update($0)
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            let newMessages = self.cacheService.storedNewMessages
+            let ids: [String] = newMessages.lazy.map { $0.id }
+            newMessages.forEach {
+                $0.status = .incoming
+                self.cacheService.update($0)
+            }
+            self.cacheService.removeAllNewMessages()
+            guard !newMessages.isEmpty else { return }
+            self.messagingService.sendLookedMessages(from: self.accountID,
+                                                     for: self.friendID,
+                                                     messageIDs: ids) { _ in }
         }
-        cacheService.removeAllNewMessages()
-        guard !newMessages.isEmpty else { return }
-        messagingService.sendLookedMessages(from: accountID,
-                                            for: friendID,
-                                            messageIDs: ids) { _ in }
     }
     
     func sendDidBeganTyping() {

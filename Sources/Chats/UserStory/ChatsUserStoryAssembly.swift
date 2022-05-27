@@ -15,6 +15,7 @@ public final class ChatsUserStoryAssembly: Assembly {
     public init() { }
 
     public func assemble(container: Container) {
+        DispatchQueueWrapperAssembly().assemble(container: container)
         AccountCacheServiceAssembly().assemble(container: container)
         ProfileInfoNetworkServiceAssembly().assemble(container: container)
         MessagingNetworkServiceAssembly().assemble(container: container)

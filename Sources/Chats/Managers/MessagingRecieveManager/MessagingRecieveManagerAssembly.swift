@@ -17,11 +17,13 @@ final class MessagingRecieveManagerAssembly: Assembly {
             guard let messagingService = r.resolve(MessagingNetworkServiceProtocol.self),
                   let coreDataService = r.resolve(CoreDataServiceProtocol.self),
                   let quickAccessManager = r.resolve(QuickAccessManagerProtocol.self),
-                  let accountID = quickAccessManager.userID else { fatalError(ErrorMessage.dependency.localizedDescription)
+                  let accountID = quickAccessManager.userID,
+                  let queue = r.resolve(DispatchQueueProtocol.self) else { fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return MessagingRecieveManager(messagingService: messagingService,
-                               coreDataService: coreDataService,
-                               accountID: accountID)
+                                           coreDataService: coreDataService,
+                                           queue: queue,
+                                           accountID: accountID)
         }.inObjectScope(.weak)
     }
 }

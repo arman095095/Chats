@@ -21,7 +21,8 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
                   let accountCacheService = r.resolve(AccountCacheServiceProtocol.self),
                   let profileService = r.resolve(ProfileInfoNetworkServiceProtocol.self),
                   let requestsService = r.resolve(ChatsAndRequestsNetworkServiceProtocol.self),
-                  let messagingService = r.resolve(MessagingNetworkServiceProtocol.self)  else {
+                  let messagingService = r.resolve(MessagingNetworkServiceProtocol.self),
+                  let queue = r.resolve(DispatchQueueProtocol.self) else {
                 fatalError(ErrorMessage.dependency.localizedDescription)
             }
             return ChatsAndRequestsManager(accountID: accountID,
@@ -30,7 +31,8 @@ final class ChatsAndRequestsManagerAssembly: Assembly {
                                            messagingService: messagingService,
                                            chatsAndRequestsCacheService: chatsAndRequestsCacheService,
                                            profileService: profileService,
-                                           requestsService: requestsService)
+                                           requestsService: requestsService,
+                                           queue: queue)
         }.inObjectScope(.weak)
     }
 }
