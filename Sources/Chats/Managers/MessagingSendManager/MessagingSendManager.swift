@@ -13,7 +13,6 @@ import Services
 import Utils
 
 protocol MessagingSendManagerProtocol: AnyObject {
-    var cachedMessages: [MessageModelProtocol] { get }
     func readNewMessages()
     func sendDidBeganTyping()
     func sendDidFinishTyping()
@@ -53,10 +52,6 @@ final class MessagingSendManager {
 }
 
 extension MessagingSendManager: MessagingSendManagerProtocol {
-    
-    var cachedMessages: [MessageModelProtocol] {
-        cacheService.storedMessages
-    }
     
     func sendAllWaitingMessages() {
         cacheService.storedNotSendedMessages.forEach {

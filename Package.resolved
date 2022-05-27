@@ -131,8 +131,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathantannar4/InputBarAccessoryView",
       "state" : {
-        "revision" : "2843b4454cfb6de5b4d1e5939fef2dd6257b69ee",
-        "version" : "5.5.0"
+        "revision" : "e5da8c5e3c6ff2740ec2b721dd71e2cf24053001",
+        "version" : "6.1.0"
       }
     },
     {
@@ -156,10 +156,10 @@
     {
       "identity" : "messagekit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/MessageKit/MessageKit",
+      "location" : "https://github.com/arman095095/MessageKit.git",
       "state" : {
-        "revision" : "84236d91ac5783e3ecbefc15b82d854476720115",
-        "version" : "3.8.0"
+        "branch" : "develop",
+        "revision" : "7893675d5c7d3506f31a087871f54e4fa5d8f22f"
       }
     },
     {
