@@ -164,7 +164,7 @@ extension MessagingSendManager: MessagingSendManagerProtocol {
     
     func readNewMessages() {
         let newMessages = cacheService.storedNewMessages
-        let ids = newMessages.map { $0.id }
+        let ids: [String] = newMessages.lazy.map { $0.id }
         newMessages.forEach {
             $0.status = .incoming
             cacheService.update($0)

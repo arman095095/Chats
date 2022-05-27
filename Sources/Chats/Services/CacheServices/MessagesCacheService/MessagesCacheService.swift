@@ -44,19 +44,19 @@ final class MessagesCacheService {
 
 extension MessagesCacheService: MessagesCacheServiceProtocol {
     var storedNotSendedMessages: [MessageModelProtocol] {
-        chat?.notSendedMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+        chat?.notSendedMessages?.lazy.compactMap { MessageModel(message: $0 as? Message) } ?? []
     }
     
     var storedNewMessages: [MessageModelProtocol] {
-        chat?.notReadMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+        chat?.notReadMessages?.lazy.compactMap { MessageModel(message: $0 as? Message) } ?? []
     }
 
     var storedMessages: [MessageModelProtocol] {
-        chat?.messages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+        chat?.messages?.lazy.compactMap { MessageModel(message: $0 as? Message) } ?? []
     }
     
     var storedNotLookedMessages: [MessageModelProtocol] {
-        chat?.notLookedMessages?.compactMap { MessageModel(message: $0 as? Message) } ?? []
+        chat?.notLookedMessages?.lazy.compactMap { MessageModel(message: $0 as? Message) } ?? []
     }
     
     var lastMessage: MessageModelProtocol? {

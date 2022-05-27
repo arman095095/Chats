@@ -43,7 +43,7 @@ extension ChatsAndRequestsCacheService: ChatsCacheServiceProtocol {
     var storedChats: [ChatModelProtocol] {
         guard let storedAccount = account,
               let storedChats = storedAccount.chats else { return [] }
-        return storedChats.compactMap { ChatModel(chat: $0 as? Chat) }
+        return storedChats.lazy.compactMap { ChatModel(chat: $0 as? Chat) }
     }
     
     func store(chatModel: ChatModelProtocol) {
@@ -83,7 +83,7 @@ extension ChatsAndRequestsCacheService: RequestsCacheServiceProtocol {
     var storedRequests: [RequestModelProtocol] {
         guard let storedAccount = account,
               let storedRequests = storedAccount.requests else { return [] }
-        return storedRequests.compactMap { RequestModel(request: $0 as? Request) }
+        return storedRequests.lazy.compactMap { RequestModel(request: $0 as? Request) }
     }
     
     func store(requestModel: RequestModelProtocol) {
