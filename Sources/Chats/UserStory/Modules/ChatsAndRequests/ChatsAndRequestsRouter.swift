@@ -12,6 +12,7 @@ import ChatsRouteMap
 import ProfileRouteMap
 
 protocol ChatsAndRequestsRouterInput: AnyObject {
+    func setupBadge(count: String?)
     func openProfileModule(profile: ProfileModelProtocol, output: ProfileModuleOutput)
     func openMessangerModule(chat: ChatModelProtocol, output: MessangerChatModuleOutput)
     func dismissProfileModule()
@@ -27,6 +28,11 @@ final class ChatsAndRequestsRouter {
 }
 
 extension ChatsAndRequestsRouter: ChatsAndRequestsRouterInput {
+
+    func setupBadge(count: String?) {
+        transitionHandler?.tabBarItem.badgeValue = count
+    }
+    
     func openProfileModule(profile: ProfileModelProtocol, output: ProfileModuleOutput) {
         let module = routeMap.profileModule(model: profile)
         module.output = output

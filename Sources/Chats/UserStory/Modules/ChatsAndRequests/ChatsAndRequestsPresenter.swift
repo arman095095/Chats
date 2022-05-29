@@ -102,7 +102,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsViewOutput {
             break
         case .chats:
             let chatItem = chats.remove(at: indexPath.row)
-            self.view?.reloadData(requests: requests, chats: chats)
+            reloadData()
             guard let chat = interactor.cachedChat(with: chatItem.id) else { return }
             interactor.remove(chat: chat)
         default:
@@ -148,7 +148,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
         chats[index].updateWith(messages: messages)
         let chat = chats.remove(at: index)
         chats.insert(chat, at: 0)
-        view?.reloadData(requests: requests, chats: chats)
+        reloadData()
     }
 
     func chatDidBeganTyping(chatID: String) {
@@ -173,7 +173,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
     func successLoaded(_ chats: [ChatModelProtocol], _ requests: [RequestModelProtocol]) {
         self.requests = requests.map { Item(request: $0) }
         self.chats = chats.map { Item(chat: $0) }.sorted(by: { $0.lastMessageDate! > $1.lastMessageDate! })
-        view?.reloadData(requests: self.requests, chats: self.chats)
+        reloadData()
         interactor.startObserve()
         interactor.sendNotSendedMessages()
     }
@@ -190,7 +190,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
         }
         let new = newChats.map { Item(chat: $0) }
         self.chats.insert(contentsOf: new, at: 0)
-        self.view?.reloadData(requests: requests, chats: chats)
+        reloadData()
     }
     
     func changed(newRequests: [RequestModelProtocol], removed: [RequestModelProtocol]) {
@@ -199,7 +199,7 @@ extension ChatsAndRequestsPresenter: ChatsAndRequestsInteractorOutput {
         }
         let new = newRequests.map { Item(request: $0) }
         self.requests.insert(contentsOf: new, at: 0)
-        self.view?.reloadData(requests: requests, chats: chats)
+        reloadData()
     }
 }
 
@@ -216,10 +216,25 @@ extension ChatsAndRequestsPresenter: ProfileModuleOutput {
 }
 
 private extension ChatsAndRequestsPresenter {
+
     func loadCache() {
         self.chats = interactor.cachedChats.map { Item(chat: $0) }.sorted(by: { $0.lastMessageDate! > $1.lastMessageDate! })
         self.requests = interactor.cachedRequests.map { Item(request: $0) }
+        reloadData()
+    }
+    
+    func reloadData() {
         view?.reloadData(requests: requests, chats: chats)
+        setupBadge()
+    }
+    
+    func setupBadge() {
+        let newCount = requests.count + chats.filter { $0.newMessagesCount != 0 }.count
+        guard newCount != 0 else {
+            router.setupBadge(count: nil)
+            return
+        }
+        router.setupBadge(count: "\(newCount)")
     }
 }
 
@@ -227,6 +242,6 @@ extension ChatsAndRequestsPresenter: MessangerChatModuleOutput {
     func reloadChat(_ chat: ChatModelProtocol) {
         guard let index = chats.firstIndex(where: { $0.id == chat.friendID }) else { return }
         chats[index] = Item(chat: chat)
-        view?.reloadData(requests: requests, chats: chats)
+        reloadData()
     }
 }
