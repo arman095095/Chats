@@ -220,7 +220,5 @@ private extension ChatsAndRequestsViewController {
         static let searchPlaceholder = "Поиск"
         static let chatCellHeight: CGFloat = 75
         static let requestCellHeight: CGFloat = 65
-        static let headerTextColor = UIColor.systemGray
-        static let headerFontSize: CGFloat = 22
     }
 }
