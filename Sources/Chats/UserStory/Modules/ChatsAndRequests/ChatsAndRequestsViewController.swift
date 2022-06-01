@@ -17,7 +17,7 @@ protocol ChatsAndRequestsViewInput: AnyObject {
 final class ChatsAndRequestsViewController: UIViewController {
     var output: ChatsAndRequestsViewOutput?
     private var collectionView: UICollectionView!
-    private var dataSource: UICollectionViewDiffableDataSource<Sections, Item>!
+    private var dataSource: ChatsAndRequestsDataSource!
     private var layout: UICollectionViewCompositionalLayout!
     
     override func viewDidLoad() {
@@ -40,13 +40,7 @@ extension ChatsAndRequestsViewController: ChatsAndRequestsViewInput {
     }
     
     func reloadData(requests: [Item], chats: [Item]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Sections, Item>()
-        snapshot.appendSections([.requests])
-        snapshot.appendItems(requests, toSection: .requests)
-        snapshot.appendSections([.chats])
-        snapshot.appendItems(chats, toSection: .chats)
-        snapshot.appendSections([.chatsEmpty])
-        dataSource.apply(snapshot, animatingDifferences: true)
+        dataSource.reloadData(chats: chats, requests: requests)
     }
 }
 
@@ -86,42 +80,7 @@ private extension ChatsAndRequestsViewController {
     }
     
     func setupDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Sections, Item>(collectionView: collectionView, cellProvider: { [weak self]
-            (collectionView, indexpath, item) -> UICollectionViewCell? in
-            guard let self = self else { return nil }
-            guard let section = Sections(rawValue: indexpath.section) else { fatalError("section not found") }
-            switch section {
-            case .chats :
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatCell.idCell, for: indexpath) as! ChatCell
-                cell.config(viewModel: item)
-                cell.output = self
-                return cell
-            case .requests :
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RequestCell.idCell, for: indexpath) as! RequestCell
-                cell.config(viewModel: item)
-                return cell
-            default:
-                return nil
-            }
-        })
-        guard let dataSource = dataSource else { return }
-        dataSource.supplementaryViewProvider = { collectionView, kind, indexpath -> UICollectionReusableView? in
-            guard let section = Sections(rawValue: indexpath.section) else { fatalError("section not found") }
-            switch section {
-            case .chats :
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HeaderItem.headerID, for: indexpath) as! HeaderItem
-                header.config(text: section.title, textColor: Constants.headerTextColor, fontSize: Constants.headerFontSize)
-                return header
-            case .requests :
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HeaderItem.headerID, for: indexpath) as! HeaderItem
-                header.config(text: section.title, textColor: Constants.headerTextColor, fontSize: Constants.headerFontSize)
-                return header
-            case .chatsEmpty:
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: EmptyHeaderView.idHeader, for: indexpath) as! EmptyHeaderView
-                header.config(type: .emptyChats)
-                return header
-            }
-        }
+        self.dataSource = ChatsAndRequestsDataSource(collectionView: collectionView, output: self)
     }
     
     func setupLayout() {

@@ -46,8 +46,14 @@ final class ChatsAndRequestsDataSource: UICollectionViewDiffableDataSource<Secti
         }
     }
     
-    func reloadData(chats: [Item], request: [Item]) {
-        
+    func reloadData(chats: [Item], requests: [Item]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Sections, Item>()
+        snapshot.appendSections([.requests])
+        snapshot.appendItems(requests, toSection: .requests)
+        snapshot.appendSections([.chats])
+        snapshot.appendItems(chats, toSection: .chats)
+        snapshot.appendSections([.chatsEmpty])
+        self.apply(snapshot, animatingDifferences: true)
     }
 }
 
